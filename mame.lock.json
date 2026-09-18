@@ -1,0 +1,8 @@
+{
+  "commit": "774a180df2b6ef9c53e48337792256817c50f768",
+  "archive_url": "https://codeload.github.com/mamedev/mame/tar.gz/774a180df2b6ef9c53e48337792256817c50f768",
+  "archive_sha256": "927902e54134e520a1ff80dc30d9b1407d29edd4a38fea67581071b5ab264b5b",
+  "archive_root": "mame-774a180df2b6ef9c53e48337792256817c50f768",
+  "reference_driver_sha256": "f74c74da24b3a4128d27913773354c7785ee28cae6c01e7d23b5d53b7372ab05",
+  "sdl_input_sha256": "de9b5c9f775fb1175408650246fea3032afff7768bbfc4a014cdef9f4785952c"
+}

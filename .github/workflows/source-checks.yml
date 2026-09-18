@@ -1,0 +1,13 @@
+name: Source checks
+on: [push, pull_request]
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 tools/audit_public.py --strict
+      - run: python3 -m unittest discover -s tests
+      - run: bash -n build_macos.sh 'Launch Emulator.command' 'Choose System and Launch.command'

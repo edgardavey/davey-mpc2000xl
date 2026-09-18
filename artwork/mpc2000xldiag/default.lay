@@ -1,0 +1,879 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mamelayout version="2">
+  <element name="panel" defstate="0">
+    <image file="panel.svg">
+      <bounds x="0" y="0" width="1280" height="980" />
+    </image>
+  </element>
+  <element name="blue" defstate="0">
+    <image file="blue-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="blue-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="cursor_down" defstate="0">
+    <image file="cursor_down-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="cursor_down-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="cursor_left" defstate="0">
+    <image file="cursor_left-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="cursor_left-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="cursor_right" defstate="0">
+    <image file="cursor_right-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="cursor_right-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="cursor_up" defstate="0">
+    <image file="cursor_up-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="cursor_up-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="ivory" defstate="0">
+    <image file="ivory-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="ivory-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="pad" defstate="0">
+    <image file="pad-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="pad-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="red" defstate="0">
+    <image file="red-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="red-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="wheel_left" defstate="0">
+    <image file="wheel_left-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="wheel_left-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="wheel_right" defstate="0">
+    <image file="wheel_right-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="wheel_right-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="yellow" defstate="0">
+    <image file="yellow-0.svg" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+    <image file="yellow-1.svg" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="variation_track" defstate="0">
+    <image file="fader-track.svg">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="variation_cap" defstate="0">
+    <image file="fader-cap.svg">
+      <bounds x="0" y="0" width="1" height="1" />
+    </image>
+  </element>
+  <element name="variation_value" defstate="0">
+    <text string="000" state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="001" state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="002" state="2">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="003" state="3">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="004" state="4">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="005" state="5">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="006" state="6">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="007" state="7">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="008" state="8">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="009" state="9">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="010" state="10">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="011" state="11">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="012" state="12">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="013" state="13">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="014" state="14">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="015" state="15">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="016" state="16">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="017" state="17">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="018" state="18">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="019" state="19">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="020" state="20">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="021" state="21">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="022" state="22">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="023" state="23">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="024" state="24">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="025" state="25">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="026" state="26">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="027" state="27">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="028" state="28">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="029" state="29">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="030" state="30">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="031" state="31">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="032" state="32">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="033" state="33">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="034" state="34">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="035" state="35">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="036" state="36">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="037" state="37">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="038" state="38">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="039" state="39">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="040" state="40">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="041" state="41">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="042" state="42">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="043" state="43">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="044" state="44">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="045" state="45">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="046" state="46">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="047" state="47">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="048" state="48">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="049" state="49">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="050" state="50">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="051" state="51">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="052" state="52">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="053" state="53">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="054" state="54">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="055" state="55">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="056" state="56">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="057" state="57">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="058" state="58">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="059" state="59">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="060" state="60">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="061" state="61">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="062" state="62">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="063" state="63">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="064" state="64">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="065" state="65">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="066" state="66">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="067" state="67">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="068" state="68">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="069" state="69">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="070" state="70">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="071" state="71">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="072" state="72">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="073" state="73">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="074" state="74">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="075" state="75">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="076" state="76">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="077" state="77">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="078" state="78">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="079" state="79">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="080" state="80">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="081" state="81">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="082" state="82">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="083" state="83">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="084" state="84">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="085" state="85">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="086" state="86">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="087" state="87">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="088" state="88">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="089" state="89">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="090" state="90">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="091" state="91">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="092" state="92">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="093" state="93">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="094" state="94">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="095" state="95">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="096" state="96">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="097" state="97">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="098" state="98">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="099" state="99">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="100" state="100">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="101" state="101">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="102" state="102">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="103" state="103">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="104" state="104">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="105" state="105">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="106" state="106">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="107" state="107">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="108" state="108">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="109" state="109">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="110" state="110">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="111" state="111">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="112" state="112">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="113" state="113">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="114" state="114">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="115" state="115">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="116" state="116">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="117" state="117">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="118" state="118">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="119" state="119">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="120" state="120">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="121" state="121">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="122" state="122">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="123" state="123">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="124" state="124">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="125" state="125">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="126" state="126">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+    <text string="127" state="127">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red=".27" green=".33" blue=".23" />
+    </text>
+  </element>
+  <element name="guest_led" defstate="0">
+    <disk state="0">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red="0.2" green="0.24" blue="0.19" />
+    </disk>
+    <disk state="1">
+      <bounds x="0" y="0" width="1" height="1" />
+      <color red="0.92" green="0.22" blue="0.12" />
+    </disk>
+  </element>
+  <view name="MPC2000XL panel" showpointers="yes">
+    <bounds x="0" y="0" width="1280" height="980" />
+    <element ref="panel">
+      <bounds x="0" y="0" width="1280" height="980" />
+    </element>
+    <screen index="0">
+      <bounds x="214" y="96" width="310" height="75" />
+    </screen>
+    <element ref="ivory" id="key_f1">
+      <bounds x="216" y="284" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_f2">
+      <bounds x="268" y="284" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_f3">
+      <bounds x="320" y="284" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_f4">
+      <bounds x="372" y="284" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_f5">
+      <bounds x="424" y="284" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_f6">
+      <bounds x="476" y="284" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_main">
+      <bounds x="370" y="354" width="48" height="25" />
+    </element>
+    <element ref="yellow" id="key_window">
+      <bounds x="491" y="354" width="48" height="25" />
+    </element>
+    <element ref="blue" id="key_num7">
+      <bounds x="96" y="359" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num8">
+      <bounds x="171" y="359" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num9">
+      <bounds x="246" y="359" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num4">
+      <bounds x="96" y="405" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num5">
+      <bounds x="171" y="405" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num6">
+      <bounds x="246" y="405" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num1">
+      <bounds x="96" y="451" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num2">
+      <bounds x="171" y="451" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num3">
+      <bounds x="246" y="451" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_shift" name="shift_active">
+      <bounds x="96" y="497" width="36" height="17" />
+    </element>
+    <element ref="blue" id="key_num0">
+      <bounds x="171" y="497" width="36" height="17" />
+    </element>
+    <element ref="ivory" id="key_enter">
+      <bounds x="246" y="497" width="36" height="17" />
+    </element>
+    <element ref="wheel_left" id="key_minus">
+      <bounds x="370" y="406" width="78" height="156" />
+    </element>
+    <element ref="wheel_right" id="key_plus">
+      <bounds x="448" y="406" width="78" height="156" />
+    </element>
+    <element ref="cursor_left" id="key_left">
+      <bounds x="394" y="610" width="27" height="78" />
+    </element>
+    <element ref="cursor_right" id="key_right">
+      <bounds x="475" y="610" width="27" height="78" />
+    </element>
+    <element ref="cursor_up" id="key_up">
+      <bounds x="423" y="610" width="50" height="38" />
+    </element>
+    <element ref="cursor_down" id="key_down">
+      <bounds x="423" y="650" width="50" height="38" />
+    </element>
+    <element ref="ivory" id="key_after">
+      <bounds x="92" y="591" width="44" height="23" />
+    </element>
+    <element ref="ivory" id="key_tap">
+      <bounds x="238" y="583" width="54" height="40" />
+    </element>
+    <element ref="ivory" id="key_undo">
+      <bounds x="204" y="674" width="44" height="23" />
+    </element>
+    <element ref="ivory" id="key_erase">
+      <bounds x="278" y="674" width="44" height="23" />
+    </element>
+    <element ref="ivory" id="key_stepprev">
+      <bounds x="204" y="746" width="44" height="23" />
+    </element>
+    <element ref="ivory" id="key_stepnext">
+      <bounds x="278" y="746" width="44" height="23" />
+    </element>
+    <element ref="ivory" id="key_goto">
+      <bounds x="352" y="746" width="44" height="23" />
+    </element>
+    <element ref="ivory" id="key_barprev">
+      <bounds x="426" y="746" width="44" height="23" />
+    </element>
+    <element ref="ivory" id="key_barnext">
+      <bounds x="500" y="746" width="44" height="23" />
+    </element>
+    <element ref="red" id="key_rec">
+      <bounds x="200" y="820" width="54" height="42" />
+    </element>
+    <element ref="red" id="key_overdub">
+      <bounds x="274" y="820" width="54" height="42" />
+    </element>
+    <element ref="ivory" id="key_stop">
+      <bounds x="348" y="820" width="54" height="42" />
+    </element>
+    <element ref="ivory" id="key_play">
+      <bounds x="422" y="820" width="54" height="42" />
+    </element>
+    <element ref="ivory" id="key_playstart">
+      <bounds x="496" y="820" width="54" height="42" />
+    </element>
+    <element ref="ivory" id="key_full">
+      <bounds x="744" y="224" width="46" height="23" />
+    </element>
+    <element ref="ivory" id="key_levels">
+      <bounds x="824" y="224" width="46" height="23" />
+    </element>
+    <element ref="ivory" id="key_nextseq">
+      <bounds x="744" y="304" width="46" height="23" />
+    </element>
+    <element ref="ivory" id="key_trackmute">
+      <bounds x="824" y="304" width="46" height="23" />
+    </element>
+    <element ref="ivory" id="key_banka">
+      <bounds x="904" y="304" width="46" height="23" />
+    </element>
+    <element ref="ivory" id="key_bankb">
+      <bounds x="984" y="304" width="46" height="23" />
+    </element>
+    <element ref="ivory" id="key_bankc">
+      <bounds x="1064" y="304" width="46" height="23" />
+    </element>
+    <element ref="ivory" id="key_bankd">
+      <bounds x="1144" y="304" width="46" height="23" />
+    </element>
+    <element ref="pad" id="key_pad13">
+      <bounds x="742" y="391" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad14">
+      <bounds x="859" y="391" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad15">
+      <bounds x="976" y="391" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad16">
+      <bounds x="1093" y="391" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad9">
+      <bounds x="742" y="507" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad10">
+      <bounds x="859" y="507" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad11">
+      <bounds x="976" y="507" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad12">
+      <bounds x="1093" y="507" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad5">
+      <bounds x="742" y="623" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad6">
+      <bounds x="859" y="623" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad7">
+      <bounds x="976" y="623" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad8">
+      <bounds x="1093" y="623" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad1">
+      <bounds x="742" y="739" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad2">
+      <bounds x="859" y="739" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad3">
+      <bounds x="976" y="739" width="99" height="99" />
+    </element>
+    <element ref="pad" id="key_pad4">
+      <bounds x="1093" y="739" width="99" height="99" />
+    </element>
+    <element ref="variation_track" id="variation_area">
+      <bounds x="74" y="658" width="80" height="170" />
+    </element>
+    <element ref="variation_cap" id="variation_cap">
+      <bounds x="84" y="802" width="60" height="26" />
+    </element>
+    <element ref="variation_value" id="variation_value">
+      <bounds x="94" y="835" width="40" height="13" />
+    </element>
+    <element ref="guest_led" name="led_after">
+      <bounds x="110" y="574" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_undo">
+      <bounds x="222" y="656" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_rec">
+      <bounds x="209" y="801" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_overdub">
+      <bounds x="283" y="801" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_play">
+      <bounds x="431" y="801" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_full">
+      <bounds x="763" y="211" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_levels">
+      <bounds x="843" y="211" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_nextseq">
+      <bounds x="763" y="291" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_trackmute">
+      <bounds x="843" y="291" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_banka">
+      <bounds x="923" y="291" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_bankb">
+      <bounds x="1003" y="291" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_bankc">
+      <bounds x="1083" y="291" width="8" height="8" />
+    </element>
+    <element ref="guest_led" name="led_bankd">
+      <bounds x="1163" y="291" width="8" height="8" />
+    </element>
+  </view>
+</mamelayout>
