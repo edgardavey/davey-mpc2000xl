@@ -30,9 +30,12 @@ def launch_command(binary, session, rom, disk=None, debug=False):
     command += ['-artpath', str(ROOT / 'artwork'), '-view', VIEW, '-snapview', VIEW,
                 '-snapsize', '1280x980', '-autoboot_script', str(ROOT / 'panel/startup.lua'),
                 '-autoboot_delay', '0', '-window', '-resolution', '1280x980', '-video', 'soft',
-                '-noui_active', '-uimodekey', 'SCRLOCK', '-sound', 'none', '-nosamples', '-skip_gameinfo']
+                '-noui_active', '-uimodekey', 'SCRLOCK', '-sound', 'sdl' if os.environ.get('MPC2000XL_SOUND') else 'none', '-nosamples', '-skip_gameinfo']
+    # MAME shows a "press any key" warning for this driver unless the debug flag is set. With no debugger front-end
+    # ('-debugger none') this opens no window, changes nothing visible, and the emulator starts straight away.
+    command += ['-debug', '-debugger', 'none']
     if debug:
-        command += ['-debug', '-debugger', 'none', '-log']
+        command += ['-log']
     return command
 
 def main():

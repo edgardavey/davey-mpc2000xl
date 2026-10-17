@@ -1,0 +1,12 @@
+wait 30
+snap
+down shift
+up shift
+wait 0.3
+press n8
+wait 0.3
+down shift
+up shift
+wait 3
+snap
+exit

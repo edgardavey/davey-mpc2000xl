@@ -1,0 +1,94 @@
+wait 25
+down shift
+press n3
+up shift
+wait 2
+press f6
+wait 5
+press n3
+press n5
+press enter
+wait 1
+press f5
+wait 3
+press main
+wait 1
+press pad1
+press levels
+wait 1
+press down
+press plus
+press plus
+press f2
+wait 2
+press f3
+press f3
+press f3
+wait 1
+tap pad1 0.6
+tap pad2 0.6
+tap pad3 0.6
+wait 1
+press f5
+wait 1
+press f6
+wait 2
+snap
+mem
+down rec
+tap playstart 0.3
+up rec
+wait 1.4
+tap pad2 0.5
+tap pad2 0.5
+tap pad2 0.5
+tap pad2 0.5
+tap pad2 0.5
+tap pad2 0.5
+tap pad2 0.5
+tap pad2 0.5
+wait 0.3
+press stop
+wait 1
+snap
+mem
+down overdub
+tap playstart 0.3
+up overdub
+wait 1.9
+tap pad3 1.0
+tap pad3 1.0
+tap pad3 1.0
+tap pad3 1.0
+wait 0.3
+press stop
+wait 1
+mem
+log on
+press playstart
+wait 4.3
+mem
+log off
+press stop
+wait 1
+down overdub
+tap playstart 0.3
+up overdub
+wait 1.4
+tap pad1 1.0
+tap pad1 1.0
+tap pad1 1.0
+tap pad1 1.0
+wait 0.3
+press stop
+wait 1
+mem
+log on
+press playstart
+wait 4.3
+mem
+log off
+press stop
+wait 1
+snap
+exit

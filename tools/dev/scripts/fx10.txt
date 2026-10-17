@@ -1,0 +1,107 @@
+wait 25
+down shift
+press n3
+up shift
+wait 2
+press f6
+wait 2
+press n3
+press n5
+press enter
+wait 1
+press f5
+wait 3
+press main
+wait 1
+press pad1
+press levels
+wait 1
+press down
+press plus
+press plus
+wait 1
+press f2
+wait 2
+press f3
+wait 1
+press f3
+wait 1
+press f3
+wait 1
+snap
+wait 0.5
+tap pad1 0
+wait 0.090
+tap pad2 0
+wait 0.234
+tap pad3 0
+wait 0.060
+tap pad4 0
+wait 0.274
+tap pad5 0
+wait 0.494
+tap pad6 0
+wait 0.305
+tap pad7 0
+wait 0.179
+tap pad8 0
+wait 0.165
+tap pad9 0
+wait 0.145
+tap pad10 0
+wait 0.169
+tap pad11 0
+wait 0.055
+tap pad12 0
+wait 0.075
+tap pad13 0
+wait 0.199
+tap pad14 0
+wait 1.2
+snap
+press f5
+wait 1.5
+snap
+press f6
+wait 2
+snap
+press down
+press n9
+press n0
+press n0
+press enter
+press down
+press right
+press right
+press n4
+press n4
+press enter
+wait 1
+press f5
+wait 2
+press up
+press up
+press up
+press left
+snap
+down shift
+press n6
+up shift
+wait 2
+snap
+press f1
+wait 1.5
+snap
+press f2
+wait 1.5
+snap
+press f3
+wait 1.5
+snap
+press f4
+wait 1.5
+snap
+press f5
+wait 1.5
+snap
+exit

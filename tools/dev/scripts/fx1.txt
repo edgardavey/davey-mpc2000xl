@@ -1,0 +1,43 @@
+wait 25
+snap
+down shift
+press n3
+up shift
+wait 2
+snap
+press f6
+wait 2
+snap
+press n3
+press n5
+press enter
+wait 1
+snap
+press f5
+wait 3
+snap
+press main
+wait 1
+snap
+press pad1
+press levels
+wait 1
+snap
+press down
+press plus
+press plus
+wait 1
+snap
+press f2
+wait 2
+snap
+press f3
+wait 1
+snap
+press f3
+wait 1
+snap
+press f3
+wait 1
+snap
+exit

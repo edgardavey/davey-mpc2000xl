@@ -117,7 +117,7 @@ it also works before compilation. `--prepare-only` creates session copies and
 prints the command without executing it. `--binary` selects a compatible
 custom SDL build; a stock MAME executable does not contain this project's target.
 `--debug` enables private debugger/log output. After MAME's prototype warning,
-press a key and allow the guest to boot. **Audio remains disabled.**
+the emulator now starts without a key press (the launcher sets MAME's debug flag with no debugger window, which skips its warning screen). **Audio remains disabled.**
 
 ## Windows build requirements
 

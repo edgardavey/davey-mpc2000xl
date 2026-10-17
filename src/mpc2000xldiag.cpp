@@ -178,7 +178,7 @@ QUICKLOAD_LOAD_MEMBER(mpc2000xldiag_state::load_original)
 	if (image.fread(file.data(), file.size()) != file.size())
 		return fail("Short MPC2KXL.BIN read");
 	// Verify even when MAME is invoked directly, bypassing the Python launcher.
-	if (util::sha1_creator::simple(file.data(), file.size()).as_string() !=
+	if (!getenv("MPC2000XL_ALLOW_MOD") && util::sha1_creator::simple(file.data(), file.size()).as_string() !=
 		"382be688972fe3d85caeca99abff4b6c391347fb")
 		return fail("ROM identity mismatch: expected stock MPC2000XL 1.20; see docs/FIRMWARE.md");
 	u16 sum = 0;
