@@ -78,3 +78,5 @@ __pycache__/
 *.zip
 /patcher/DAVEY_MPC_PATCHER_artifact.html
 /exp_reloc/*.png
+/patcher/native/windows/.deps/
+/patcher/native/windows/out/

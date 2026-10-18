@@ -120,6 +120,9 @@ patcher/matrix_result.json
 patcher/modules.json
 patcher/native/main.swift
 patcher/native/make_icon.py
+patcher/native/windows/app.rc
+patcher/native/windows/build_win.py
+patcher/native/windows/main.cc
 patcher/restore_after_use_result.json
 patcher/test_features.py
 patcher/test_matrix.py
