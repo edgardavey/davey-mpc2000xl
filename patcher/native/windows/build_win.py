@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Build "DAVEY MPC PATCHER.exe" (Windows x64) from macOS or Linux with Zig.
+"""Build "DAVEY MPC PATCHER.exe" (Windows x64) with Zig, natively on Windows or cross-built from macOS or Linux.
 
 Inputs: patcher/MPC2000XL-DAVEY-Patcher.html (run patcher/build_app.py first) and the app icon (patcher/native/make_icon.py).
 Third-party sources are downloaded once at pinned versions and checked by sha256 (never committed):
   webview 0.12.0 (MIT, github.com/webview/webview): native window + built-in WebView2 loader, so no WebView2Loader.dll
   Microsoft.Web.WebView2 1.0.2592.51 (NuGet): WebView2.h
-Zig: $ZIG, else zig on PATH (tested with 0.13.0).   Output: patcher/native/windows/out/DAVEY MPC PATCHER.exe"""
+Zig: $ZIG, else zig on PATH, else (on Windows) the pinned zig 0.13.0 fetched into .deps.   Output: patcher/native/windows/out/DAVEY MPC PATCHER.exe"""
 import hashlib, io, os, shutil, subprocess, sys, tarfile, urllib.request, zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -16,6 +16,8 @@ WEBVIEW = ('https://github.com/webview/webview/archive/refs/tags/0.12.0.tar.gz',
            'e2c8d0bed3fcd13e624074448b7d3b1d0b0d03546a15839f17ee0013f2cba1db')
 WEBVIEW2 = ('https://api.nuget.org/v3-flatcontainer/microsoft.web.webview2/1.0.2592.51/microsoft.web.webview2.1.0.2592.51.nupkg',
             '805c79e05184fab18c9fe7b8ba820c598399b97adc1fbf5b0ea490efad91d5b8')
+ZIG_WIN = ('https://ziglang.org/download/0.13.0/zig-windows-x86_64-0.13.0.zip',
+           'd859994725ef9402381e557c60bb57497215682e355204d754ee3df75ee3c158')
 
 
 def fetch(url, sha):
@@ -35,12 +37,23 @@ def deps():
     return os.path.join(wv, 'core', 'include'), os.path.join(w2, 'build', 'native', 'include')
 
 
+def find_zig():
+    zig = os.environ.get('ZIG') or shutil.which('zig')
+    if zig: return zig
+    if os.name != 'nt': raise SystemExit('Zig not found: set ZIG=/path/to/zig')
+    zig = os.path.join(DEPS, 'zig-windows-x86_64-0.13.0', 'zig.exe')
+    if not os.path.exists(zig):
+        os.makedirs(DEPS, exist_ok=True)
+        zipfile.ZipFile(io.BytesIO(fetch(*ZIG_WIN))).extractall(DEPS)
+    return zig
+
+
 def main():
     html_path = os.path.join(PATCHER, 'MPC2000XL-DAVEY-Patcher.html')
     icon_png = os.path.join(PATCHER, 'native', 'build', 'icon_1024.png')
     for p, how in ((html_path, 'python3 patcher/build_app.py'), (icon_png, 'python3 patcher/native/make_icon.py')):
         if not os.path.exists(p): raise SystemExit(f'missing {p}: run {how}')
-    zig = os.environ.get('ZIG') or shutil.which('zig') or raise_(SystemExit('Zig not found: set ZIG=/path/to/zig'))
+    zig = find_zig()
     wv_inc, w2_inc = deps()
     gen = os.path.join(DEPS, 'gen'); os.makedirs(gen, exist_ok=True); os.makedirs(OUT, exist_ok=True)
     html = open(html_path, 'rb').read() + b'\0'
@@ -59,9 +72,6 @@ def main():
            '-lole32', '-lshlwapi', '-lversion', '-lcomdlg32', '-ladvapi32', '-lshell32', '-luser32', '-lgdi32']
     subprocess.run(cmd, check=True)
     print('built', exe, os.path.getsize(exe), 'bytes, sha256', hashlib.sha256(open(exe, 'rb').read()).hexdigest()[:16])
-
-
-def raise_(e): raise e
 
 
 if __name__ == '__main__':

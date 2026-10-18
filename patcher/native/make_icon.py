@@ -157,8 +157,11 @@ ex0 = sx1 + R(18)[0]; dw.rounded_rectangle((ex0, sy0 + R(2)[0], ex0 + R(46)[0], 
 img = out
 final = img.convert('RGBA'); final.putalpha(alpha); final = final.resize((1024, 1024), Image.LANCZOS)
 final.save(os.path.join(OUT, 'icon_1024.png'))
-iset = os.path.join(OUT, 'AppIcon.iconset'); shutil.rmtree(iset, ignore_errors=True); os.makedirs(iset)
-for s in (16, 32, 128, 256, 512):
-    final.resize((s, s), Image.LANCZOS).save(f'{iset}/icon_{s}x{s}.png'); final.resize((s * 2, s * 2), Image.LANCZOS).save(f'{iset}/icon_{s}x{s}@2x.png')
-subprocess.run(['iconutil', '-c', 'icns', iset, '-o', os.path.join(OUT, 'AppIcon.icns')], check=True)
-print('wrote', os.path.join(OUT, 'AppIcon.icns'), 'elements placed:', len(placed))
+if not shutil.which('iconutil'):                         # Windows/Linux: the PNG is all build_win.py needs
+    print('wrote', os.path.join(OUT, 'icon_1024.png'), '(no iconutil, AppIcon.icns skipped) elements placed:', len(placed))
+else:
+    iset = os.path.join(OUT, 'AppIcon.iconset'); shutil.rmtree(iset, ignore_errors=True); os.makedirs(iset)
+    for s in (16, 32, 128, 256, 512):
+        final.resize((s, s), Image.LANCZOS).save(f'{iset}/icon_{s}x{s}.png'); final.resize((s * 2, s * 2), Image.LANCZOS).save(f'{iset}/icon_{s}x{s}@2x.png')
+    subprocess.run(['iconutil', '-c', 'icns', iset, '-o', os.path.join(OUT, 'AppIcon.icns')], check=True)
+    print('wrote', os.path.join(OUT, 'AppIcon.icns'), 'elements placed:', len(placed))

@@ -79,8 +79,12 @@ document.addEventListener('click', async function (e) {
 )JS";
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
-  // the intro tune may start when the window opens (as in the macOS app)
-  SetEnvironmentVariableW(L"WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", L"--autoplay-policy=no-user-gesture-required");
+  // the intro tune may start when the window opens (as in the macOS app); arguments already set (e.g. a debug port) are kept
+  std::wstring args = L"--autoplay-policy=no-user-gesture-required";
+  wchar_t prev[1024];
+  DWORD n = GetEnvironmentVariableW(L"WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", prev, 1024);
+  if (n > 0 && n < 1024) args = std::wstring(prev) + L" " + args;
+  SetEnvironmentVariableW(L"WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", args.c_str());
   try {
     webview::webview w(false, nullptr);
     w.set_title("DAVEY MPC PATCHER");

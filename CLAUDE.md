@@ -28,7 +28,7 @@ Say "emulator-tested only".
 | `src/`, `tools/`, `run.py` | the emulator (MAME target `mpc2000xldiag`); `tools/dev/` = scripted test runner |
 | `exp_reloc/` | current OS build line: `make_exp.py` (guarded builder), `mods/` (chop, sampling, mute8, prog_mono, asm16), `test_exp.py` (suite), `gate_presets.py` (patcher restore gates), `cov/` (free-RAM measurement) |
 | `build_os/` | older builders + `suite/` test harness (`harness.py`, `phases.py`) |
-| `patcher/` | patcher: `gen_data.py` → `modules.json`, `engine.py`/`engine.js` (must agree byte for byte), `app_template.html`, `build_app.py`, `native/` (macOS app) |
+| `patcher/` | patcher: `gen_data.py` → `modules.json`, `engine.py`/`engine.js` (must agree byte for byte), `app_template.html`, `build_app.py`, `native/` (macOS app; `native/windows/` = Windows exe + `test_win.mjs`) |
 | `docs/` | emulator architecture/status; `DAVEY_CHEAT_SHEET.md` = user guide (EN/RU) |
 
 ## Setup (macOS)
@@ -40,6 +40,8 @@ Say "emulator-tested only".
    `PAR=1 python3 exp_reloc/test_exp.py exp_reloc/DAVEY_EXPn.BIN` (one emulator at a time; `PAR=1`).
 5. Patcher: `python3 patcher/gen_data.py` (asserts the DAVEY preset equals the tested EXP file), `python3 exp_reloc/gate_presets.py`,
    `python3 patcher/build_app.py`.
+6. Windows patcher exe (on Windows, Python + Pillow + Node): `python patcher/build_app.py`, `python patcher/native/make_icon.py`,
+   `python patcher/native/windows/build_win.py`, then `node patcher/native/windows/test_win.mjs`.
 
 ## Emulator caveats (see docs and the audit notes)
 Recording input is not modelled; flash writes are modelled only on the `emu-dev` branch (Intel 28F400BV-T, WIP);

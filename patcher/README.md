@@ -7,3 +7,8 @@
 
 Read `STABILITY_GUIDE.md` first. Everything is emulator-tested only. Keep the original OS and check REC + OVER DUB recovery before flashing.
 Rebuild after changing modules: `python3 gen_data.py && python3 build_app.py`. Gates: `python3 test_matrix.py`, `python3 test_features.py`.
+
+**Windows app** (`DAVEY MPC PATCHER.exe`, one file, uses the WebView2 runtime built into Windows 10/11): on Windows, with Python + Pillow,
+`python build_app.py && python native/make_icon.py && python native/windows/build_win.py` (fetches pinned Zig, webview and WebView2 headers,
+sha256-checked, into `native/windows/.deps`). Check it with `node native/windows/test_win.mjs` (page loads, SAVE goes through the
+native Save dialog byte for byte, Cancel writes nothing). The same exe can also be cross-built from macOS/Linux with Zig.

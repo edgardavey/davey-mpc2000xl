@@ -123,6 +123,8 @@ patcher/native/make_icon.py
 patcher/native/windows/app.rc
 patcher/native/windows/build_win.py
 patcher/native/windows/main.cc
+patcher/native/windows/save_dialog.ps1
+patcher/native/windows/test_win.mjs
 patcher/restore_after_use_result.json
 patcher/test_features.py
 patcher/test_matrix.py
