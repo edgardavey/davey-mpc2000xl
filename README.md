@@ -1,3 +1,23 @@
+# DAVEY MPC2000XL: OS mods, patcher and emulator
+
+**Built on the work of vubeatz ([github.com/dariuszchynek](https://github.com/dariuszchynek)).** This repo is a fork of his
+[MPC2000XL emulator](https://github.com/dariuszchynek/mpc2000xl-emulator), and DAVEY OS starts from his MPC2000XL OS features
+(tune ±360, transpose, mute groups, ALL param copy, LPF/HPF, input thru, format, double STOP, step move) and his
+*MPC2000XL Updater*. His module data is included here **with his permission**, on his terms:
+
+> **Free and open source, forever. Never sold, never charged for.** Credit vubeatz in anything you share or build on this.
+
+What DAVEY adds: a waveform chop screen (16/8/4/LAZY → drum program), Program MONO (MONO pads choke each other),
+TRIM pad select, Sampling Mode (SP1200/S900), a patcher app (macOS, Windows, browser) and an emulator test suite.
+No Akai OS files are included; you need your own stock MPC2000XL OS 1.20. Builds are **emulator-tested**; always keep
+the original OS on your card (LOAD it → DO IT restores the unit). User guide: [DAVEY_CHEAT_SHEET.md](DAVEY_CHEAT_SHEET.md).
+Contributors and their AI agents: read [CLAUDE.md](CLAUDE.md) first.
+
+Credits: **vubeatz / [dariuszchynek](https://github.com/dariuszchynek)**: the emulator this fork extends ([mpc2000xl-emulator](https://github.com/dariuszchynek/mpc2000xl-emulator), BSD-3),
+the base OS features, the Updater and its module data · MAME and its authors (CPU, DSP and device models).
+
+---
+
 # MPC2000XL Emulator
 
 ![MPC2000XL emulator running on macOS](docs/images/emulator.png)

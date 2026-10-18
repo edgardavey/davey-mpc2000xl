@@ -1,6 +1,6 @@
 # DAVEY MPC2000XL: rules for every contributor and their AI agent
 
-This repo is a fork of [dariuszchynek/mpc2000xl-emulator](https://github.com/dariuszchynek/mpc2000xl-emulator) (BSD-3)
+This repo is a fork of [dariuszchynek/mpc2000xl-emulator](https://github.com/dariuszchynek/mpc2000xl-emulator) (BSD-3) by **vubeatz** (dariuszchynek)
 extended with **DAVEY OS**: patches for the Akai MPC2000XL OS 1.20 (chop screen, Program MONO, TRIM pad select,
 Sampling Mode, …), a **patcher app** and an emulator-based **test suite**. Builds go onto real units, so the rules below
 are not optional.
@@ -48,5 +48,5 @@ NEC register names `ps`/`pc`/`ds0`/`ds1`/`aw`). Emulator fixes need evidence (OS
 measurement), never "it makes a test pass".
 
 ## Credits
-Emulator: dariuszchynek / "Vubeatz and contributors" (BSD-3). VU base features and their module data: **vubeatz**
-(included with his permission, given by phone on 2026-10-18; credit him in anything you share). MAME: its own licenses (`vendor/` is fetched, not committed).
+Emulator: **vubeatz** ([dariuszchynek](https://github.com/dariuszchynek), BSD-3). VU base features and their module data: **vubeatz**
+(included with his permission, given 2026-10-18, on his terms: free and open source, never sold; credit him in anything you share; project link in README). MAME: its own licenses (`vendor/` is fetched, not committed).
