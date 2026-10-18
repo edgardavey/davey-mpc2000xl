@@ -49,4 +49,4 @@ measurement), never "it makes a test pass".
 
 ## Credits
 Emulator: dariuszchynek / "Vubeatz and contributors" (BSD-3). VU base features and their module data: **vubeatz**
-(included with his permission pending; ask before redistributing). MAME: its own licenses (`vendor/` is fetched, not committed).
+(included with his permission, given by phone on 2026-10-18; credit him in anything you share). MAME: its own licenses (`vendor/` is fetched, not committed).
