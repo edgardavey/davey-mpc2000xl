@@ -1,0 +1,301 @@
+wait 28
+snap
+down shift
+up shift
+wait 0.3
+press n3
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f6
+wait 3
+snap
+press n3
+press n5
+press enter
+wait 6
+snap
+press f5
+wait 3
+snap
+press main
+wait 1
+snap
+press f1
+wait 1.2
+snap
+press main
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press main
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press main
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press main
+wait 1.2
+snap
+down shift
+up shift
+wait 0.3
+press n1
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press f5
+wait 1.2
+snap
+press f6
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n2
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press f5
+wait 1.2
+snap
+press f6
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n3
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n4
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press f5
+wait 1.2
+snap
+press f6
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n5
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press f5
+wait 1.2
+snap
+press f6
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n7
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n8
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n9
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 1.2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press f5
+wait 1.2
+snap
+press f6
+wait 1.2
+snap
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n6
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+snap
+press f1
+wait 2
+snap
+press f2
+wait 1.2
+snap
+press f3
+wait 1.2
+snap
+press f4
+wait 1.2
+snap
+press f5
+wait 1.2
+snap
+press f1
+wait 1.2
+snap
+press main
+wait 1
+snap
+exit

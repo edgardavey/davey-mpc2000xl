@@ -1,0 +1,162 @@
+wait 28
+down shift
+up shift
+wait 0.3
+press n3
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 2
+press f6
+wait 3
+press n3
+press n5
+press enter
+wait 6
+press f5
+wait 3
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n5
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+press f3
+wait 1.5
+press right
+press right
+press right
+press right
+wait 1
+snap
+press window
+wait 1.5
+press f6
+wait 2
+snap
+down f6
+wait 0.3
+tap pad2 0
+wait 0.4
+tap pad3 0
+wait 0.4
+tap pad4 0
+wait 0.4
+tap pad5 0
+wait 0.4
+tap pad6 0
+wait 0.3
+up f6
+wait 0.5
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,15 do t[#t+1]=sp:read_u16(0x70174+i*2) end print("TAPS A cnt="..sp:read_u8(0x70162).." open="..sp:read_u8(0x70160).." run="..sp:read_u8(0x70161).." req="..sp:read_u8(0x70163).." taps="..table.concat(t," "))
+press f5
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local b=0x582b0 local t={} for i=0,17 do t[#t+1]=sp:read_u16(b+0x8e72+i*4)+65536*sp:read_u16(b+0x8e74+i*4) end print("ZONES A n="..sp:read_u8(b+0xd7dc).." cur="..sp:read_u8(b+0xd7dd).." B="..table.concat(t," "))
+snap
+press window
+wait 1.5
+press f6
+wait 2
+tap pad1 0
+wait 0.5
+tap pad2 0
+wait 0.4
+tap pad3 0
+wait 0.3
+press f3
+wait 0.4
+tap pad4 0
+wait 0.5
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,15 do t[#t+1]=sp:read_u16(0x70174+i*2) end print("TAPS B cnt="..sp:read_u8(0x70162).." open="..sp:read_u8(0x70160).." run="..sp:read_u8(0x70161).." req="..sp:read_u8(0x70163).." taps="..table.concat(t," "))
+press f5
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local b=0x582b0 local t={} for i=0,17 do t[#t+1]=sp:read_u16(b+0x8e72+i*4)+65536*sp:read_u16(b+0x8e74+i*4) end print("ZONES B n="..sp:read_u8(b+0xd7dc).." cur="..sp:read_u8(b+0xd7dd).." B="..table.concat(t," "))
+press window
+wait 1.5
+press f6
+wait 2
+down f6
+wait 0.3
+tap pad2 0
+wait 0.01
+tap pad3 0
+wait 0.5
+tap pad4 0
+wait 2.6
+tap pad5 0
+wait 0.3
+up f6
+wait 0.4
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,15 do t[#t+1]=sp:read_u16(0x70174+i*2) end print("TAPS C cnt="..sp:read_u8(0x70162).." open="..sp:read_u8(0x70160).." run="..sp:read_u8(0x70161).." req="..sp:read_u8(0x70163).." taps="..table.concat(t," "))
+press f4
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local b=0x582b0 local t={} for i=0,17 do t[#t+1]=sp:read_u16(b+0x8e72+i*4)+65536*sp:read_u16(b+0x8e74+i*4) end print("ZONES C n="..sp:read_u8(b+0xd7dc).." cur="..sp:read_u8(b+0xd7dd).." B="..table.concat(t," "))
+press window
+wait 1.5
+press f6
+wait 2
+down f6
+wait 0.2
+tap pad1 0
+wait 0.11
+tap pad2 0
+wait 0.11
+tap pad3 0
+wait 0.11
+tap pad4 0
+wait 0.11
+tap pad5 0
+wait 0.11
+tap pad6 0
+wait 0.11
+tap pad7 0
+wait 0.11
+tap pad8 0
+wait 0.11
+tap pad9 0
+wait 0.11
+tap pad10 0
+wait 0.11
+tap pad11 0
+wait 0.11
+tap pad12 0
+wait 0.11
+tap pad13 0
+wait 0.11
+tap pad14 0
+wait 0.11
+tap pad15 0
+wait 0.11
+tap pad1 0
+wait 0.11
+tap pad2 0
+wait 0.11
+tap pad3 0
+wait 0.11
+tap pad4 0
+wait 0.11
+tap pad5 0
+wait 0.11
+up f6
+wait 0.4
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,15 do t[#t+1]=sp:read_u16(0x70174+i*2) end print("TAPS D cnt="..sp:read_u8(0x70162).." open="..sp:read_u8(0x70160).." run="..sp:read_u8(0x70161).." req="..sp:read_u8(0x70163).." taps="..table.concat(t," "))
+press f5
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local b=0x582b0 local t={} for i=0,17 do t[#t+1]=sp:read_u16(b+0x8e72+i*4)+65536*sp:read_u16(b+0x8e74+i*4) end print("ZONES D n="..sp:read_u8(b+0xd7dc).." cur="..sp:read_u8(b+0xd7dd).." B="..table.concat(t," "))
+snap
+press window
+wait 1.5
+press f6
+wait 2
+press main
+wait 1.5
+tap pad1 0
+wait 1
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,15 do t[#t+1]=sp:read_u16(0x70174+i*2) end print("TAPS E cnt="..sp:read_u8(0x70162).." open="..sp:read_u8(0x70160).." run="..sp:read_u8(0x70161).." req="..sp:read_u8(0x70163).." taps="..table.concat(t," "))
+exit

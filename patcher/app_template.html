@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAVEY MPC PATCHER</title>
+<style>
+:root{--bg:#050805;--fg:#8dff9a;--hi:#d6ffdb;--mut:#3f9a52;--dim:#1f5a2a;--chip:#0b130b;--acc:#ffb000;--bad:#ff4040;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.4 "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);z-index:50}
+main{max-width:780px;margin:0 auto;padding:14px 16px 30px}
+.logo{white-space:pre;color:var(--hi);font-size:10px;line-height:1.05;margin:0;text-shadow:0 0 6px rgba(57,255,106,.45)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.tag{color:var(--mut);font-size:11px;letter-spacing:2px}#t_tag{margin-top:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-size:12px;letter-spacing:1px;color:var(--fg);background:var(--chip);border:1px solid var(--dim);padding:5px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--fg)}
+button:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+button:disabled{opacity:.35;cursor:default}
+button.go{border-color:var(--acc);color:#000;background:var(--acc);font-weight:700;padding:7px 18px}
+button.sel{border-color:var(--fg);color:var(--hi)}
+#snd{width:34px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-color:var(--fg)}
+#snd.off{border-color:var(--dim);color:var(--mut)}
+.bar{position:sticky;top:0;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--dim);margin:10px 0;z-index:10}
+#segs{display:flex;gap:2px;height:14px}
+#segs i{flex:1;border:1px solid #143514;background:#0b140b;transition:background .12s}
+#segs i.on{background:var(--fg);border-color:var(--fg);box-shadow:0 0 5px rgba(57,255,106,.6)}
+#segs i.on.hot{background:var(--acc);border-color:var(--acc)}
+#segs i.gh{background:#2a4a2a;border-color:#4a8a4a}
+#segs i.lim{border-right:2px solid var(--hi)}
+.drop{flex:1;min-width:0;border:1px dashed var(--dim);padding:8px 10px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drop.hot{border-color:var(--fg)}
+.sec{color:var(--mut);font-size:11px;letter-spacing:2px;margin:14px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:5px}
+.t{display:flex;align-items:center;gap:7px;border:1px solid var(--dim);background:var(--chip);padding:6px 8px;position:relative;cursor:pointer;user-select:none}
+.t:hover,.t:focus-visible{border-color:var(--fg);outline:none}
+.t.on{border-color:var(--fg);background:#0d2210}
+.t.fx{border-style:dashed}.t.exp{border-style:dashed;border-color:#7a2020}.t.exp.on{background:#2a0c0c;border-color:var(--bad)}
+.t .n{flex:1;color:var(--hi);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t .p{font-size:11px;color:var(--mut)}.t .p.w2{color:var(--acc)}
+.t .box{width:11px;height:11px;border:1px solid var(--fg);flex:none}.t.on .box{background:var(--fg)}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
+.or{color:var(--acc);font-size:11px}
+.tip{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:20;width:260px;max-width:80vw;background:#000;border:1px solid var(--fg);padding:6px 8px;font-size:12px;color:var(--fg);white-space:normal;cursor:default}
+.tip.l{left:auto;right:0}
+.t:hover .tip,.t:focus-visible .tip{display:block}
+.tip b{color:var(--hi)}.tip .x{display:block;color:var(--acc);margin-top:3px}.tip .xp{display:block;color:var(--bad);margin-top:3px}
+.ok{color:var(--fg)}.warn{color:var(--acc)}.bad{color:var(--bad)}
+.mono{word-break:break-all}
+#result{border:1px solid var(--dim);padding:10px 12px;margin-top:12px}
+#result label{display:flex;gap:8px;align-items:flex-start;margin:5px 0;cursor:pointer}
+#result input{accent-color:var(--fg);margin-top:2px}
+.safe{display:flex;gap:16px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin-top:16px;border-top:1px dashed var(--dim);padding-top:10px}
+.safe span::before{content:"▸ ";color:var(--acc)}
+.foot{color:#2c6a38;font-size:11px;margin-top:12px;white-space:nowrap;overflow:hidden}
+.link{background:none;border:none;padding:0;color:var(--mut);text-decoration:underline;font-size:12px;letter-spacing:0}
+@media (max-width:520px){.logo{font-size:7px}.pair{grid-template-columns:1fr}.or{text-align:center}}
+@media (prefers-reduced-motion:reduce){#segs i{transition:none}}
+</style></head><body><main>
+
+<div class="top">
+<pre class="logo" aria-label="DAVEY MPC PATCHER">█▀▄ ▄▀█ █ █ █▀▀ █▄█   █▀▄▀█ █▀█ █▀▀   █▀█ ▄▀█ ▀█▀ █▀▀ █ █ █▀▀ █▀█
+█▄▀ █▀█ ▀▄▀ ██▄  █    █ ▀ █ █▀▀ █▄▄   █▀▀ █▀█  █  █▄▄ █▀█ ██▄ █▀▄</pre>
+<div class="row"><button id="snd" aria-label="Music on or off" title="Music on/off"></button><button id="langbtn">RU</button></div>
+</div>
+<div class="tag" id="t_tag">MPC2000XL · OS 1.20 · OFFLINE</div>
+
+<div class="bar">
+ <div id="segs"></div>
+ <div class="row" style="justify-content:space-between;margin-top:5px;font-size:12px"><span id="pts"></span><span id="ptsnote" style="color:var(--mut)"></span></div>
+</div>
+
+<div class="row">
+ <div class="drop" id="drop"><span id="fileinfo"></span></div>
+ <button id="pick">OPEN</button><input id="file" type="file" accept=".bin,.BIN" hidden>
+</div>
+
+<div class="sec" id="t_presets">PRESETS</div>
+<div class="row" id="presets"></div>
+
+<div class="sec" id="t_feat">FEATURES</div>
+<div class="grid" id="mods"></div>
+
+<div class="row" style="margin-top:16px;justify-content:space-between">
+ <span id="status" style="color:var(--mut);font-size:12px"></span>
+ <button class="go" id="make">▶ PATCH</button>
+</div>
+<div id="result" hidden></div>
+
+<div class="safe" id="safety"></div>
+<div class="row" style="margin-top:8px"><button class="link" id="vpick"></button><input id="vfile" type="file" hidden><span id="vresult" style="font-size:12px"></span></div>
+<div class="foot">» greetz: vubeatz · mpc forum · all the diggers · keep the 2000XL alive «</div>
+</main>
+<script>const DATA = /*DATA*/;</script>
+<script>/*ENGINE*/</script>
+<script>/*CHIP*/</script>
+<script>
+const $ = id => document.getElementById(id);
+const L = {
+ en:{tag:'MPC2000XL · OS 1.20 · OFFLINE', presets:'PRESETS', feat:'FEATURES', open:'OPEN', drop:'drop the original MPC2KXL.BIN here',
+  ok:'original 1.20', notorig:'not the original OS 1.20', wrongsize:'wrong size', pts:'pts', tested:'tested ≤ ', above:'above tested set',
+  P:{davey:'DAVEY',light:'LIGHT',clear:'CLEAR'}, patch:'▶ PATCH', needfile:'open the original OS first',
+  match:'same as the tested build ✓', untested:'NOT TESTED AS A SET: flash only with your restore path ready', mismatch:'does not match the tested build: do not use',
+  ack:['The ORIGINAL MPC2KXL.BIN is on my card and computer, and I know the restore: LOAD, pick it, DO IT.','If this build’s update screen ever fails, only a hardware recovery (ROM chip) can bring the unit back.','This tool cannot test the real flash write.'],
+  save:'SAVE', report:'report.txt', savedhint:'Copy it to the card in its own folder. Never save over the original.',
+  safe:['original on card','restore = LOAD › DO IT','emulator-tested only'], verify:'verify a saved file', vsame:'✓ identical to the file you created', vdiff:'✗ different from the file you created: copy it again', vnone:'create a file first',
+  needs:'needs: ', exp:'EXPERIMENTAL: never tested on real hardware', expack:'I have the recovery ROM chip ready (experimental module selected)', fx:'needs the EB16 effects board', comb:'cannot be combined', helper:'helper'},
+ ru:{tag:'MPC2000XL · OS 1.20 · ОФЛАЙН', presets:'ПРЕСЕТЫ', feat:'ФУНКЦИИ', open:'ОТКРЫТЬ', drop:'перетащите сюда оригинальный MPC2KXL.BIN',
+  ok:'оригинал 1.20', notorig:'это не оригинальная OS 1.20', wrongsize:'неверный размер', pts:'очк', tested:'проверено ≤ ', above:'выше проверенного',
+  P:{davey:'DAVEY',light:'ЛЁГКИЙ',clear:'СБРОС'}, patch:'▶ СОЗДАТЬ', needfile:'сначала откройте оригинальную OS',
+  match:'совпадает с проверенной сборкой ✓', untested:'НЕ ПРОВЕРЕНО КАК НАБОР: прошивайте только с готовым путём восстановления', mismatch:'не совпадает с проверенной сборкой: не использовать',
+  ack:['ОРИГИНАЛЬНЫЙ MPC2KXL.BIN есть на карте и на компьютере, и я знаю восстановление: LOAD, выбрать, DO IT.','Если экран обновления этой сборки откажет, вернуть прибор поможет только аппаратное восстановление (микросхема).','Программа не может проверить реальную запись во флеш.'],
+  save:'СОХРАНИТЬ', report:'отчёт.txt', savedhint:'Скопируйте на карту в отдельную папку. Никогда не сохраняйте поверх оригинала.',
+  safe:['оригинал на карте','восстановление = LOAD › DO IT','проверено только в эмуляторе'], verify:'проверить сохранённый файл', vsame:'✓ совпадает с созданным файлом', vdiff:'✗ отличается от созданного файла: скопируйте заново', vnone:'сначала создайте файл',
+  needs:'нужно: ', exp:'ЭКСПЕРИМЕНТАЛЬНО: не проверялось на железе', expack:'У меня готова микросхема восстановления (выбран экспериментальный модуль)', fx:'нужна плата эффектов EB16', comb:'нельзя совместить', helper:'служебный'}};
+const SHORT = {   // [EN name, RU name, EN tip, RU tip]
+ tune:['Tune ±360','Tune ±360','TUNE goes to ±360 (three octaves).','Поле TUNE до ±360 (три октавы).'],
+ transpose:['Transpose ±36','Транспонир. ±36','Program transpose ±36 semitones (ASSIGN page).','Транспонирование программы ±36 полутонов (страница ASSIGN).'],
+ mute:['Mute 1–4','Mute 1–4','Mute groups 1–4 on the ASSIGN page Mode field.','Mute-группы 1–4 в поле Mode на странице ASSIGN.'],
+ mute8:['Mute 1–8','Mute 1–8','Adds MUTE 5–8 to Mute 1–4.','Добавляет MUTE 5–8 к Mute 1–4.'],
+ param_copy:['Param copy','Копия парам.','ALL: copy a parameter to the bank or whole program.','ALL: копирует параметр в банк или всю программу.'],
+ hpf:['LPF / HPF','LPF / HPF','Filter LPF / HPF with FREQ 0–200.','Фильтр LPF / HPF, FREQ 0–200.'],
+ input_thru:['Input thru','Input thru','Input Thru, plus PLAY / STOP on the RECORD page.','Input Thru и PLAY / STOP на странице RECORD.'],
+ format:['Format safe','Безопасный FORMAT','FORMAT keeps the disk geometry.','FORMAT сохраняет геометрию диска.'],
+ double_stop:['Double STOP','Двойной STOP','Press STOP twice to silence all voices.','Двойной STOP глушит все голоса.'],
+ step_move:['Step move','Step: перенос','STEP page: Move Event (SHIFT + F5).','Страница STEP: Move Event (SHIFT + F5).'],
+ sampling:['Sampling mode','Режим сэмплинга','SP1200 / S900 lo-fi or a custom rate for new recordings (SAMPLE › Mode › WINDOW).','SP1200 / S900 или своя частота для новых записей (SAMPLE › Mode › WINDOW).'],
+ delay670:['EB16 delay','EB16 delay','EB16 delay up to 670 ms.','Задержка EB16 до 670 мс.'],
+ date:['OS date','Дата OS','Version page date Oct. 11,2026.','Дата на странице версии: Oct. 11,2026.'],
+ dark:['Dark mode','Тёмный режим','Inverted LCD.','Инверсия LCD.'],
+ prog_mono:['Program MONO','Program MONO','MONO pads choke each other: ALL › MONO makes the whole program mono (like newer MPCs). One MONO pad works as stock.','MONO-пэды глушат друг друга: ALL › MONO делает всю программу моно (как на новых MPC). Один MONO-пэд работает как в стоке.'],
+ zone_chop:['Zone chop','Zone chop','TRIM › ZONE, press F3 again: waveform chop screen, 16/8/4/LAZY, UNDO, pads and F6 PLAY preview slices, SHIFT+cursor sets the step, APPLY makes a drum program. On TRIM a pad hit selects that pad’s sound. 16 LEVELS stays free.','TRIM › ZONE, ещё раз F3: экран нарезки с волной, 16/8/4/LAZY, UNDO, пэды и F6 PLAY прослушивают слайсы, SHIFT+курсор задаёт шаг, APPLY создаёт программу. На TRIM удар по пэду выбирает его звук. 16 LEVELS свободен.']};
+const FEATS = ['zone_chop','prog_mono','tune','transpose','mute','mute8','param_copy','hpf','input_thru','sampling','double_stop','step_move','format','delay670','date','dark'];
+let lang = 'en', original = null, fstate = null, sel = new Set(DATA.meter.sets[DATA.meter.limit_set]), last = null, building = false, urls = [];
+const byId = Object.fromEntries(DATA.modules.map(m => [m.id, m]));
+const t = () => L[lang], ru = () => lang === 'ru', nm = id => (SHORT[id] || [id, id])[ru() ? 1 : 0];
+function closureSafe(S) { try { return MPCEngine.closure(DATA, [...S]); } catch (e) { return null; } }
+function pts(S) { const c = closureSafe(S); return c ? MPCEngine.points(DATA, c) : 0; }
+function clearResult() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; last = null; $('result').hidden = true; $('result').innerHTML = ''; }
+function setSel(S) { clearResult(); sel = S; render(); }
+function toggle(id) {
+  const S = new Set(sel);
+  if (S.has(id)) { S.delete(id); for (const d of MPCEngine.dependents(DATA, id)) S.delete(d); }
+  else { S.add(id); for (const r of byId[id].requires) if (!byId[r].hidden) S.add(r); }
+  setSel(S);
+}
+function paintSegs(ghost) {
+  const max = DATA.meter.maximum, lim = DATA.meter.limit, p = pts(sel), sg = $('segs');
+  if (sg.children.length !== max) { sg.innerHTML = ''; for (let i = 0; i < max; i++) sg.appendChild(document.createElement('i')); }
+  [...sg.children].forEach((e, i) => { e.className = (i < p ? 'on' + (i >= lim ? ' hot' : '') : (i < p + ghost ? 'gh' : '')) + (i === lim - 1 ? ' lim' : ''); });
+  $('pts').innerHTML = '<b style="color:var(--hi)">' + p + '</b>/' + max + ' ' + t().pts;
+  $('ptsnote').innerHTML = p > lim ? '<span class="warn">' + t().above + '</span>' : t().tested + lim;
+}
+function tile(id, opts = {}) {
+  const m = byId[id], on = opts.on !== undefined ? opts.on : sel.has(id), el = document.createElement('div'), w = opts.weight !== undefined ? opts.weight : m.weight;
+  el.className = 't' + (on ? ' on' : '') + (m.experimental ? ' exp' : '') + (id === 'delay670' ? ' fx' : ''); el.tabIndex = 0; el.setAttribute('role', 'checkbox'); el.setAttribute('aria-checked', on);
+  const req = m.requires.filter(r => !byId[r].hidden).map(nm).join(', ');
+  const s = SHORT[id] || [m.name, m.name, m.desc, m.desc];
+  el.innerHTML = '<span class="box"></span><span class="n"></span><span class="p ' + (w >= 2 ? 'w2' : '') + '">' + (id === 'delay670' ? 'FX' : '+' + w) + '</span><span class="tip"></span>';
+  el.querySelector('.n').textContent = nm(id);
+  el.querySelector('.tip').innerHTML = '<b></b> · ' + w + ' pt<br><span class="d"></span>' + (req ? '<span class="x">' + t().needs + req + '</span>' : '') +
+    (id === 'delay670' ? '<span class="x">' + t().fx + '</span>' : '') + (m.experimental ? '<span class="xp">' + t().exp + '</span>' : '');
+  el.querySelector('.tip b').textContent = nm(id); el.querySelector('.tip .d').textContent = s[ru() ? 3 : 2];
+  const act = opts.act || (() => toggle(id));
+  el.onclick = e => { if (!e.target.closest('.tip')) act(); };
+  el.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); act(); } };
+  el.onmouseenter = () => { el.querySelector('.tip').classList.toggle('l', el.getBoundingClientRect().left + 280 > document.documentElement.clientWidth);
+    if (on) return; const S = new Set(sel); (opts.adds || [id]).forEach(x => S.add(x)); (opts.removes || []).forEach(x => S.delete(x)); paintSegs(Math.max(0, pts(S) - pts(sel))); };
+  el.onmouseleave = () => paintSegs(0);
+  return el;
+}
+function render() {
+  const T = t();
+  $('t_tag').textContent = T.tag; $('t_presets').textContent = T.presets; $('t_feat').textContent = T.feat;
+  $('pick').textContent = T.open; $('make').textContent = T.patch; $('langbtn').textContent = ru() ? 'EN' : 'RU'; $('vpick').textContent = T.verify;
+  $('safety').innerHTML = T.safe.map(x => '<span>' + x + '</span>').join('');
+  paintFile();
+  const pr = $('presets'); pr.innerHTML = '';
+  [...Object.keys(DATA.meter.sets), 'clear'].forEach(k => { const b = document.createElement('button'); b.textContent = T.P[k] || k;
+    const S = k === 'clear' ? new Set() : new Set(DATA.meter.sets[k]); if (S.size === sel.size && [...S].every(x => sel.has(x))) b.classList.add('sel');
+    b.onclick = () => setSel(S); pr.appendChild(b); });
+  const g = $('mods'); g.innerHTML = ''; FEATS.forEach(id => g.appendChild(tile(id)));
+  paintSegs(0);
+  const exp = [...(closureSafe(sel) || [])].some(x => byId[x].experimental);
+  $('make').disabled = building || !original || sel.size === 0;
+  $('status').textContent = !original ? T.needfile : '';
+  if (exp && !$('expwrap')) { const d = document.createElement('label'); d.id = 'expwrap'; d.style.cssText = 'display:flex;gap:8px;margin-top:10px;color:var(--bad);font-size:12px';
+    d.innerHTML = '<input type="checkbox" id="expack"><span></span>'; d.querySelector('span').textContent = T.expack; $('mods').after(d); $('expack').onchange = render; }
+  if (!exp && $('expwrap')) $('expwrap').remove();
+  if (exp && !$('expack').checked) $('make').disabled = true;
+}
+function paintFile() {
+  const fi = $('fileinfo'), T = t();
+  if (!fstate) { fi.textContent = original ? T.ok : T.drop; return; }
+  fi.innerHTML = '';
+  const nmEl = document.createElement('b'); nmEl.style.color = 'var(--fg)'; nmEl.textContent = fstate.name + ' ';
+  const st = document.createElement('span');
+  if (fstate.kind === 'ok') { st.className = 'ok'; st.textContent = '✓ ' + T.ok; }
+  else if (fstate.kind === 'size') { st.className = 'bad'; st.textContent = '✗ ' + T.wrongsize; }
+  else if (fstate.kind === 'other') { st.className = 'bad'; st.textContent = '✗ ' + T.notorig + ' · ' + fstate.sha.slice(0, 12); }
+  else { st.className = 'bad'; st.textContent = fstate.msg; }
+  fi.append(nmEl, st);
+}
+async function loadFile(f) {
+  clearResult(); original = null;
+  try {
+    if (f.size !== DATA.base.size) fstate = { name: f.name, kind: 'size' };
+    else {
+      const buf = new Uint8Array(await f.arrayBuffer()), sha = await MPCEngine.sha256(buf);
+      if (sha === DATA.base.sha256) { original = buf; fstate = { name: f.name, kind: 'ok' }; } else fstate = { name: f.name, kind: 'other', sha };
+    }
+  } catch (e) { fstate = { name: f.name, kind: 'err', msg: e.message }; }
+  render();
+}
+$('pick').onclick = () => $('file').click(); $('file').onchange = e => e.target.files[0] && loadFile(e.target.files[0]);
+const dz = $('drop');
+['dragenter', 'dragover'].forEach(e => dz.addEventListener(e, ev => { ev.preventDefault(); dz.classList.add('hot'); }));
+['dragleave', 'drop'].forEach(e => dz.addEventListener(e, ev => { ev.preventDefault(); dz.classList.remove('hot'); }));
+dz.addEventListener('drop', ev => { const f = ev.dataTransfer.files[0]; if (f) loadFile(f); });
+$('langbtn').onclick = () => { lang = ru() ? 'en' : 'ru'; render(); if (last) showResult(); };
+function reportText(r, n) {
+  return ['DAVEY MPC PATCHER report', 'release: ' + DATA.release, 'input sha256: ' + r.inputSha, 'output sha256: ' + r.sha256, 'size: ' + n,
+    'modules: ' + r.modules.join(', '), 'points: ' + r.points + ' / ' + DATA.meter.maximum + ' (tested set ' + DATA.meter.limit + ')',
+    'patches: ' + r.patches + ' (xor ' + r.xorPatches + ', verified-old ' + r.setPatches + ')', 'checksum word: 0x' + r.checksum.toString(16).padStart(4, '0') + ' at 0x77FFE',
+    'boot region 0x78000-0x7FFFF: unchanged', 'program memory 0x70000-0x741AF: unchanged', 'reference: ' + r.reference,
+    'Emulator-tested only. Keep the ORIGINAL MPC2KXL.BIN on the card; restore = LOAD, pick it, DO IT.'].join('\n');
+}
+function showResult() {
+  const T = t(), r = last.report, res = $('result'); urls.forEach(u => URL.revokeObjectURL(u)); urls = [];
+  const bin = URL.createObjectURL(new Blob([last.bytes], { type: 'application/octet-stream' })), txt = URL.createObjectURL(new Blob([reportText(r, last.bytes.length)], { type: 'text/plain' }));
+  urls = [bin, txt]; const fname = 'MPC2KXL_DAVEY_' + r.sha256.slice(0, 8) + '.BIN';
+  const state = r.reference === 'match' ? '<span class="ok">' + T.match + '</span>' : r.reference === 'untested-combination' ? '<span class="warn">' + T.untested + '</span>' : '<span class="bad">' + T.mismatch + '</span>';
+  res.innerHTML = '<div>' + state + '</div><div class="mono" style="color:var(--mut);font-size:11px;margin:4px 0 8px">sha ' + r.sha256 + ' · ' + r.points + ' ' + T.pts + '</div>' +
+    T.ack.map((a, i) => '<label><input type="checkbox" class="ack" id="ack' + i + '"><span></span></label>').join('') +
+    '<div class="row" style="margin-top:8px"><a id="dl" download="' + fname + '" href="' + bin + '"><button class="go" id="savebtn" disabled>' + T.save + '</button></a>' +
+    '<a download="' + fname.replace('.BIN', '_report.txt') + '" href="' + txt + '"><button>' + T.report + '</button></a><span style="color:var(--mut);font-size:12px">' + fname + '</span></div>' +
+    '<div style="color:var(--mut);font-size:12px;margin-top:6px">' + T.savedhint + '</div>';
+  res.querySelectorAll('label span').forEach((s, i) => s.textContent = T.ack[i]);
+  const acks = [...res.querySelectorAll('.ack')], dl = $('dl');
+  const upd = () => { const ok = acks.every(a => a.checked); $('savebtn').disabled = !ok; dl.style.pointerEvents = ok ? 'auto' : 'none'; };
+  acks.forEach(a => a.onchange = upd); upd(); res.hidden = false;
+}
+$('make').onclick = async () => {
+  if (building) return; building = true; clearResult(); $('make').disabled = true; $('status').textContent = '…';
+  try { last = await MPCEngine.build(DATA, original, [...sel]); showResult(); $('status').textContent = ''; }
+  catch (e) { $('status').innerHTML = '<span class="bad"></span>'; $('status').firstChild.textContent = e.message; }
+  building = false; render();
+};
+$('vpick').onclick = () => $('vfile').click();
+$('vfile').onchange = async e => { const f = e.target.files[0]; if (!f) return; const sha = await MPCEngine.sha256(new Uint8Array(await f.arrayBuffer()));
+  $('vresult').innerHTML = !last ? '<span class="warn">' + t().vnone + '</span>' : sha === last.report.sha256 ? '<span class="ok">' + t().vsame + '</span>' : '<span class="bad">' + t().vdiff + '</span>'; };
+/* music: on by default; browsers allow sound only after the first click or key, so it also starts on the first interaction */
+const snd = $('snd');
+const ICON_ON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+const ICON_OFF = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>';
+const paintSnd = () => { snd.innerHTML = Chip.isOn() ? ICON_ON : ICON_OFF; snd.classList.toggle('off', !Chip.isOn()); };
+snd.onclick = e => { e.stopPropagation(); Chip.set(Chip.running() ? !Chip.isOn() : true); paintSnd(); };
+const firstTouch = () => { if (Chip.isOn()) Chip.start(); };
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#snd')) return; firstTouch(); }, { once: true }));
+try { if (Chip.isOn()) Chip.start(); } catch (e) {}
+paintSnd();
+window.__test = { build: s => MPCEngine.build(DATA, original, s), loadBytes: async b => { original = b; render(); return MPCEngine.sha256(b); }, DATA, sel: () => [...sel], toggle, setSel };
+render();
+</script></body></html>

@@ -1,0 +1,56 @@
+wait 30
+down shift
+up shift
+wait 0.3
+press n3
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 2
+press f6
+wait 3
+press n3
+press n5
+press enter
+wait 6
+press f5
+wait 3
+press main
+wait 1
+press pad1
+press levels
+wait 1
+press down
+press plus
+press plus
+press f2
+wait 2
+press f3
+press f3
+press f3
+wait 1
+press f5
+wait 1.5
+press f6
+wait 2
+snap
+press main
+wait 1
+tap pad1 0
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,31 do t[#t+1]=sp:read_u8(0x65aae+i) end print("VOICE idle_before "..table.concat(t," "))
+press stop
+wait 1.5
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,31 do t[#t+1]=sp:read_u8(0x65aae+i) end print("VOICE idle_after "..table.concat(t," "))
+snap
+press playstart
+wait 1.5
+tap pad1 0
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,31 do t[#t+1]=sp:read_u8(0x65aae+i) end print("VOICE play_before "..table.concat(t," "))
+press stop
+wait 1.5
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,31 do t[#t+1]=sp:read_u8(0x65aae+i) end print("VOICE play_after "..table.concat(t," "))
+snap
+exit

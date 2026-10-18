@@ -1,0 +1,92 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Patcher v3 mockup</title>
+<style>
+:root{--bg:#050805;--fg:#8dff9a;--hi:#d6ffdb;--mut:#3f9a52;--dim:#1f5a2a;--chip:#0b130b;--acc:#ffb000;--bad:#ff4040}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.4 "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px)}
+main{max-width:760px;margin:0 auto;padding:14px 14px 30px}
+.logo{white-space:pre;color:var(--hi);font-size:10px;line-height:1.05;margin:0;text-shadow:0 0 6px rgba(57,255,106,.45)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.tag{color:var(--mut);font-size:11px;letter-spacing:2px}
+.btn{border:1px solid var(--dim);background:var(--chip);color:var(--fg);padding:5px 12px;font:inherit;font-size:12px;letter-spacing:1px;cursor:pointer}
+.btn.go{border-color:var(--acc);color:#000;background:var(--acc);font-weight:700}
+.bar{position:sticky;top:0;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--dim);margin:10px 0}
+.segs{display:flex;gap:2px;height:14px}
+.segs i{flex:1;border:1px solid #143514;background:#0b140b}
+.segs i.on{background:var(--fg);border-color:var(--fg);box-shadow:0 0 5px rgba(57,255,106,.6)}
+.segs i.gh{background:#2a4a2a;border-color:#4a8a4a}
+.segs i.lim{border-right:2px solid var(--hi)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.file{flex:1;border:1px dashed var(--dim);padding:8px 10px;color:var(--mut)}
+.file b{color:var(--fg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:5px}
+.t{display:flex;align-items:center;gap:7px;border:1px solid var(--dim);background:var(--chip);padding:6px 8px;position:relative}
+.t.on{border-color:var(--fg);background:#0d2210}
+.t .n{flex:1;color:var(--hi)}
+.t .p{font-size:11px;color:var(--mut)} .t .p.w2{color:var(--acc)}
+.t .box{width:11px;height:11px;border:1px solid var(--fg)} .t.on .box{background:var(--fg)}
+.pair{grid-column:1/-1;display:grid;grid-template-columns:1fr auto 1fr;gap:5px;align-items:center}
+.or{color:var(--acc);font-size:11px;padding:0 4px}
+.sec{color:var(--mut);font-size:11px;letter-spacing:2px;margin:12px 0 5px}
+.tip{position:absolute;left:0;top:calc(100% + 4px);z-index:5;width:250px;background:#000;border:1px solid var(--fg);padding:6px 8px;font-size:12px;color:var(--fg)}
+.safe{display:flex;gap:14px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin-top:14px;border-top:1px dashed var(--dim);padding-top:10px}
+.safe span::before{content:"▸ ";color:var(--acc)}
+.foot{color:#2c6a38;font-size:11px;margin-top:12px;white-space:nowrap;overflow:hidden}
+</style></head><body><main>
+
+<div class="top">
+<pre class="logo">█▀▄ ▄▀█ █ █ █▀▀ █▄█   █▀█ ▄▀█ ▀█▀ █▀▀ █ █ █▀▀ █▀█
+█▄▀ █▀█ ▀▄▀ ██▄  █    █▀▀ █▀█  █  █▄▄ █▀█ ██▄ █▀▄</pre>
+<div class="row"><span class="tag">EN</span><span class="btn">RU</span></div>
+</div>
+<div class="tag" style="margin-top:4px">MPC2000XL · OS 1.20 · OFFLINE</div>
+
+<div class="bar">
+ <div class="segs"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="gh"></i><i class="gh"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="lim"></i><i></i><i></i></div>
+ <div class="row" style="justify-content:space-between;margin-top:5px;font-size:12px"><span><b style="color:var(--hi)">6</b>/19 pts</span><span style="color:var(--mut)">tested ≤ 17</span></div>
+</div>
+
+<div class="row">
+ <div class="file"><b>MPC2KXL.BIN</b> ✓ original 1.20</div>
+ <span class="btn">OPEN</span>
+</div>
+
+<div class="sec">PRESETS</div>
+<div class="row"><span class="btn" style="border-color:var(--fg)">DAVEY</span><span class="btn">VU BASE</span><span class="btn">LIGHT</span><span class="btn">CLEAR</span></div>
+
+<div class="sec">CHOP · PICK ONE</div>
+<div class="grid">
+ <div class="pair">
+  <div class="t on"><span class="box"></span><span class="n">Zone chop</span><span class="p w2">+2</span></div>
+  <span class="or">OR</span>
+  <div class="t"><span class="box"></span><span class="n">VU Regions</span><span class="p w2">+2</span>
+   <div class="tip"><b style="color:var(--hi)">VU Regions · 2 pt</b><br>Region edit + lazy chop. Uses 16 LEVELS.<br><span style="color:var(--acc)">Adds: overdub fix</span></div></div>
+ </div>
+</div>
+
+<div class="sec" style="margin-top:46px">FEATURES</div>
+<div class="grid">
+ <div class="t on"><span class="box"></span><span class="n">Tune ±360</span><span class="p">+0</span></div>
+ <div class="t on"><span class="box"></span><span class="n">Transpose ±36</span><span class="p">+0</span></div>
+ <div class="t on"><span class="box"></span><span class="n">Mute 1–4</span><span class="p w2">+2</span></div>
+ <div class="t"><span class="box"></span><span class="n">Mute 1–8</span><span class="p">+0</span></div>
+ <div class="t on"><span class="box"></span><span class="n">Param copy</span><span class="p">+0</span></div>
+ <div class="t"><span class="box"></span><span class="n">LPF / HPF</span><span class="p w2">+2</span></div>
+ <div class="t"><span class="box"></span><span class="n">Input thru</span><span class="p w2">+2</span></div>
+ <div class="t on"><span class="box"></span><span class="n">Sampling mode</span><span class="p w2">+2</span></div>
+ <div class="t"><span class="box"></span><span class="n">Double STOP</span><span class="p">+1</span></div>
+ <div class="t"><span class="box"></span><span class="n">Step move</span><span class="p">+1</span></div>
+ <div class="t"><span class="box"></span><span class="n">Format safe</span><span class="p">+1</span></div>
+ <div class="t" style="border-style:dashed"><span class="box"></span><span class="n">EB16 delay</span><span class="p">FX</span></div>
+</div>
+
+<div class="row" style="margin-top:16px;justify-content:space-between">
+ <span style="color:var(--mut);font-size:12px">sha 7b49…  · same as tested build ✓</span>
+ <span class="btn go">▶ PATCH</span>
+</div>
+
+<div class="safe"><span>original on card</span><span>restore = LOAD › DO IT</span><span>emulator-tested only</span></div>
+<div class="foot">» greetz: vubeatz · mpc forum · all the diggers · keep the 2000XL alive «</div>
+</main></body></html>

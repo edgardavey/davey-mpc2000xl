@@ -1,0 +1,2678 @@
+
+<title>DAVEY MPC PATCHER</title>
+<style>
+:root{--bg:#050805;--fg:#8dff9a;--hi:#d6ffdb;--mut:#3f9a52;--dim:#1f5a2a;--chip:#0b130b;--acc:#ffb000;--bad:#ff4040;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.4 "SF Mono",ui-monospace,Menlo,Consolas,monospace}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);z-index:50}
+main{max-width:780px;margin:0 auto;padding:14px 16px 30px}
+.logo{white-space:pre;color:var(--hi);font-size:10px;line-height:1.05;margin:0;text-shadow:0 0 6px rgba(57,255,106,.45)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.tag{color:var(--mut);font-size:11px;letter-spacing:2px}#t_tag{margin-top:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-size:12px;letter-spacing:1px;color:var(--fg);background:var(--chip);border:1px solid var(--dim);padding:5px 12px;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--fg)}
+button:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+button:disabled{opacity:.35;cursor:default}
+button.go{border-color:var(--acc);color:#000;background:var(--acc);font-weight:700;padding:7px 18px}
+button.sel{border-color:var(--fg);color:var(--hi)}
+#snd{width:34px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-color:var(--fg)}
+#snd.off{border-color:var(--dim);color:var(--mut)}
+.bar{position:sticky;top:0;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--dim);margin:10px 0;z-index:10}
+#segs{display:flex;gap:2px;height:14px}
+#segs i{flex:1;border:1px solid #143514;background:#0b140b;transition:background .12s}
+#segs i.on{background:var(--fg);border-color:var(--fg);box-shadow:0 0 5px rgba(57,255,106,.6)}
+#segs i.on.hot{background:var(--acc);border-color:var(--acc)}
+#segs i.gh{background:#2a4a2a;border-color:#4a8a4a}
+#segs i.lim{border-right:2px solid var(--hi)}
+.drop{flex:1;min-width:0;border:1px dashed var(--dim);padding:8px 10px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drop.hot{border-color:var(--fg)}
+.sec{color:var(--mut);font-size:11px;letter-spacing:2px;margin:14px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:5px}
+.t{display:flex;align-items:center;gap:7px;border:1px solid var(--dim);background:var(--chip);padding:6px 8px;position:relative;cursor:pointer;user-select:none}
+.t:hover,.t:focus-visible{border-color:var(--fg);outline:none}
+.t.on{border-color:var(--fg);background:#0d2210}
+.t.fx{border-style:dashed}.t.exp{border-style:dashed;border-color:#7a2020}.t.exp.on{background:#2a0c0c;border-color:var(--bad)}
+.t .n{flex:1;color:var(--hi);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t .p{font-size:11px;color:var(--mut)}.t .p.w2{color:var(--acc)}
+.t .box{width:11px;height:11px;border:1px solid var(--fg);flex:none}.t.on .box{background:var(--fg)}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
+.or{color:var(--acc);font-size:11px}
+.tip{display:none;position:absolute;left:0;top:calc(100% + 4px);z-index:20;width:260px;max-width:80vw;background:#000;border:1px solid var(--fg);padding:6px 8px;font-size:12px;color:var(--fg);white-space:normal;cursor:default}
+.tip.l{left:auto;right:0}
+.t:hover .tip,.t:focus-visible .tip{display:block}
+.tip b{color:var(--hi)}.tip .x{display:block;color:var(--acc);margin-top:3px}.tip .xp{display:block;color:var(--bad);margin-top:3px}
+.ok{color:var(--fg)}.warn{color:var(--acc)}.bad{color:var(--bad)}
+.mono{word-break:break-all}
+#result{border:1px solid var(--dim);padding:10px 12px;margin-top:12px}
+#result label{display:flex;gap:8px;align-items:flex-start;margin:5px 0;cursor:pointer}
+#result input{accent-color:var(--fg);margin-top:2px}
+.safe{display:flex;gap:16px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin-top:16px;border-top:1px dashed var(--dim);padding-top:10px}
+.safe span::before{content:"▸ ";color:var(--acc)}
+.foot{color:#2c6a38;font-size:11px;margin-top:12px;white-space:nowrap;overflow:hidden}
+.link{background:none;border:none;padding:0;color:var(--mut);text-decoration:underline;font-size:12px;letter-spacing:0}
+@media (max-width:520px){.logo{font-size:7px}.pair{grid-template-columns:1fr}.or{text-align:center}}
+@media (prefers-reduced-motion:reduce){#segs i{transition:none}}
+</style><main>
+
+<div class="top">
+<pre class="logo" aria-label="DAVEY MPC PATCHER">█▀▄ ▄▀█ █ █ █▀▀ █▄█   █▀▄▀█ █▀█ █▀▀   █▀█ ▄▀█ ▀█▀ █▀▀ █ █ █▀▀ █▀█
+█▄▀ █▀█ ▀▄▀ ██▄  █    █ ▀ █ █▀▀ █▄▄   █▀▀ █▀█  █  █▄▄ █▀█ ██▄ █▀▄</pre>
+<div class="row"><button id="snd" aria-label="Music on or off" title="Music on/off"></button><button id="langbtn">RU</button></div>
+</div>
+<div class="tag" id="t_tag">MPC2000XL · OS 1.20 · OFFLINE</div>
+
+<div class="bar">
+ <div id="segs"></div>
+ <div class="row" style="justify-content:space-between;margin-top:5px;font-size:12px"><span id="pts"></span><span id="ptsnote" style="color:var(--mut)"></span></div>
+</div>
+
+<div class="row">
+ <div class="drop" id="drop"><span id="fileinfo"></span></div>
+ <button id="pick">OPEN</button><input id="file" type="file" accept=".bin,.BIN" hidden>
+</div>
+
+<div class="sec" id="t_presets">PRESETS</div>
+<div class="row" id="presets"></div>
+
+<div class="sec" id="t_chop">CHOP · PICK ONE</div>
+<div class="pair" id="chop"></div>
+
+<div class="sec" id="t_feat">FEATURES</div>
+<div class="grid" id="mods"></div>
+
+<div class="row" style="margin-top:16px;justify-content:space-between">
+ <span id="status" style="color:var(--mut);font-size:12px"></span>
+ <button class="go" id="make">▶ PATCH</button>
+</div>
+<div id="result" hidden></div>
+
+<div class="safe" id="safety"></div>
+<div class="row" style="margin-top:8px"><button class="link" id="vpick"></button><input id="vfile" type="file" hidden><span id="vresult" style="font-size:12px"></span></div>
+<div class="foot">» greetz: vubeatz · mpc forum · all the diggers · keep the 2000XL alive «</div>
+</main>
+<script>const DATA = {
+ "format": "davey-patcher",
+ "schema_version": 2,
+ "release": "DAVEY patcher 4.0",
+ "base": {
+  "file": "MPC2KXL.BIN",
+  "size": 524288,
+  "sha256": "100e3375b45072c209ffa2b1dbaecbf740c8c4ea29162827ac11cc6bf9cc7bab"
+ },
+ "modules": [
+  {
+   "id": "ram_init",
+   "name": "RAM initialiser for mod state in 0x78000-0x78F2F",
+   "desc": "RAM initialiser for mod state in 0x78000-0x78F2F",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": true,
+   "weight": 0,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 1412,
+     "xor": "ZHuOSfhA"
+    },
+    {
+     "offset": 221091,
+     "xor": "VjSQSA=="
+    },
+    {
+     "offset": 347828,
+     "xor": "hg6QSA=="
+    },
+    {
+     "offset": 347955,
+     "xor": "hg6QSA=="
+    },
+    {
+     "offset": 485683,
+     "xor": "jtiOwI7QuHwKi+DoNQDqjwUAAJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQ6A0A6oA0GT7oBQDqWA4ZPpxgBvy4AHiOwL8AALgAALmYB/OrsBAmosMKJqI6DbD/JqLOCiaiRQ0HYZ3DifY="
+    }
+   ]
+  },
+  {
+   "id": "runtime",
+   "name": "Shared runtime dispatcher",
+   "desc": "Shared runtime dispatcher",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": true,
+   "weight": 0,
+   "requires": [
+    "ram_init"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 16970,
+     "xor": "EYjnhvhI"
+    },
+    {
+     "offset": 157744,
+     "xor": "KjG6tHs="
+    },
+    {
+     "offset": 232410,
+     "xor": "E1T8ACBu"
+    },
+    {
+     "offset": 233749,
+     "xor": "HASQSA=="
+    },
+    {
+     "offset": 260732,
+     "xor": "vK0Er/3Ekg=="
+    },
+    {
+     "offset": 485520,
+     "xor": "LouHcBnLLouFcBnLLv+HcBnLmscQm3TqHAQbdJpDGZt06tQFG3Sa9wYbdOoBA5t0mvsGG3TqRQWbdOrzBht06koZm3TqMBObdOpmABk+6jQAGT5QBmjnDwcmxgZjAAEHWMvqTgFUdppOAVR2nGAeBmgrWB8x9pz6VpoCOhk+g8QCgLz+1wB1D4nwgMwD54AxwOeC54Tnhp1Gg/4gctgHH2Gdyw=="
+    }
+   ]
+  },
+  {
+   "id": "u13_pitch",
+   "name": "Update 1.3 pitch helpers",
+   "desc": "Update 1.3 pitch helpers",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": true,
+   "weight": 0,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 232276,
+     "xor": "a+vwAAk="
+    },
+    {
+     "offset": 487424,
+     "xor": "PP90CjxHdwow5IPoI8O43P/DMcDDUwbEXgomikcd6N//a8AKAcYHW+gFAOpvMLA1gf6Y/n0Dvpj+gf5oAX4DvmgBgf4Q/3wNgf7wAH8TAfaLhDYCw4PGeAH2i4Q2AtHow4PueAH2i4Q2AtHgPf9/dgO4/3/D"
+    }
+   ]
+  },
+  {
+   "id": "u13_program",
+   "name": "Update 1.3 get_program helper",
+   "desc": "Update 1.3 get_program helper",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": true,
+   "weight": 0,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 487550,
+     "xor": "oL7XPAN3JDDkg8BcUJoYBLA1g8QCicOOwgnQdA6B++L5dwgmgz8ecgL4w/nD"
+    }
+   ]
+  },
+  {
+   "id": "tune",
+   "name": "Tune \u00b1360 (\u00b13 octaves)",
+   "desc": "TUNE field goes to +/-360 (three octaves)",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 0,
+   "requires": [
+    "u13_pitch"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 296685,
+     "xor": "ESsMA6wbF6aS"
+    },
+    {
+     "offset": 328910,
+     "xor": "mAEAAACYAQAAiAEAAACIAQ=="
+    },
+    {
+     "offset": 331308,
+     "xor": "iAEAAAAAAIgBAAAAAAAAAACYAQAAAAAAmAE="
+    },
+    {
+     "offset": 373574,
+     "xor": "iAEAAJgB"
+    },
+    {
+     "offset": 376518,
+     "xor": "iAEAAJgB"
+    },
+    {
+     "offset": 377052,
+     "xor": "iAEAAJgB"
+    },
+    {
+     "offset": 487541,
+     "xor": "Vot2DOi0/17L"
+    }
+   ]
+  },
+  {
+   "id": "transpose",
+   "name": "Program Transpose \u00b136 semitones",
+   "desc": "Program TRANSPOSE +/-36 semitones on the ASSIGN page",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 0,
+   "requires": [
+    "u13_pitch",
+    "u13_program"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 318936,
+     "xor": "BwAAAAAAAAAA8RdbjV1vDwy8"
+    },
+    {
+     "offset": 319039,
+     "xor": "8RdbjV1vDwy8"
+    },
+    {
+     "offset": 319602,
+     "xor": "Chbpc+g="
+    },
+    {
+     "offset": 319744,
+     "xor": "9KQuWPlJ"
+    },
+    {
+     "offset": 319812,
+     "xor": "8RdbjV1vDwy8"
+    },
+    {
+     "offset": 319987,
+     "xor": "8RdbjV1vDwy8"
+    },
+    {
+     "offset": 372732,
+     "xor": "+QIWOQ=="
+    },
+    {
+     "offset": 372812,
+     "xor": "yQEWOQ=="
+    },
+    {
+     "offset": 487595,
+     "xor": "YB4GaCtYH8cGXo0LAOjD/3IlLokeVQEujAZXASaKRx3oMv8uolkBDmhZAQ5oPAWavmKwNYPECAcfYctgHgZoK1gf6I7/ciIuOx5VAXUbjMAuOwZXAXUSLqBZATzcfAo8JH8GBCMmiEcdBx9hy2AeBmgrWB8OaDEFah9qCZqICRk+g8QI6Ez/ch0mikcd6MX+mWoCUlBqH2pFmu4JGT6DxAqaWp4ZPgcfYcs="
+    },
+    {
+     "offset": 488713,
+     "xor": "gz5ejQt1A+mY+2seXo0q/5+cLMseuStYjtmDPl6NC3QF6nb/GT4fy1RyYW5zcG9zZToARR8SAwGA3P///yQAAACrAAB3YgEWTlICFk4AAAAAyAIWTuYAAHc="
+    }
+   ]
+  },
+  {
+   "id": "mute",
+   "name": "Mute Groups 1\u20134",
+   "desc": "Mute groups 1-4 (MODE field on the ASSIGN page)",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 2,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 319363,
+     "xor": "GgCReWT6t3d0ruWUAwAPZM8SBWu7Aw2C/qjM8g5uTF7wAAkSobUDmMbpsgOhviyhwyl5KpA="
+    },
+    {
+     "offset": 320589,
+     "xor": "Cjgsdhwn9yGR5Io="
+    },
+    {
+     "offset": 372804,
+     "xor": "BA=="
+    },
+    {
+     "offset": 488806,
+     "xor": "gPsEchiA+wd3EYDrBNHjLouXjwW5AHe7BADLMdvB4wKLl/4ri48ALMuXBZ4FpQWsBU1VVEUgMQBNVVRFIDIATVVURSAzAE1VVEUgNA=="
+    },
+    {
+     "offset": 488891,
+     "xor": "dVImiheA+gRySoD6B3dFYAYx9r8JlopGBDoFdSyKRQE6RgV0JCwjPD93HjDka9gYA176g8Mejkb8JjgXdQtSVpo2Ohk+g8QCWoPHFEaD/iByxAdhWp3EXvYmikcMyw=="
+    }
+   ]
+  },
+  {
+   "id": "param_copy",
+   "name": "Parameter Copy \u2014 Bank / Program",
+   "desc": "ALL: copy a parameter to a bank or the whole program",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 0,
+   "requires": [
+    "u13_program"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 373017,
+     "xor": "JgYWOQ=="
+    },
+    {
+     "offset": 373052,
+     "xor": "igcWOQ=="
+    },
+    {
+     "offset": 375994,
+     "xor": "YB4WOQ=="
+    },
+    {
+     "offset": 376008,
+     "xor": "BMwBAHc="
+    },
+    {
+     "offset": 376664,
+     "xor": "TicWOQ=="
+    },
+    {
+     "offset": 376678,
+     "xor": "BMwBAHc="
+    },
+    {
+     "offset": 487770,
+     "xor": "YB4GaCtYH4M+Zo0IdAeaOh8WTusFmhQmFk4OaIQBmmIGGT6DxAQHH2HLGgMBQUxMAABgHgZoK1gfmgYGFk6hZo3oGgByDA5osAGaYgYZPoPEBAcfYcsaAgFBTEwAAIPoAoP4BncKweADvjQEAcb4w/nDYB4GaCtYHy7GBtkEAKFmjS6j0ATo1f9zA+m1AOiT/nMD6a0ALoke0gQujAbUBKDA1ywjPD92A+mXADDka/gYMcAuigQBxwHfMcAmikUeLoB8AQJ1BCaLRR4uO0QCfHIuO0QEf2wuo9YEmlIHGT6D+AN3Xi6i2AQEQS6izASgvtcw5IPAYFCaGASwNYPEAonDjsIJ0HQ7g/vAdzYuoNgEMOTB4AQBw7/aBLkQACaKBy6IBUNH4vaabAgWTi7GBtkEAQ5o6gSaJAcZPoPEBA7oBAAHH2HLYB4GaCtYHw5obASaYgYZPoPEBC6h0ATo/f5yDQ4u/3QGmmIGGT6DxAQHH2HLUDHA6A8AWOmgAFC4AQDoBABY6ZUAYB4GaCtYH4nFLoA+2QQBdW8uxgbZBAAuodAE6Lf+cmDoeP1yWy47HtIEdVSMwC47BtQEdUsuixbWBC47VAJ8QC47VAR/OjHALooEAcODwx65QAAJ7XUfuRAAMf8uioXaBEcsIzw/dwow5GvoGAHd6BIA4ujrCond6AkAg8UY4vgHH2HDLoB8AQJ0BSaIVgDDJolWAMNgHgZoK1gfLsYG2QQAmloFFk4HH2HLAgccEFBhcmFtZXRlcjogQVRUQUNLAAACBxwQUGFyYW1ldGVyOiBERUNBWQAAAgccEFBhcmFtZXRlcjogREVDQVkgTU9ERQAAAgccEFBhcmFtZXRlcjogRlJFUQAAAgccEFBhcmFtZXRlcjogUkVTT04AAAIHHBBQYXJhbWV0ZXI6IFRVTkUAAAIHHBBQYXJhbWV0ZXI6IFZPSUNFIE9WRVJMQVAAAAoBAABkAI4DCwEAAGQApQMMAQAAAQC7Aw0B"
+    },
+    {
+     "offset": 488530,
+     "xor": "1gMOAQAADwDrAwgCmP5oAQEEBQEAAAIAFgQCEwAz+AkDEwAz+AkEEwAz+AkCIgwC4DpBTEwgRk9SOgAaAgJDQU5DRUwAGgQBQkFOSwAEE6UzLQkRpTMtCQITpTMtCQenNFBST0dSQU0ABxwcQ3VycmVudCBiYW5rOiBB"
+    },
+    {
+     "offset": 488682,
+     "xor": "AQAAAAAyoQIAdwN4AwB3Bc4CAHcG2AIAdxV4AwB3"
+    }
+   ]
+  },
+  {
+   "id": "regions",
+   "name": "REGIONS \u2014 4 / 8 / 16 slices",
+   "desc": "REGION EDIT on the TRIM page: 4 / 8 / 16 even slices, slice editing, APPLY",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 2,
+   "requires": [
+    "runtime"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 2570,
+     "xor": "EL6ab7R+lg=="
+    },
+    {
+     "offset": 3290,
+     "xor": "YDX+n/43bpQ="
+    },
+    {
+     "offset": 3323,
+     "xor": "YV3cmbR2lg=="
+    },
+    {
+     "offset": 3454,
+     "xor": "as3Zn3Q="
+    },
+    {
+     "offset": 24843,
+     "xor": "zLtGnKVyQHo="
+    },
+    {
+     "offset": 25903,
+     "xor": "VLwpGLKaEOyYkOSBqtSU5WIazJMQc6+qc+V4e5RW1IKQSvPDQfzEl0BxQH5ASRjclg=="
+    },
+    {
+     "offset": 25989,
+     "xor": "vNKdG3KR"
+    },
+    {
+     "offset": 26971,
+     "xor": "EKiab7R+lg=="
+    },
+    {
+     "offset": 28849,
+     "xor": "YUncmbR2lg=="
+    },
+    {
+     "offset": 121497,
+     "xor": "XewGnHSQ"
+    },
+    {
+     "offset": 128739,
+     "xor": "JwxmmZ+Z"
+    },
+    {
+     "offset": 188270,
+     "xor": "ykEXbZCVprEbYCSTHEoQUbojlV0AyLYa1Ze07xBRiMF4H5DJ"
+    },
+    {
+     "offset": 190414,
+     "xor": "vNtQnaVwthrVl0FwGlS1k5AAAAAAAAc="
+    },
+    {
+     "offset": 190450,
+     "xor": "YI/RpVSJ"
+    },
+    {
+     "offset": 190510,
+     "xor": "Lqs1glIa1ZY="
+    },
+    {
+     "offset": 203777,
+     "xor": "FsPNFGqQ2Yorui26eJiQePWQ"
+    },
+    {
+     "offset": 203995,
+     "xor": "Kw+ugcTyXSBT"
+    },
+    {
+     "offset": 204022,
+     "xor": "YJC4sf6uKbo="
+    },
+    {
+     "offset": 204159,
+     "xor": "Aw=="
+    },
+    {
+     "offset": 204185,
+     "xor": "akO7sXQ="
+    },
+    {
+     "offset": 229557,
+     "xor": "vG9WnPzWYQ=="
+    },
+    {
+     "offset": 229674,
+     "xor": "vIFtnHQ="
+    },
+    {
+     "offset": 233484,
+     "xor": "XjLpvf/Xmg=="
+    },
+    {
+     "offset": 233626,
+     "xor": "8MN7mbDOaLZv54C2b+eeAJ54blqR1liBxlr6kPqSVM5otm/ngLZv554Annh0WpHWXIHGXvqQ+pJUzmi2b+eAtm/nngCeeFpakdZAgcZC"
+    },
+    {
+     "offset": 267962,
+     "xor": "Go/tTHQ="
+    },
+    {
+     "offset": 268056,
+     "xor": "Go/tTHQ="
+    },
+    {
+     "offset": 268119,
+     "xor": "Go/tTHQ="
+    },
+    {
+     "offset": 268223,
+     "xor": "Go/tTHQ="
+    },
+    {
+     "offset": 268309,
+     "xor": "Go/tTHQ="
+    },
+    {
+     "offset": 477616,
+     "xor": "uwUAtFCMys2Qw2grWB8OVppiBhk+g8QEww5oJgBqNmh7JmhotMuAPrsqAnQajNrNjx4ASRq7Kr0qDmhGAGo2aHsmaMi0y8tgBrlJGr5WAOiu/wdh6whSRUdJT05TAGAevmoA6KT/H2HrCgIaAgFFRElUAADNlmYASAObdMuAPrsqAXQF6vC1eybq8bV7JoA+uyoCdAmLHrgq6k61eyYuxgaLQwHpoBJVUVI8I3JAPGJ3PCwjMOSJw1PNxVuMwAnwdCyJ2GvbGAHzg8MeweACAcYmxLTeB4zAPStYdRGB/hqZcguB/hrXcwVaWV34w1pZXfnDLoA+EEEAdWuAPtkEAnVaU1YGLoA+EUEBdRQugD6SQwF1DID5AHQ06BwZci/rIVDoTACIwlg403MiLoA+EUEBdQ4uiB4SQS7GBhhBAegXGrYEiNoHXlvquA0AADHJMdKwIgdeW+q4DQAAgD7ZBADqgw0AADHJMdKwIuq4DQAAYAboMf9yC+gVAHIGLopFaOsCsBAuoopDB2EuoIpDw1BTUVK/UDq5EAAugz0BdAPpgAAmi0QuLjtFBHV2JotEMC47RQZ1bCaKRCUuOkUCdWKJ84HrGpmJ2DHSuz4A9/PR4InDLjt1XHUJ6IgZLjtFYnRPLoN9XgB1OVFWV4PGEoPHCLkIACaLBC47BXUig8YCg8cC4vBfXlkuiXVcLsdFXitYLoldYOhLGS6JRWLrEl9eWYPHbEl0A+lu/1pZW1j5w1pZW1j4w1foVP9yAon7X8PoS/9yA+mbAL9QOrkQAC6DPQB0B4PHbOL1+cNWV4PGEoPHCLkIACaLBC6JBYPGAoPHAuLyX14uiXVcLoxFXiaKRCUw5C6JRQImi0QuLolFBCaLRDAuiUUGifAtGpkx0rs+APfz0eCJwy6JXWDotBguiUViLsdFaBAALsdFagAAVwYmi0QmJotUKCaLXComi0wsg8cYDgcO6J8VB19yBS7HBQEAw2AGJvZEDQF1DuhQ/3IJLv8GgkMHYfjDB2H5ww=="
+    },
+    {
+     "offset": 478449,
+     "xor": "LsYGFkEAw4A+uyoCdAPpuwGguCroT/1zA+mwASb2RA0BdAPppgEmi0QuJotUMC6jKkEuiRYsQQnSdQiD+BBzA+mJAS6JNiZBLowGKEEuxgYQQQHoyBfoTP9zA+luAeju/XMD6WYBLoN9aAFzA+lcAS6DfWgQdgPpUgEug31qAXYD6UgBLok+NkEuikVoLqITQS6KRWouopJDHg4fDgeNdRi/OEG5IgDzpR8uxgYXQQAuxgYSQQAuxgYUQQAuxgYaQQMuxgYbQQAuxgYVQQAuxgYeQf8uxgYZQQAuxgYWQQBo5w8HJqB4Qy6iHEEmoHdDLqIdQSah1wQuox9BJqHZBC6jIUEmoNsELqIjQYseuCq5AgCKFroqsAHNx82kLsYGEUEBzZZgAG8Fm3TNlmYAGwabdM2WbAAyBpt0zZZyABgHm3TNlngAwgibdM2WfgDICJt0zZYMAHIFm3TNlsAAhwmbdM2WxgDvDZt0zZa0AKgHm3TNlroAlQebdM2WigCJBZt0zZaQAJEFm3TNlpYAmQWbdM2WnACoBZt0zZiKACAIm3TNmJAAEQibdM2WTgBMCJt0zZdOAFMIm3TNltgAWgibdC7GBhhBAehMFi7GBhBBAMtQBmjnDwcuoBxBJqJ4Qy6gHUEmondDLqEfQSaj1wQuoSFBJqPZBC6gI0EmotsEB1jD"
+    },
+    {
+     "offset": 478976,
+     "xor": "EUEAdA/odhToBATotv8uxgYRQQD7uOcPjtjqUEIAAOii/+hZFOjnAy7GBhFBAC7GBhlBAOp6AHsmLsYGFEEA6ykuxgYUQQHrIS6APhJBAHQZLv4OEkHrEi6gEkH+wC46BhNBcwUu/gYSQS7GBhlBAC7GBhhBAeiQFctgBi7ENiZBJotEJiaLVCgmi1wqJotMLA4HvzhBDuiRErhAADHSMckuig4TQffxicO+OEGJ90EuiwQui1QCJokFJolVAgHeg8cE4usHYejQAMMugD6SQwF1A+myEy7GBhlBAOib/+nGAS6APpJDAXQLLoA+E0EE"
+    },
+    {
+     "offset": 479217,
+     "xor": "A+nsE+huE2AeBg4fDge+OEG/fEG5IgDzpaATQaqgEkGqoBdBqqCSQ6oHH2EugD6SQwF1Di7GBpJDAC7GBhNBEOsTLtAuE0EugD4TQQRzBi7GBhNBEC6gE0EuOAYSQXIG/sguohJBLsYGGUEA6Br/LsYGF0EB6BoCcyVgHgYOHw4HvnxBvzhBuSIA86WsohNBrKISQayiF0GsopJDBx9hLsYGGEEB6HAUy2Ax2y6KHhNBg/sQcx+5EAAp2cHjAoHDOEEuiwcui1cCg8MELokHLolXAuL0YcMu/gYaQS6APhpBBHIGLsYGGkEALsYGGEEB6CUUyzHALqASQS4CBhRBicPB4wKNtzhBMdIxyYXAdA4ui1T8LotM/oPCAYPRAC6JFi5BLokOMEEuOgYTQXQQLotUBC6LTAaD6gGD2QDrCi6LFipBLosOLEEuiRYyQS6JDjRBw+id/+icAC6LBC6LVAIB2BHK6xfoiv/oiQAuiwQui1QCKdgZynMEMcAx0i47FjRBdwlyEC47BjJBdgkuoTJBLosWNEEuOxYwQXIJdxAuOwYuQXMJLqEuQS6LFjBBLokELolUAujv/i7GBhdBAS7GBhhBAehPEy7GBhtBAMsugD4VQQB0HS7+DhVB6w0ugD4VQQZzDi7+BhVBLsYGGEEB6CMTyzHbLooeFUHB4wIui49uGy6Ln2wbwy7GBhlBAcsuxgYZQQDLLoA+GUEBdAHLg/h/dgHLLqMkQejF/i6hMkEuixY0QS4rBi5BLhsWMEEuix4kQYnR9+NQUonI9+OJwVoByli5fwDoDQAuAwYuQS4TFjBB6RT/VonGidAx0vfxicOJ8PfxidaJ2onzXsPoDgDp8vzoCABzA+nq/Omf/OjgEC6APhdBAHUC+MNgHgYxwC6gEEFQLsYGEEEB6GwSDh8OB4s2NkG/xEG5NgDzpYs+NkExwKATQYlFaKCSQ4lFaoPHGL44QbkiAPOlxDYmQei/+XIWLsYGF0EALsYGG0EAWC6iEEEHH2H4ww4fDge+xEGLPjZBuTYA86UuxgYbQQJYLqIQQQcfYfnDYB4uiiYeQYD8EHMZLsYGHkH/aOcPHzDADmiECWjNQmoAaHYMyx9hwy6APhhBAHUkLoA+jUMAdBtgBmjnDwe/QloxwLmwAfOr6H0CLsYGjUMAB2HLLsYGjUMALsYGGEEAYB4GDh+zAs2Q6OIBYAa5AgG+2gnoKvYHYesMUkVHSU9OIEVESVQAYAa5ngG+9QnoD/YHYesJUkVHOiAgIC8AMcCgE0Fguc4BuwgCzZBhoBJBQGC5vAG7CALNkGFgBrkADL4qCuja9Qdh6wRTdDoAYAa5gAy+PQrox/UHYesFRW5kOgAx24oeEkHB4wKLhzhBi5c6QWC5GAy7CAfNkGGLhzxBi5c+QWC5ngy7CAfNkGExwKAVQbEG9uGyKyjCsReAPhRBAHQCsZ21C7YJ6EkB6JYBgD4bQQJ1IGAGuQArvqcK6F31B2HrEU5PIEZSRUUgTUFQIFNMT1QAYB6+xAroSvUfYesKAhoBAUJBQ0sAAIA+kkMBdS9gHr7hCugt9R9h6wsCGgIBQ0xFQU4AAGAevvgK6Bb1H2HrCgIaAwFMQVpZAADrYmAevhAL6P70H2HrCgIaAgFFVkVOAACAPhNBCHQdgD4TQQR0K2AevjQL6Nr0H2HrCAIaAwExNgAA6yhgHr5KC+jE9B9h6wcCGgMBOAAA6xNgHr5fC+iv9B9h6wcCGgMBNAAAYB6+cgvonPQfYesKAhoEAVpPT00AAGAevogL6Ib0H2HrCwIaBQFBUFBMWQAAYB6+nwvob/QfYesKAhoGAURPTkUAAAcfYcu5AAC6kwHoJwC5AAC6AQvoHgC5kgDoGAC5AAq6AQHoDwCAwQKA+ZJy8sNgvQEA6wNgMe0GaOcPB4jIMOSJw8HrA4joMOTB4AUBw4HDoleA4QewgNLoMO2I0YnfiPKF7XQFJjAF6wMmCAWDxyD+ynXt0MhzAUPi4gdhw2AeBg4fxDYmQSaLRAomi1QMozBCiRYyQjHbih4SQcHjAouHOEGLlzpBozxCiRY+QouPPEGLtz5BKcEZ1okOQEKJNkJCgD4UQQB0CIuHPEGLlz5Bo0RCiRZGQoA+GkEAdG2APhpBA3RMu4AAgD4aQQF0A7sABInBidYp2IPaAHMEMcAx0qM8QokWPkIB2YPWADs2LEF3CHIOOw4qQXYIiw4qQYs2LEEpwRnWiQ5AQok2QkLrGscGPEIAAMcGPkIAAKEqQYsWLEGjQEKJFkJCgD4WQQF1JKE8QjsGTkJ1G6E+QjsGUEJ1EqFAQjsGUkJ1CaFCQjsGVEJ0XaE8QosWPkKjTkKJFlBCozRCiRY2QqFAQosWQkKjUkKJFlRCufUA6GL7ozhCiRY6QokeekPHBnxDAADHBnhDAADHBlpCAADHBlxCAAAOB7+CQjHAufUA86rGBhZBATH2ifOKh4JCg+AP99iFwHkBSInHioeCQsDoBDDkicMp+3UBQ4jesgG1IijFifBAiMFW6Cv+XkaB/vUAcsWAPhpBA3UF6PkB6yWhREKLFkZCKwY8QhsWPkLosAE99AB2A7j0AECIwbUVugEb6PL9Bx9hwy6APhFBAXURLoA+FkEBdQkugT54Q/UAcgHLYB4GDh/HBmBCAAShWkILBlxCdUihNEKLFjZCAwY4QhMWOkKLHnxDAx56Q4H79QByCoHr9QCDwAGD0gCJHnxDo1ZCiRZYQisGNEIbFjZCicMJ03UBQKNaQokWXEK5EAA7DmBCdgSLDmBCgz5cQgB1CjkOWkJzBIsOWkKJDl5CoTRCixY2QgMGMEITFjJCaCtYH5piAIl2nPqAPgqW/3QD6dYAULgAA+eAMcDngueE54ZYaAAQUQ5oYkJSUJpJAIl2g8QMnQ4fvmJCiw5eQjHbMf+LBDnYfQKJwzn4fgKJx4PGAuLtidiLHnhDgcOCQrl7CZn3+fbYiheA4g840HYFgCfwCAeJ+Jn3+cDgBIoXgOLwONB2BYAnDwgHoV5CKQZgQgEGNEKDFjZCACkGWkKDHlxCAKFaQgsGXEJ1KqFWQosWWEKjNEKJFjZC/wZ4Q/cGeEMHAHQIgT54Q/UAdQjGBo1DAejqC4M+YEIAdA6BPnhD9QBzBumT/p3rAAcfYctTUVJWV1UeBonRu/UA9+OJxonXicj34wH4icKJ8P82QkL/NkBCUlCarACwNQcfXV9eWllbwzHbih4SQcHjAouHOEGLlzpB6Lf/QKNIQouHPEGLlz5B6Kj/QCsGSEJ1AUCjSkKhREKLFkZC6JP/QKNMQoM+SkIBdQY7BkhCdAqIwbUVugEb6M37oUhCicPB6wOBw0JaiMGA4QeygNLqiw5KQmjnDweJ374bACYwFYPHIE5199DKcwFD4uvDgP4EdQOAyYCLHswCwOYG6gINAACA/gR1A4DJgIsezALA5gbquHAAAIjqiObA7gb2wYB0BYDhf7YEy5prEJt0gP4EdSqA+QB1JWAGLCMw5InDU83FW2vbGAHzJopHIy6if0MHYS6APn9DAnQCsCLLircOBYqXHgWKh+4Eiqf+BOriDA=="
+    },
+    {
+     "offset": 481918,
+     "xor": "gD4QQQB0C8dG/AAAx0b+AADLgH61A3UOgH62cHIIxka1BIButnCAfrUEdXFgBsR2+Og28XJW6CMIOEa2c04xwIpGtsHgAgHD6B8ILotHHC6LVx4uK0cYLhtXGonDidHR4NHS0eDR0gHYEcrR4NHSagBouQFSUJqsALA1iUb8iVb+xka3AC7/BoRD6w/HRvwAAMdG/gAALv8GhkMHYcuAfrUEdUlgBsR2+Oi+8HI9McCKRrbB4AIBw+ivBy6LRxgui1caiUbIiVbKLotHHC6LVx6JRtCJVtKJRsyJVs7HRtQAAMdG1gAAxka5AAdhxF74JotHCsvEXvgmi0cOJotXENHq0dgBRsgRVsoBRswRVs4BRtARVtLLJopHByaAfwUEdQ0wwCbGRwkAJsdHOgAAiEbxyyaAfwUEdAYmgH8HAMs528suiDZ+Q4D+BHUFtgOAwnDQ4tHaiFQH0OHQ7tDZiEwGyyaKVAfR4tDqgP4DdQ+A+nByCoDqcLYE6jNhAADqE2EAACaAj4AGAS6APn5DBHUMLoA+f0MCdATGRAkBy5xgBoB+CAR0DIB+CAN1OIB+CXByMiaAPwRyLCaAPwd3JjH2vwmWikYEOAV1EYpGBThFAXUJVpo2Ohk+g8QCg8cURoP+IHLfB2Gd6rMFAHcuiDZ+Q4D+BHVBYAYsIzDkicNTzcVba9sYAfMmikcjLqJ/QwdhLoA+f0MCdB6+ADuDxgqB/vI+dwiAfAgAdfHrKi7/BohD6otlAAC+ADuDxgqAfAgAdBQ6RAR18opcA4DjPzjcdejqUGUAAMZEEgDqUGU="
+    },
+    {
+     "offset": 482534,
+     "xor": "dQn2wwF1BID7/8uAv/7XAMsuxgYQQQHoD/boDAguxgaMQwDNpOhgAc2WwAByE5t0zZbGAE8Um3To6AfLYB4GswLNkLkSDLrcAehb+LkSDLoBJuhS+LntDLoBJuhJ+LkSMbrcAehA+GAGuU8RvqwT6FjsB2HrCjE2IExFVkVMUwAugD6MQwR0Mi6APoxDAnQqLoA+jEMDdD9gBrlVIL7dE+gn7Adh6wtMT0FESU5HLi4uAC7GBoxDAetbYAa5bSC+/xPoBewHYesGUkVBRFkALsYGjEME6z5gBrkfIL4cFOjo6wdh6xlOTyBTT1VORCAvIEZSRUUgTUFQIFNMT1QAYB6+QRTozesfYesKAhoBAUJBQ0sAAAcfYcsugD6MQwR0PC6APoxDAXUhgD67KgJ1EWAGoLgq6DnscgPoc+4HYXIKLsYGjEMC6NkGyy7GBoxDA82WYACrFJt06McGy+jDBi7GBhBBAC7GBotDAIseuCrqTrV7Js2kLsYGEEEALsYGi0MA6rizeyZgBmjnDwe/RjC5MADoFQC/qDG5OgDoDAC/ZDO5IQDoAwAHYcO48BSrjMiruHUiq+Lzw8uA/AN1KSaAfQfwciKAwSqMyr5OFbQDswXNkIDBGCaKRQeD4H+D6G+3ArMIzZDLULAD9uQFNiGJxrQDjNqAwSqzBc2QWCaKRQckf4DBGFEOaEwVajZoeyZocHjLWctSRUcmikUG0eAmikUH0eCI4IPgAzwDdQgmgH0H8HIBQMvEPiAZPAR1CyaATQaAJsZFB/DLJoB9B/ByBSbGRQdAiMTqSIB7JsQ+IBkmikUGqIB0IyaAfQfwchzHBiQZT3gmikUHg+B/g+hvuwEAuhAAv8kVzX/L6oaAeyaD+AFzA7gBAIP4EHYDuBAABG8MgMQ+IBkmiEUHy83qcwXqQk2bGmAeBjHbLokeSEK9UDq6EADodwDozACDxWxKdfQOB7/EQTHAuRgA86seDh++axi/1EG5CADzpR8uxwbkQRAALscG5kFgAC6hSEIuo+hBvsRBuTAAswnNkXIpvVA6uhAA6CgAUlUOB77EQblgALMJzZFdWnIOg8VsSnXlBx9h6jlNmxoHH2HqQk2bGmAeBg4fDgcug34AAXUyLoF+XitYdSoui15g6M8ELjtGYnUdLsR2XInvg8cIuQgAJotEEi6JBYPGAoPHAuLxDgeJ7r/EQbkuAPOlLotGaKsui0ZqqwcfYcNgvsRBuTAALqFIQi4DBIPGAuL4LqNIQmHD6HIE6FHsYB4G6LAADge/xEG5MACzBs2RcwPplQAeDh++axi/1EG5CADzpx90A+mBAC6DPuRBEHV5LoM+5kFgdXEuoehBLqNKQi7HBkhCAAC9UDq6EABSVQ4Hv8RBuWAAswbNkV1ackDofP/oZgByOB4OHw4HvsRBie+5LgDzpaEgQi6JRmihIkIuiUZqH4PFbEp1wi6hSEIuOwZKQnUJLscGgEMBAOsK6BEALscGgEMCAAcfYccGEAcAAMtgBg4HMcC/UDq5YAPzqy7HBoBDAAAHYcNgLoM+xEEAdGQugz7EQQF1Xy6DPsZBAXdXLoE+ykEAAXNOLosOIEIugz4iQgF3QYP5AXI8g/kQdze+3EEuiwQui1QCLjtUBncncgYuO0QEcx+DxgQuiwQui1QC4uYuOxbKQXcMcgcuOwbIQXcDYfjDYfnD"
+    },
+    {
+     "offset": 483820,
+     "xor": "jMA9K1h1GoH+GplyFIH+GtdzDlboPeleaCtYBybENOvfmjoAiXYHH2GwAKIvD8tNUENYTFJFR0lPTlMwMDAxVYnlg+wMnGCD/7x3d4H6/wB3cYH5/wB3a4lG/olW/CnDGdFyX4XJdQWD+xByVonYg+APiUb2x0b0AACJ2InKuQQA0erR2OL6iUb6iVb4i0b+i1b8uRAA/KuSq5IDRvoTVviLXvQDXvaD+xByCYPrEIPAAYPSAIle9KuSq5Li3WGdyfjLYZ3J+csugD4RQQF1HC6APpJDAXUULjs2JkF1DVCMwC47BihBWHUC+MP5wy6KR2jo0/9yBC6gE0HD6Mn/cgW7IEEBw8M="
+    },
+    {
+     "offset": 484084,
+     "xor": "xgaUQwDL"
+    },
+    {
+     "offset": 484093,
+     "xor": "EUEAy+gIACaKRwEmig/LnC6APpNDAXUNLjoOlUN1Bi7GBpNDAC6APpRDAXU6JoB/BQR1My6IDpVDYDHALqASQYnGweYCJotHGCaLVxouK4Q4QS4blDpBLqOOQy6JFpBDYS7GBpNDAZ3DLoA+kkMBdQ/ongEuxgaTQwAuxgaUQwDD6OX/LsYGkkMAw+jb/2AGLsQ2JkEmi0QmJotUKC6jOEEuiRY6QSaLRComi1QsLqM8QS6JFj5BLsYGE0EBLsYGEkEA6NfsLsYGF0EBLsYGGEEBLsYGG0EALsYGGUEA6CsBB2HLLsYGkkMB658uOh4TQXMD6eQAdAPp3QCA+xByA+nVAC6APpNDAXQD6coAnPpgHgZoK1gfMcAuoJVDa/AUgLwKlv91A+mqAOeA5YLB6AyJweWEicPlhoPgD4nCidjR4NHS0eDR0tHg0dLR4NHSCcguKwaOQy4bFpBDcnYx2y6KHhNBweMCicaJ1y4rtzRBLhu/NkFyXIX/dQWD/hByUy6LtzhBLou/OkEpxhnXckOF/3UFg/4Qcjoui7c4QS6LvzpBLom3PEEuib8+QS6JhzhBLomXOkEuoBNBLqISQS7+BhNBLsYGF0EBLsYGGEEB6DgABx9hnfnD6Iz+LogeEkEuxgYZQQAuxgYYQQHoGwAuxgaUQwH4w7lJGrAxnIA+uyoCdQKwK53NsMuaUwCJdsOaZwCJdsOaAACJdsOQAQAAAAoAAABkAAAA6AMAABAnAACghgEAQEIPAICWmA=="
+    }
+   ],
+   "excludes": [
+    "zone_chop"
+   ]
+  },
+  {
+   "id": "lazy",
+   "name": "Lazy chop",
+   "desc": "Lazy chop inside REGION EDIT: tap pads while the sample plays",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 0,
+   "requires": [
+    "regions"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 230109,
+     "xor": "vNtemlIanw=="
+    }
+   ]
+  },
+  {
+   "id": "hpf",
+   "name": "LPF / HPF \u2014 FREQ 0\u2013200",
+   "desc": "LPF / HPF with FREQ 0-200",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 2,
+   "requires": [
+    "runtime"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 232003,
+     "xor": "Mg=="
+    },
+    {
+     "offset": 232963,
+     "xor": "vINBFl50"
+    },
+    {
+     "offset": 233602,
+     "xor": "CovsPoQ="
+    },
+    {
+     "offset": 233740,
+     "xor": "CovsgJs="
+    },
+    {
+     "offset": 254404,
+     "xor": "IusDGyM="
+    },
+    {
+     "offset": 254904,
+     "xor": "IvYDGyI="
+    },
+    {
+     "offset": 254994,
+     "xor": "Cvzrtok="
+    },
+    {
+     "offset": 255182,
+     "xor": "Cvzr6og="
+    },
+    {
+     "offset": 268192,
+     "xor": "SlkCRSs="
+    },
+    {
+     "offset": 268347,
+     "xor": "YNr7uaKU"
+    },
+    {
+     "offset": 269254,
+     "xor": "v87qTf/mlg=="
+    },
+    {
+     "offset": 301334,
+     "xor": "CvHrhj4="
+    },
+    {
+     "offset": 301406,
+     "xor": "CvHrTj4="
+    },
+    {
+     "offset": 301439,
+     "xor": "CvHrLz4="
+    },
+    {
+     "offset": 301476,
+     "xor": "CvHrFD4="
+    },
+    {
+     "offset": 301504,
+     "xor": "CvHr6D0="
+    },
+    {
+     "offset": 301668,
+     "xor": "CvHrVD0="
+    },
+    {
+     "offset": 303418,
+     "xor": "gp4NOg=="
+    },
+    {
+     "offset": 321838,
+     "xor": "Vp4CSg=="
+    },
+    {
+     "offset": 373494,
+     "xor": "rA=="
+    },
+    {
+     "offset": 475568,
+     "xor": "moKeFk7oEADoZQHLmlqeGT7oBADoWQHLnGAeaOcPH4zIOQYOMXUIgT4MMYgAdCWhDDEuo6BLoQ4xLqOiS6EQMS6jpEvHBgwxiACMDg4xxwYQMStYH2Gdw5xgHmjnDx+MyDkGDjF1HYE+DDGIAHUVLqGgS6MMMS6hokujDjEuoaRLoxAxH2Gdw5xgHgYuoaBLLgsGokt0Ci6OHqRLLv8eoEvozAAHH2Gdy4zAPStYdSmB/hqZciOB/hrXcx0m9kQNAXUWifAtGpkx0rk+APfxhdJ1BtHgicf4w/nDLoA+0QcAdRrow/9yFbuqS7kgAC45N3UF6AsAcweDwwzi8fnD+MOaBgCJdi45RwJ1FiaLRA4uOUcEdQwmi0QQLjlHBnUC+MP5w5wugD7QBwB1Ey6APtEHAHULLsYG0QcBmmcAiXadw5pnAIl2Bg4Hv6pLMcC5wADzqy6hpksuixaoS4XSdAejxo+JFsiPLsYG0QcAB8Mu/zZ2TS7HBnZNAQDoBgAujwZ2TcOcYB4GLoA+0AcAdAPp2wCaPwCJdnQD6dEAaOcPH4A+cUMAdAPpwwBoK1gfLoA+0QcAdSO7qku9IAAuizeF9nQOaCtYB+jd/nIN6DD/cgiDwwxNdeXrA+hk/+geBTHtMf9ormUHa98YAesmgH8rZHZHJoB/K8h3QFVXU4n+weYCAe4mxLTeB4zACfB0Ei6DPlBNAHUF6PIE6wboUwDrAfhbX11zE2iuZQcmxkcrZC7/BixNmlMAiXZHg/9AcqOBxZ4Jgf3Q5nKXLv8GUE0ugz5QTQF0iC6APtAHAHQOLsYG0AcAzY8BmlMAiXYHH2Gdw1WJ5YPsFGAGiXb+6Fn+cgPpXgHoH/5zA+lbAYl+/LuqS7kgAC6DPwB0CIPDDOL16UQBiV76LoA+0AcAdQsuxgbQBwGaZwCJduisBC6DPqhLAHUQocaPixbIjy6jpksuiRaoS6HGj4sWyI8mK0QOJhtUEHMD6f8Ag+DwiUb4iVb2mj4ZGT47VvZ2A+npAHIIO0b4dgPp3wCLdv5oK1gHi0b4i1b2o8aPiRbIj4te+i6JRwguiVcKJotECiaLVAyJRvSJVvImi0QOJotUEIlG8IlW7i6JRwQuiVcGuRAAg37uAHUIOU7wcwOLTvCFyXRjiU7snPpoABBRDmgwTf928v929JpJAIl2g8QMi07svjBNLosE99hxA7j/fy6JBIPGAuLu/3bsDmgwTf929v92+JpOAIl2g8QKnYtG7AFG9INW8gABRviDVvYAKUbwg17uAOuIi176i3b+Lok3i378mgYAiXYuiUcCLv8GKk0u/wZUTQdhyfjDB2HJ+cPoMv3IBAAAV+o5ABk+6CX9yAoAAFbqLQIZPiaKRQ08ZHYILGQ8Y3YCsGMw5Ms="
+    },
+    {
+     "offset": 476621,
+     "xor": "RqwAx0ag///HRqL//8dGpP//x0am//+cYAYugD7QBwB1OMR2DiaKRA08ZHY3PMh3KcR2+OiH/HIcLotHCC6LVwomK0QKJhtUDIlGqIlWqsZGrAHrDy7/Bi5Nx0b8AADHRv4AAAdhncuAfqwCdAuAfqwBdAbqrCWwNctVieWD7GCcYB4GxXYGFgeNfqC5IAD886VoK1gfi14ANotHqIlG8DaLR6qJRvKc+jHJMduaRACJdnUBQUOD+yBy8oF+Aoc1dQiD+QRzA+mmAIP5AnMD6Z4A6K8AiUb06KkAiUb2nYtG9IhGoKE2B4lGysdGyAAAJfg/0eCJRsyJRtDHRs4AAOidAB7FdgYWB41+oLkgAPOlH4tG9ohGoMZGqACLRvCLVvIBRrgRVroBRrwRVr4BRsARVsLoaQCc+ote9It29onw/sAuiIfSB4nY/sAuiITSB4t+AIF+Aoc1dQo2iV2kNol1pusINoldoDaJdaKd6w6di14ANsZHrAIu/wYuTQcfYZ3JyzHAikajUIpGolCa8DQZPoPEBDDkicPGh/7XAcP/dg7/dgz/dgoWjUagUJqsJbA1g8QKww=="
+    },
+    {
+     "offset": 477065,
+     "xor": "/4sag/sgcw7Gh/7XAIB+rAJ1A+joAIPGAoP+qHLjgH6sAXUb5Ygkf4DMAYnCi0agi16i6BcAi0aki16m6A4AYZ2AfqwAdQXqAAQZPsuD+CBzGYP7IHMUgMwHgM8H54CJ0OeIidjngInQ54jDVYnlnPpgi14Gg/sgcyIxwC6Kh9IHLsaH0gcAhcB0EUiJxi7GhNIHAFAO6BEAg8QC/3YGDugHAIPEAmGdXctVieVWi3YG6j06GT6g1gToFQBeX+oVNhk+ikb9otYE6AUA6rE2GT6cYDDkicMxwC6Kh9IHLsaH0gcAhcB0E0iJxi7GhNIHAFOJ8+gHAFvoAwBhncNgid5TDuik/4PEAonwgMwD54AxwOeM54LnhGHD"
+    },
+    {
+     "offset": 477348,
+     "xor": "j/rL"
+    },
+    {
+     "offset": 477352,
+     "xor": "KvrL"
+    },
+    {
+     "offset": 477356,
+     "xor": "WvnLBg4Hv1BNMcC5EwDzqwfDYOjJ+XMn6JL5ciKJ+NHoicPB6wMkB4jBsAHS4C6Eh1ZNdQouCIdWTS7/BlJNYfjDsmT28obgiOKAwjCA+jB1ArIgLogV1AoFMDCA+iB1B4D8MHUCtCCG4C6JRQHDnGAGLoA+dk0AdTtgLqFUTb+jB+i9/y6hUk2/pwfos/9hzY8GICAgSU5JVElBTElaSU5HIEhQRiAgIDAvICAwICAgIADrG82PBiAgIElOSVRJQUxJWklORyBIUEYgICAgAAdhncM="
+    },
+    {
+     "offset": 477602,
+     "xor": "kJA="
+    }
+   ]
+  },
+  {
+   "id": "input_thru",
+   "name": "Input Thru + PLAY / STOP on RECORD",
+   "desc": "Input Thru, and PLAY / STOP on the RECORD page",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 2,
+   "requires": [
+    "ram_init"
+   ],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 1957,
+     "xor": "IYYwvL2n"
+    },
+    {
+     "offset": 219888,
+     "xor": "nPqLfgyLXgjqdgQZPpCQkA=="
+    },
+    {
+     "offset": 221286,
+     "xor": "XXuyO52WXQqyG52Q"
+    },
+    {
+     "offset": 228303,
+     "xor": "yv8eJPcTVJI="
+    },
+    {
+     "offset": 255488,
+     "xor": "YX4MJGuY"
+    },
+    {
+     "offset": 255900,
+     "xor": "wpYCyw=="
+    },
+    {
+     "offset": 296834,
+     "xor": "9KYrDPhJ"
+    },
+    {
+     "offset": 297465,
+     "xor": "CqzqkIs="
+    },
+    {
+     "offset": 297676,
+     "xor": "9OEpDPhJ"
+    },
+    {
+     "offset": 297694,
+     "xor": "9MgrDPhJ"
+    },
+    {
+     "offset": 299559,
+     "xor": "CuLpzCM="
+    },
+    {
+     "offset": 299713,
+     "xor": "gB5pVIYAnnizwhNUlChvkyqiUH8="
+    },
+    {
+     "offset": 299948,
+     "xor": "CA=="
+    },
+    {
+     "offset": 299965,
+     "xor": "CA=="
+    },
+    {
+     "offset": 299987,
+     "xor": "CAAAAAAAAAAI"
+    },
+    {
+     "offset": 300550,
+     "xor": "DAAAAADJ8ydnZWdDKeSHWQAAAAAAAAkqUNUW"
+    },
+    {
+     "offset": 300654,
+     "xor": "rzrUQAIEbnw2SYVJnU+dR2mMa0kZYxsAAAAAAAAb3mw="
+    },
+    {
+     "offset": 484672,
+     "xor": "UIA+dGQAdQ+BPnCBKDl0B1CaKDkZPlj/HnCBg8QCyx5oK1gfLoA+TAMAdBTovQCaGLAZPi7HBkwDAACw++gNAJruORk+6BYA6v2lGT4gBv7XIAYO2CAGG9ggBh3Yw7AECAb+1wgGDtgIBhvYCAYd2MMeaCtYHy6APkoDAXVdgD7O1wB0VoA+zNcAdU+hRosJwHQKg/gDdUOaFq8ZPoM+WIsAdDdgBppCshk+6D4Auj/A7AwE7rAC6EYAujrAsFXuuj/A7CT77uiU/y7HBkwDAQDorAAHYeptqRk+DugHALD76Gn/H8se6lSpGT66P8DsDAjuMcDniDHJ5IiogOD6w7oxwO5qB2gAgJpeAxk+g8QEuP8AujLA78MugD5MAwF1Bejc/+sTagdoAPCaXgMZPoPEBLj/A+jb/+pFsRk+u29F6wO7T0noCQDqcgWwNQ=="
+    },
+    {
+     "offset": 485007,
+     "xor": "AQDLnGAeBmgrWB8ugD5MAwF1GS6APk0DAHQOmkKyGT7oev8uxgZNAwDoBQAHH2Gdw5o4Bxk+LqNOA8OcYB4G6GQALoM+TAMBdT6aOAcZPi4rBk4Dg/hkci+6McCwAu66NMDtLQCAPYAAch09AAFzGGgrWB+a1rAZPmoAmnixGT6DxAIu/gZNAwcfYZ27DDEOaOsBaM1CagBodj/Ly5z6mjQGGT6dy2jnDx+BPiwxGT51DaEqMT20u3QVPU6pdBCBPiwxVHZ1QYE+KjFxAHU5aHUiH82fAAAAAAAAAADOmHsmYJh7JhGXeybNiGjnDx8IwHUHxwaQMSKWwzHAo5Yxo5gxo5wxo54xwx5oK1gfgz5WiwJ0BepCqRk+LqBKAy6iSwMOaO4CmiQHGT6DxATNlrQAswJUds2WugC3AlR2H8suoEsDLqJKAy7GBu0CAeo2qBk+McAuhgbtAgjAdAHL6jKmGT4xwOsCsAEuoksD6wAOaBEDmmIGGT6DxAS+QwMugD5LAwB0A75HA7mRGrsFALRQjMrNkLmRGrAXzbDLAAEAAAAAA5cCVHYGjwJUdhWXAlR2Mr8CVHY0cQBUdgAAAAAAAiIMAuA6SU5QVVQgVEhSVQAHKxpJbnB1dCB0aHJ1OgAaAgFCQUNLABoFAURPIElUAABPRkYAT04="
+    }
+   ]
+  },
+  {
+   "id": "format",
+   "name": "FORMAT \u2014 keeps disk geometry",
+   "desc": "FORMAT keeps the disk geometry",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 1,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 131159,
+     "xor": "Sm83KG5dAQ=="
+    },
+    {
+     "offset": 485808,
+     "xor": "nGAGMcCOwCaBPkQCqql1TiaDPkYCAHVGuwEAzZFyPzwCdTtoAPAHJoE+oqAAAnUKJoA+AALwdSbrCSaBPqKgAAh1G7sRAM2RciUI23Uf/LsVAM2RchkHYZ3q3VabGgdhnaBvN7MYzZHqrlabGrABB4nliUYOYZ3q81abGg=="
+    }
+   ]
+  },
+  {
+   "id": "double_stop",
+   "name": "Double STOP \u2014 silence all voices",
+   "desc": "Press STOP twice to silence all voices",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 1,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 16212,
+     "xor": "a8NGk56RkA=="
+    },
+    {
+     "offset": 485936,
+     "xor": "gftKAXQMgcNGMGhbP+pcPwAAHlBo5w8fgz6WCwB0LKGKC1AuKwZ8AC6PBnwAPfQBcxMugD5+AAB0Cy7GBn4AAOgMAOsGLsYGfgABWB/rt5xgHgZoK1gfMfac+oC8/tcAdQ6J8LvV1VaaAjoZPoPEAp1Gg/4gcuIHH2GdwwAAAAA="
+    }
+   ]
+  },
+  {
+   "id": "delay670",
+   "name": "EB16 Delay \u2014 stereo time up to 670 ms",
+   "desc": "EB16 delay time up to 670 ms",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 0,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 344214,
+     "xor": "0QM="
+    },
+    {
+     "offset": 382430,
+     "xor": "0QM="
+    },
+    {
+     "offset": 382598,
+     "xor": "0QM="
+    },
+    {
+     "offset": 382724,
+     "xor": "0QM="
+    }
+   ]
+  },
+  {
+   "id": "step_move",
+   "name": "STEP \u2014 Move Event (SHIFT + F5)",
+   "desc": "STEP page: Move Event (SHIFT + F5)",
+   "group": "base",
+   "source": "vubeatz",
+   "hidden": false,
+   "weight": 1,
+   "requires": [],
+   "kind": "xor",
+   "patches": [
+    {
+     "offset": 186536,
+     "xor": "V48Zr3fV1NnEkA=="
+    },
+    {
+     "offset": 187474,
+     "xor": "J4Jaq+n/67Zb"
+    },
+    {
+     "offset": 193503,
+     "xor": "ahhmsnbkkVs="
+    },
+    {
+     "offset": 486064,
+     "xor": "zY8ZBAFFRElUAM2PGQUBTU9WRQDLzZdaAJ9veybNmHgAMgCrdsuAPmYZAHUF6jeMeybENiAZjMAJ8HUD6bUALok2HAMujAYeAyaLBCaKVAKD4g8uoyADLokWIgMuoyQDLokWJgPNvi6jKAMuiRYqAy6jLAMuiRYuA82kzZbAAPUAq3bNlnIAn297Js2WeAAAAqt2zZaEAJ9veybNluQAP3B7Js2W6gCfb3smzZaKAL8Aq3bNlpAAyQCrdrAC6xMuoDIDLAFyLesJLqAyA0A8A3MiLqIyA5jB4AOJwy6LtwQDLouXBgMuip8IAzD/jMm/eQHNfsvNjxwDTW92ZSBFdmVudADNjwVgFFRpbWU9AM2PBU4eTW92ZSB0bzoAzY8ZBAJDTE9TRQDNjxkFAURPIElUAC6hKAMuixYqA7l+FOgoAC6hLAMuixYuA7l+HugZAC6gMgOYweADicMuio8JAy6KhwoDtR7NsMsOaHgBaNwYaHsmaC0Zy8No5w8HJo4GCkMuix4sAyahGgA5w3IDicNLweMCgcMAFSaKTwMmi0cEJisH9vEuixYuAzjCcgSIwv7KOM5yBIjO/s6I0PbhAPCA1AAx0iYDByYSVwImix4cACaLDh4Ag+sBg9kAOcpyCncEOdh2BInYicouoyQDLokWJgPNvi6jLAMuiRYuA8v8LqEkAy6LFiYDLjsGIAN1DC47FiIDdQXqn297Ji7ENhwDuQEAJoB8BPB1FSaLRAWDwA9y48HoA0CJwYH5AAR31y6JDjADHgYfaAB6BzH/6H4AHzH/6JUALos+MANPdAbB5wPohwAuxDYcA814LqEkAy6LFiYDswrNhzHAomYZozwZoz4Zo1gZo1oZ6DMAmtx1eyac6CoAnXP0LosOMANRzYJZ4voeaAB6HzH2LosOMAPoHAAfzYWjVBmJFlYZ6Vf/DmjPAmjcGGh7JmhgfMvDpaWlpQn2dQeM2IDEEI7YCf91B4zAgMQQjsDi5MMuoSQDJokFJopFAiTwLgoGJgMmiEUCwywD5wMBfhMALgMgAAGWDQAvA2MAAKgNAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+    }
+   ]
+  },
+  {
+   "id": "overdub_fix",
+   "name": "REGIONS overdub fix",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 2,
+   "requires": [
+    "regions"
+   ],
+   "kind": "set",
+   "desc": "Overdubbing a REGION no longer deletes same-tick notes of other regions (hooks the note pairing loop)",
+   "patches": [
+    {
+     "offset": 25791,
+     "old": "OkUEdfI=",
+     "new": "6iAkm3Q="
+    },
+    {
+     "offset": 486864,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "OkUEdSyKXQOA4z8643UiUCaKZAeA/PBzCIplB4D88HIJJopkBzplB3UGWOrOZAAAWOq2ZA=="
+    },
+    {
+     "offset": 486916,
+     "old": "AAA=",
+     "new": "AAA="
+    }
+   ]
+  },
+  {
+   "id": "zone_chop",
+   "name": "Zone chop",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 2,
+   "requires": [],
+   "excludes": [
+    "regions"
+   ],
+   "kind": "set",
+   "desc": "TRIM > ZONE, press F3 again: chop screen with the waveform. F3 cycles 16 / 8 / 4 / LAZY, F4 UNDO, F5 APPLY makes the sounds and a drum program. 16 LEVELS stays free.",
+   "patches": [
+    {
+     "offset": 2587,
+     "old": "jgYKQ4s+VEg=",
+     "new": "mmYC4HSQkJA="
+    },
+    {
+     "offset": 371356,
+     "old": "OM0ZPg==",
+     "new": "8wLgdA=="
+    },
+    {
+     "offset": 478976,
+     "old": "AA==",
+     "new": "AQ=="
+    },
+    {
+     "offset": 478981,
+     "old": "AAAAAAAAAAAAAAAAAAA=",
+     "new": "AqUF4HQD9wTgdATcBOA="
+    },
+    {
+     "offset": 478995,
+     "old": "AA==",
+     "new": "dA=="
+    },
+    {
+     "offset": 478996,
+     "old": "AAAAAAAAAAAA",
+     "new": "BQYF4HQGjwXg"
+    },
+    {
+     "offset": 479005,
+     "old": "AAA=",
+     "new": "dAc="
+    },
+    {
+     "offset": 479007,
+     "old": "AAAAAAAAAAAAAAAAAAA=",
+     "new": "gAXgdBWABeB0Mk8G4HQ="
+    },
+    {
+     "offset": 479021,
+     "old": "AA==",
+     "new": "Mw=="
+    },
+    {
+     "offset": 479022,
+     "old": "AAAAAA==",
+     "new": "3QXgdA=="
+    },
+    {
+     "offset": 479048,
+     "old": "AAA=",
+     "new": "//8="
+    },
+    {
+     "offset": 479169,
+     "old": "AA==",
+     "new": "EA=="
+    },
+    {
+     "offset": 479179,
+     "old": "AAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "9+OJw4nQMdK56AP38ZP38Q=="
+    },
+    {
+     "offset": 479195,
+     "old": "AA==",
+     "new": "iQ=="
+    },
+    {
+     "offset": 479196,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "2sMmi0UuJotVMCaLXTgJ23QeOdo="
+    },
+    {
+     "offset": 479216,
+     "old": "AA==",
+     "new": "cw=="
+    },
+    {
+     "offset": 479217,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "Gvfzida56AP34QnSdQ1QifD34ffzWQ=="
+    },
+    {
+     "offset": 479239,
+     "old": "AA==",
+     "new": "AQ=="
+    },
+    {
+     "offset": 479240,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "yHIBw7j//8MeUMQ+wtfoxf8uo0gBieM2iwcmi1046KL/Jg=="
+    },
+    {
+     "offset": 479274,
+     "old": "AA==",
+     "new": "iw=="
+    },
+    {
+     "offset": 479275,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "TS4mi3UwKcEZ1nIqan9WUVJQBlceuOcPjtihigsfieM2K0cOLqNGAZosPRk+g8QOLg=="
+    },
+    {
+     "offset": 479324,
+     "old": "AA==",
+     "new": "xg=="
+    },
+    {
+     "offset": 479325,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "BkEBAYPEAh/DnC6APkABAXV6CMl0dlChigsuKwY="
+    },
+    {
+     "offset": 479354,
+     "old": "AA==",
+     "new": "Sg=="
+    },
+    {
+     "offset": 479355,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "AT0sAVh3Z1BTVi6APkEBAXVKoYoLLisGRgEx2y6KHkIBLjsGSAFzOoD7EHM1CA=="
+    },
+    {
+     "offset": 479401,
+     "old": "AA==",
+     "new": "2w=="
+    },
+    {
+     "offset": 479402,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "dBOJ3k7R5i6LtFYBUCnwg/gZWHIeid7R5i6JhFYB/sMuiB5CAS7GBkQBAesGLsYG"
+    },
+    {
+     "offset": 479450,
+     "old": "AA==",
+     "new": "Qw=="
+    },
+    {
+     "offset": 479451,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "AQFeW1idg8QE6hoKAACdjgYKQ4s+VEjLYB4GuCtYjti4Gtc7BsLXdQqM2DsGxNcPhKU="
+    },
+    {
+     "offset": 479502,
+     "old": "AA==",
+     "new": "vg=="
+    },
+    {
+     "offset": 479503,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "co6/dgG5JACLBC6JBYPGAoPHAuLzodzXLokFHpru"
+    },
+    {
+     "offset": 479533,
+     "old": "AA==",
+     "new": "OQ=="
+    },
+    {
+     "offset": 479534,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "GT4fLsYGQQEALsYGQgEALsYGQwEAoNzXLsYGwA=="
+    },
+    {
+     "offset": 479562,
+     "old": "AA==",
+     "new": "AQ=="
+    },
+    {
+     "offset": 479564,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "LscGwQEQADwQdCguxgbAAQE="
+    },
+    {
+     "offset": 479581,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 479582,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "xwbBAQgAPAh0Fy7GBsABAi7HBsEBBAA8BHQGLsYGwAEDMMAugD7AAQN1ArABLqJAAR645w+O2KGKCx8uo0oBHmjwdGoAmiQHGT6DxAQf6MIABx9hywcfYeo4zRk+xD7C1w=="
+    },
+    {
+     "offset": 479679,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 479680,
+     "old": "AAAAAAAA",
+     "new": "iw7BASaL"
+    },
+    {
+     "offset": 479686,
+     "old": "AA==",
+     "new": "RQ=="
+    },
+    {
+     "offset": 479687,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "MDHS9/Euo8MBJotFLvfxLqPFAS6JFscBLscGyQEAADHAMdKjco6jdI67do6JB4lXAi6LDsEBg8MELgMGxQEuExY="
+    },
+    {
+     "offset": 479752,
+     "old": "AA==",
+     "new": "ww=="
+    },
+    {
+     "offset": 479753,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "AVAuockBLgMGxwEuOwbBAXISLisGwQEuo8kBWIPAAYPSAOsFLqPJAViJB4lXAuLELqHBAaLc18YG3dcBw8Q+wtc="
+    },
+    {
+     "offset": 479818,
+     "old": "AA==",
+     "new": "MQ=="
+    },
+    {
+     "offset": 479819,
+     "old": "AAA=",
+     "new": "wKM="
+    },
+    {
+     "offset": 479821,
+     "old": "AA==",
+     "new": "cg=="
+    },
+    {
+     "offset": 479822,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "jqN0jqN2jqN4jiaLRS6jeo4mi0Uwo3yOxgbc1wHGBt3XAcMeuOc="
+    },
+    {
+     "offset": 479860,
+     "old": "AA==",
+     "new": "Dw=="
+    },
+    {
+     "offset": 479861,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "jtjGBmMAAR/DHpruORk+Hy7GBkEB"
+    },
+    {
+     "offset": 479883,
+     "old": "AA==",
+     "new": "ww=="
+    },
+    {
+     "offset": 479884,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "6O//LsYGQgEALsYGQwEALoA+wAEDdB0uxgZAAQAuih7AATD/"
+    },
+    {
+     "offset": 479920,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 479921,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "iofZBDDkLqPBAej9/uux6IP/HrjnD47YoYoLHw=="
+    },
+    {
+     "offset": 479949,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 479950,
+     "old": "AAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "o0oBLsYGQAEB65gQCARgHg=="
+    },
+    {
+     "offset": 479966,
+     "old": "AA==",
+     "new": "Bg=="
+    },
+    {
+     "offset": 479967,
+     "old": "AAAAAAA=",
+     "new": "uCtYjtg="
+    },
+    {
+     "offset": 479972,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 479973,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "oMAB/sAkAy6iwAHomf8HH2HLYB4GuCs="
+    },
+    {
+     "offset": 479996,
+     "old": "AA==",
+     "new": "WA=="
+    },
+    {
+     "offset": 479997,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "jtjoiv8HH2HLYB4GuCtYjtgugD7AAQN1PS6gQgEIwHQz/sguokIBMdsxwC6KHkIBCNs="
+    },
+    {
+     "offset": 480047,
+     "old": "AA==",
+     "new": "dA=="
+    },
+    {
+     "offset": 480048,
+     "old": "AAAAAAAAAAAAAAAA",
+     "new": "CEvR4y6Lh1YBUB6a"
+    },
+    {
+     "offset": 480060,
+     "old": "AA==",
+     "new": "7g=="
+    },
+    {
+     "offset": 480061,
+     "old": "AAAAAAAAAA==",
+     "new": "ORk+H1guxg=="
+    },
+    {
+     "offset": 480068,
+     "old": "AA==",
+     "new": "Bg=="
+    },
+    {
+     "offset": 480069,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "QQEA6MX8LsYGRAEB6wAHH2HL6CT/LsYGQAEALoA+wAEDdQs="
+    },
+    {
+     "offset": 480104,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 480105,
+     "old": "AAAAAA==",
+     "new": "gD5CAQ=="
+    },
+    {
+     "offset": 480110,
+     "old": "AA==",
+     "new": "dA=="
+    },
+    {
+     "offset": 480111,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "A+jGAcYG3dcBHprc8Rk+H8NgHga4K1iO2OjM/wcfYctgHga4K1g="
+    },
+    {
+     "offset": 480149,
+     "old": "AA==",
+     "new": "jg=="
+    },
+    {
+     "offset": 480150,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "2Oi9/x6aKvIZPh8HH2HLYB4GuCtYjtg="
+    },
+    {
+     "offset": 480173,
+     "old": "AA==",
+     "new": "6A=="
+    },
+    {
+     "offset": 480174,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "zv4uxgZAAQC+dgG/co65JAAuiwSJBYPGAoPHAuLzLos="
+    },
+    {
+     "offset": 480206,
+     "old": "AA==",
+     "new": "BA=="
+    },
+    {
+     "offset": 480207,
+     "old": "AAAAAAAAAAAAAAAAAAA=",
+     "new": "o9zXHprc8Rk+HwcfYcs="
+    },
+    {
+     "offset": 480221,
+     "old": "AA==",
+     "new": "YA=="
+    },
+    {
+     "offset": 480222,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "Hga4K1iO2B645w+O2KGKCx8uow=="
+    },
+    {
+     "offset": 480241,
+     "old": "AA==",
+     "new": "Sg=="
+    },
+    {
+     "offset": 480242,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "AS6APkMBAXUuLsYGQwEALoA+QQEBdCAxwOgC/C6APkEBAXUTLsYGQgEBLscGVgEAAC7GBkQBAS6APkQBAXUaLg=="
+    },
+    {
+     "offset": 480306,
+     "old": "AA==",
+     "new": "xg=="
+    },
+    {
+     "offset": 480307,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "BkQBAC6APkIBAHQJ6PcAoNzXot3X6Cb+"
+    },
+    {
+     "offset": 480331,
+     "old": "AA==",
+     "new": "Bw=="
+    },
+    {
+     "offset": 480332,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "H2HLYB4GuCtYjtgemkD0GT4fHprM8hk+H82P"
+    },
+    {
+     "offset": 480359,
+     "old": "AA==",
+     "new": "FA=="
+    },
+    {
+     "offset": 480362,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "+Amg3Ncw5LEK9vEFMDAuo6IG"
+    },
+    {
+     "offset": 480380,
+     "old": "AAA=",
+     "new": "LqA="
+    },
+    {
+     "offset": 480382,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "QgEw5PbxBTAwLqOsBs2PBQABWk9ORSBDSE9QIA=="
+    },
+    {
+     "offset": 480410,
+     "old": "AAA=",
+     "new": "ICA="
+    },
+    {
+     "offset": 480412,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "Wm9uZXM6MDAgICBUYXBzOjAwICA="
+    },
+    {
+     "offset": 480432,
+     "old": "AAA=",
+     "new": "ICA="
+    },
+    {
+     "offset": 480434,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "ICAgICAAzY8ZAQFCQUNLAC6APsABAw=="
+    },
+    {
+     "offset": 480456,
+     "old": "AAA=",
+     "new": "dDc="
+    },
+    {
+     "offset": 480458,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "zY8ZAgFFVkVOAM2PGQQBIAAugD7AAQF0DHcTzY8ZAwI="
+    },
+    {
+     "offset": 480490,
+     "old": "AAA=",
+     "new": "MTY="
+    },
+    {
+     "offset": 480493,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "6zHNjxkDAjgA6yjNjxkDAjQ="
+    },
+    {
+     "offset": 480511,
+     "old": "AAA=",
+     "new": "6x8="
+    },
+    {
+     "offset": 480513,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "zY8ZAgFDTEVBTgDNjxkDAkxBWg=="
+    },
+    {
+     "offset": 480532,
+     "old": "AA==",
+     "new": "WQ=="
+    },
+    {
+     "offset": 480534,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "zY8ZBAFVTkRPAM2PGQUBQVBQTFk="
+    },
+    {
+     "offset": 480555,
+     "old": "AA==",
+     "new": "zQ=="
+    },
+    {
+     "offset": 480556,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "jxkGAURPTkUABx9hy8Q+wtcmi0Uu"
+    },
+    {
+     "offset": 480577,
+     "old": "AAA=",
+     "new": "LqM="
+    },
+    {
+     "offset": 480579,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "TAEmi0UwLqNOASaLRTguo1ABMcA="
+    },
+    {
+     "offset": 480599,
+     "old": "AAA=",
+     "new": "o3I="
+    },
+    {
+     "offset": 480601,
+     "old": "AAAAAAA=",
+     "new": "jqN0ji4="
+    },
+    {
+     "offset": 480606,
+     "old": "AAA=",
+     "new": "o1I="
+    },
+    {
+     "offset": 480608,
+     "old": "AAAAAAA=",
+     "new": "AS6jVAE="
+    },
+    {
+     "offset": 480613,
+     "old": "AA==",
+     "new": "uw=="
+    },
+    {
+     "offset": 480614,
+     "old": "AA==",
+     "new": "dg=="
+    },
+    {
+     "offset": 480615,
+     "old": "AAA=",
+     "new": "jjE="
+    },
+    {
+     "offset": 480617,
+     "old": "AAAAAAA=",
+     "new": "9jHtLqA="
+    },
+    {
+     "offset": 480622,
+     "old": "AA==",
+     "new": "Qg=="
+    },
+    {
+     "offset": 480623,
+     "old": "AAA=",
+     "new": "ATA="
+    },
+    {
+     "offset": 480625,
+     "old": "AA==",
+     "new": "5A=="
+    },
+    {
+     "offset": 480626,
+     "old": "AAA=",
+     "new": "OcY="
+    },
+    {
+     "offset": 480628,
+     "old": "AA==",
+     "new": "cw=="
+    },
+    {
+     "offset": 480629,
+     "old": "AA==",
+     "new": "TA=="
+    },
+    {
+     "offset": 480630,
+     "old": "AA==",
+     "new": "iQ=="
+    },
+    {
+     "offset": 480631,
+     "old": "AAAAAAAA",
+     "new": "99HnLouF"
+    },
+    {
+     "offset": 480637,
+     "old": "AA==",
+     "new": "Vg=="
+    },
+    {
+     "offset": 480638,
+     "old": "AAAAAAAAAAAAAAAA",
+     "new": "AVMuix5QAehD+lsu"
+    },
+    {
+     "offset": 480650,
+     "old": "AA==",
+     "new": "Ow=="
+    },
+    {
+     "offset": 480651,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "Fk4BdzJyBy47BkwBcykJ7XQQLjsWVAFyG3cHLjsGUgF2EokHiVcCLqNSAS6JFlQBg8MERUbrqgntdQ3HBwAAx0cCAACDwwRFLqFMAYkHLqFOAYlHAonootzXw2YC8wI="
+    }
+   ]
+  },
+  {
+   "id": "mute8",
+   "name": "Mute groups 1-8",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 0,
+   "requires": [
+    "mute"
+   ],
+   "kind": "set",
+   "desc": "MODE field accepts MUTE 5-8 as well (adds to Mute groups 1-4)",
+   "patches": [
+    {
+     "offset": 372804,
+     "old": "Bw==",
+     "new": "Cw=="
+    },
+    {
+     "offset": 488806,
+     "old": "gPsEchg=",
+     "new": "6gAGkHc="
+    },
+    {
+     "offset": 488903,
+     "old": "Bw==",
+     "new": "Cw=="
+    },
+    {
+     "offset": 491264,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "gPsEchiA+wt3EYDrBNHjLouXKQa5kHe7BADLMdvB4wKLl/4ri48ALMs5BkAGRwZOBlUGXAZjBmoGTVVURSAxAE1VVEUgMgBNVVRFIDMATVVURSA0AE1VVEUgNQBNVVRFIDYATVVURSA3AE1VVEUgOA=="
+    },
+    {
+     "offset": 482360,
+     "old": "JoA/Bw==",
+     "new": "JoA/Cw==",
+     "when": [
+      "regions"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sampling",
+   "name": "Sampling Mode (SP1200 / S900)",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 2,
+   "requires": [],
+   "kind": "set",
+   "desc": "SAMPLE page > Mode field > WINDOW: SP1200 / S900 presets or a custom 8000-44100 Hz rate for new recordings. Shows the processing box, then KEEP / RETRY at once.",
+   "patches": [
+    {
+     "offset": 297504,
+     "old": "kA7oBw4=",
+     "new": "mpgBYnc="
+    },
+    {
+     "offset": 297687,
+     "old": "kA7o/g8=",
+     "new": "mgAAYnc="
+    },
+    {
+     "offset": 488992,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "gz5WiwF0BepKuRk+LqAwBy6iMQcuoTYHLqM4BzHALqIyBy6iMwcOaNsEmiQHGT6DxATNlrQAxABid82WugC/AGJ3zZZUAGIBYnfNoCkBYnfLDmgDBZpiBhk+g8QEMdsuih4xB8HjA423SgWMyrlwFrQGswXNkC6hOAcugD4zBwB0BC6hOge5cCPoNAfNkLlwFrAlLoA+MgcAdAS1I7AfzbDLLsYGMgcA6w4ugD4xBwB0Bi7GBjIHAS7GBjMHAMu6AQDrA7r//y7GBjMHAC6APjIHAHUbLqAxBwDQPAJ3SS6iMQcx24jD0eMui4diBes0CcB1AUCD+GR2A7hkAPfqumQA9+ouAwY4B4PSAAnSeBF1Cj1AH3IKPUSsdgi4RKzrA7hAHy6jOAfLLoA+MgcAdPcugD4zBwVz74nDLqE6By6APjMHAHUCMcC6CgD34gHYg9IAdAO4//8uozoHLv4GMwfLLoA+MwcAdL4uxgYzBwAuoToHMdLrlC6gMQcuojAHLqE4By6APjAHAHUDuESsLqM2B+pYuRk+mpy2GT4ugD4wBwB1A+kMAWAGLqAwBy6iNAcuoTYHPUAfcwO4QB89RKx2A7hErC6jPAe7RKwpwy6JHj4H6N4AaBk+ahJoGT5oCuKaaCWwNYPECM2PAS7HBkIHAgDEHkqLjMAJ2HUD6bEAJotHLiaLVzAuo1AHLokWUgeJwQnRdQPpkAAmi08OLokOVAcmi08QLokOVgc5ynIYdwcuOwZUB3YPLqFUB4nKLqNQBy6JFlIHvgEAJoB/JQF1F9Hg0dJyES47FlYHdwpyBy47BlQHdwFGLok2RAcmi0cKJotXDC6jWAcuiRZaB+hpAC6hWAcuixZaBy4DBlAHLhMWUgcu/w5EB3XaLscGQgcBAC7/BkAH6wcuxwZCBwMA6UsFHg4foTwHLUAfMdK76AP384nRa/AMgcZoBb9kB70GAItEDCsE9+n3+wMEiQWDxgKDxwJNdeofwx4OH6FYB6NcB6FaB6NeB6FQB6NgB6FSB6NiB6E+B6NKBzHAo0wHDge/cge5CAD886uhYAeLFmIHicEJ0XR/uRAACdJ1BjnIcwKJwYkOTge7ZgXoagC+kAeLDk4HgD40BwJ0MIsuSgeLFkwHix4+B4s+PAc53XIJKd2LFIPi8OsCAf2JFIPGAuLqiS5KB4kWTAfrDIsE6EcAiQSDxgLi9LtsBegaAKFOBwEGXAeDFl4HACkGYAeDHmIHAOl0/x/DiR5GB8Q+XAeLDk4HvrB9ugAQHmoHH5z6Lv8eRgedH8OZiRZwBzHQKdC63sr34onQPWZWcyKJw/fg0eDR0tHg0dKJ0PfjuKVd9+LR4NHSidgp0D2aOXYDuJo5ixZwBzHQKdCjcgcDBnYH9y5kB4nFidehdAfR4PcuZAcBxRHXoXoH9y5mBynFGdehfAf3LmgHKcUZ1+hzAKN4BwMGfAf3LmoHicWJ16F6B/cuagcBxRHXAcUR16F+B/cubAcpxRnXoYAH9y5uBynFGdfoPACLFn4HiRaAB6N+B4sWegeJFnwHixZ4B4kWegeLFnQHiRZ2B4sWcgeJFnQHg8AEg+D4Pfg/fgO4+D/R4MOBxQAgg9cAgf8AEH0Rgf8A8HwPiejB6A7B5wIJ+MO4/z/DuADAwwE="
+    },
+    {
+     "offset": 490240,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "A5MBYncGeAFidxWTAWJ3GKIAYncZqgBidzJRAGJ3"
+    },
+    {
+     "offset": 490275,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "AiIMAuA6U2FtcGxpbmcgTW9kZQAHRhZQcmVzZXQ6AAcoI1NhbXBsZSBSYXRlOgAHjiNIegAaAgFCQUNLABoFAURPIElUAABPRkYgICAAAFNQMTIwMAAAUzkwMCAgAABErLhlMHXVAkOzEhh3AxuiwytyA6y4GxVJBEGn5SkYBO69cRIsBYasKSjGBAvDDhAeBuixjyZ9BQfI6w0eB2K3FiU6BubMAwwsCPG8viP/BqrRUgpGCZLChiLKB1fW0ghsCkPIbCGcCO7aggedCwLOcSB0CXTfXQbXDMvTkx9TCurjYgUcDp7Z0h44C1PojwRqD3nfLR4kDLDs4QPAEFvlpR0XDQTxWAMfEkLrOB0RDlH18gKFEyzx5xwSD5n5rgLzFBn3sRwbEN79jAJoFgj9lhwsESICjALjF/gClhxFEmcGrgJmGecIsRxoE68K8gLvGtQO5xyVFPwOWAN+HL4UOB3MFVAT4QMTHqUapR0PF60XjwStH4cgLR5eGBYcYgVNIWIm0h66GYwgXQbyIjUskx8lGxIlggecJP4xcSCfHKkp0ghKJr03bCEqHlYuUgr9J249hiLHHxozAwyzKQ9DviN5Ifk36w1tK55IFiVBI/U8DhAqLRhOjyYhJRJCcRLpLnpTKSgcJ1RHGxWpML9Y5Sk0Kb1MEhhqMuVdwyttK1NSXxsrNOdixi3JLRpYDB/rNb9n7S9PMBdeIyOoN2hsOjIAM09ksydiOdxwrTQ="
+    },
+    {
+     "offset": 490838,
+     "old": "AAAAAA==",
+     "new": "RKxErA=="
+    },
+    {
+     "offset": 490856,
+     "old": "AAA=",
+     "new": "sDU="
+    },
+    {
+     "offset": 490976,
+     "old": "AAAAAAAA",
+     "new": "uwgFMdLD"
+    },
+    {
+     "offset": 491040,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "HrgrWI7YmiIMGT645w+O2MYGYwABHwdhyw=="
+    }
+   ]
+  },
+  {
+   "id": "date",
+   "name": "OS date Oct. 11,2026",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 0,
+   "requires": [],
+   "kind": "set",
+   "desc": "Date line on OTHER > VER. and the date stamp of a Copy Operating System file",
+   "patches": [
+    {
+     "offset": 65152,
+     "old": "SnVs",
+     "new": "T2N0"
+    },
+    {
+     "offset": 65158,
+     "old": "NQ==",
+     "new": "MQ=="
+    },
+    {
+     "offset": 65162,
+     "old": "MDTUBwcP",
+     "new": "MjbqBwoL"
+    }
+   ]
+  },
+  {
+   "id": "dark",
+   "name": "Dark mode (inverted LCD)",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 2,
+   "requires": [],
+   "kind": "set",
+   "experimental": true,
+   "desc": "Every LCD pixel byte is inverted inside the screen refresh loops. Touches the refresh path: emulator-tested only",
+   "patches": [
+    {
+     "offset": 109610,
+     "old": "iiC6YADs0OB0A+hu/4rE",
+     "new": "umAA7NDgdAPocP+KAPbQ"
+    },
+    {
+     "offset": 109674,
+     "old": "iiC6AAHs0OB0A+hK/4rE",
+     "new": "ugAB7NDgdAPoTP+KAPbQ"
+    },
+    {
+     "offset": 109757,
+     "old": "iqeiVwqnIl8yp6JmumAA7NDgdAPo0f6KxA==",
+     "new": "umAA7NDgdAPo3f6Kh6JXCociXzKHomb20A=="
+    },
+    {
+     "offset": 109831,
+     "old": "iqeiVwqnIl8yp6JmugAB7NDgdAPoo/6KxA==",
+     "new": "ugAB7NDgdAPor/6Kh6JXCociXzKHomb20A=="
+    }
+   ]
+  }
+ ],
+ "rules": [
+  {
+   "id": "mute_hook",
+   "file": "MPC2KXL.BIN",
+   "offset": 230919,
+   "length": 7,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "XjPkvf7XnA=="
+    },
+    {
+     "when": {
+      "all": [
+       "mute"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "Xu3zJv3XnA=="
+    }
+   ],
+   "default": "AAAAAAAAAA=="
+  },
+  {
+   "id": "all_freq_bound",
+   "file": "MPC2KXL.BIN",
+   "offset": 488528,
+   "length": 1,
+   "host": "param_copy",
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "hpf"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "yA=="
+    }
+   ],
+   "default": "ZA=="
+  },
+  {
+   "id": "lazy_f3_cycle",
+   "file": "MPC2KXL.BIN",
+   "offset": 479216,
+   "length": 1,
+   "host": "regions",
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "lazy"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "dQ=="
+    }
+   ],
+   "default": "6w=="
+  },
+  {
+   "id": "stub_hpf_voice_start",
+   "file": "MPC2KXL.BIN",
+   "offset": 476620,
+   "length": 1,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "hpf"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "xg=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "yw=="
+    }
+   ],
+   "default": "AA=="
+  },
+  {
+   "id": "stub_hpf_finish",
+   "file": "MPC2KXL.BIN",
+   "offset": 477060,
+   "length": 5,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "hpf"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "nPpgvqA="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "6gAEGT4="
+    }
+   ],
+   "default": "AAAAAAA="
+  },
+  {
+   "id": "stub_hpf_scan_api",
+   "file": "MPC2KXL.BIN",
+   "offset": 477347,
+   "length": 1,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "hpf"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "6A=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "yw=="
+    }
+   ],
+   "default": "AA=="
+  },
+  {
+   "id": "stub_hpf_invalidate_api",
+   "file": "MPC2KXL.BIN",
+   "offset": 477351,
+   "length": 1,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "hpf"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "6A=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "yw=="
+    }
+   ],
+   "default": "AA=="
+  },
+  {
+   "id": "stub_hpf_unbind_api",
+   "file": "MPC2KXL.BIN",
+   "offset": 477355,
+   "length": 1,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "hpf"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "6A=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "yw=="
+    }
+   ],
+   "default": "AA=="
+  },
+  {
+   "id": "stub_voice_start",
+   "file": "MPC2KXL.BIN",
+   "offset": 481911,
+   "length": 7,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "iUb8iVb+Lg=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "iUb8iVb+yw=="
+    }
+   ],
+   "default": "AAAAAAAAAA=="
+  },
+  {
+   "id": "stub_lazy_finish_api",
+   "file": "MPC2KXL.BIN",
+   "offset": 484083,
+   "length": 1,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "Lg=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "yw=="
+    }
+   ],
+   "default": "AA=="
+  },
+  {
+   "id": "stub_editor_ui_reset",
+   "file": "MPC2KXL.BIN",
+   "offset": 478965,
+   "length": 11,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "LoA+i0MAdRcugD4="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "+7jnD47Y6lBCAAA="
+    }
+   ],
+   "default": "AAAAAAAAAAAAAAA="
+  },
+  {
+   "id": "stub_sample_free",
+   "file": "MPC2KXL.BIN",
+   "offset": 478385,
+   "length": 64,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "nGAGifAtGpkx0rs+APfz0eCJw5oMAIl2v1A6uRAALjt1XHUMLsdFXAAALsdFXgAAg8ds4ukHYZ0miwQmi1QCyw=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "nGAGifAtGpkx0rs+APfz0eCJw5oMAIl2v1A6uRAALjt1XHUMLsdFXAAALsdFXgAAg8ds4ukHYZ0miwQmi1QCyw=="
+    }
+   ],
+   "default": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+  },
+  {
+   "id": "stub_regions_editor_busy",
+   "file": "MPC2KXL.BIN",
+   "offset": 484090,
+   "length": 3,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "LoA+"
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "OMDL"
+    }
+   ],
+   "default": "AAAA"
+  },
+  {
+   "id": "stub_wave_voice_available",
+   "file": "MPC2KXL.BIN",
+   "offset": 482528,
+   "length": 6,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "LoA+EUEB"
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "gL/+1wDL"
+    }
+   ],
+   "default": "AAAAAAAA"
+  },
+  {
+   "id": "stub_main_prepare",
+   "file": "MPC2KXL.BIN",
+   "offset": 483809,
+   "length": 11,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "YB4GaCtYH8Q23Jg="
+    },
+    {
+     "when": {
+      "all": [
+       "hpf"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "mjoAiXawAKIvD8s="
+    }
+   ],
+   "default": "AAAAAAAAAAAAAAA="
+  },
+  {
+   "id": "stub_thru_suspend_api",
+   "file": "MPC2KXL.BIN",
+   "offset": 485006,
+   "length": 1,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "input_thru"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "6A=="
+    },
+    {
+     "when": {
+      "all": [
+       "runtime"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "yw=="
+    }
+   ],
+   "default": "AA=="
+  },
+  {
+   "id": "stub_mute_trigger",
+   "file": "MPC2KXL.BIN",
+   "offset": 488883,
+   "length": 8,
+   "host": null,
+   "variants": [
+    {
+     "when": {
+      "all": [
+       "mute"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "nFKKRgU6Rv8="
+    },
+    {
+     "when": {
+      "all": [
+       "regions"
+      ],
+      "any": [],
+      "none": []
+     },
+     "xor": "xF72JopHDMs="
+    }
+   ],
+   "default": "AAAAAAAAAAA="
+  }
+ ],
+ "finalize": {
+  "checksum": {
+   "range": [
+    0,
+    491518
+   ],
+   "offset": 491518
+  },
+  "unchanged": [
+   491520,
+   524288
+  ],
+  "forbidden": [
+   [
+    458752,
+    475568
+   ]
+  ]
+ },
+ "meter": {
+  "limit": 13,
+  "maximum": 17,
+  "limit_set": "davey",
+  "sets": {
+   "davey": [
+    "tune",
+    "transpose",
+    "mute",
+    "param_copy",
+    "hpf",
+    "input_thru",
+    "format",
+    "double_stop",
+    "step_move",
+    "zone_chop",
+    "sampling"
+   ],
+   "vubeatz_base_only": [
+    "tune",
+    "transpose",
+    "mute",
+    "param_copy",
+    "regions",
+    "lazy",
+    "hpf",
+    "input_thru",
+    "format",
+    "double_stop",
+    "delay670",
+    "step_move"
+   ],
+   "light": [
+    "tune",
+    "transpose",
+    "param_copy",
+    "format"
+   ]
+  }
+ },
+ "verified": {
+  "double_stop,format,hpf,input_thru,mute,param_copy,ram_init,runtime,sampling,step_move,transpose,tune,u13_pitch,u13_program,zone_chop": "f6c7552d974c62673c5629d84b25c99860ae2590e7f209698707a23bccf8ac87",
+  "format,param_copy,transpose,tune,u13_pitch,u13_program": "9b0057cf4b6b4d3b32835b8e244852f8915d507de18a52eda21212d37f47f29a",
+  "delay670,double_stop,format,hpf,input_thru,lazy,mute,param_copy,ram_init,regions,runtime,step_move,transpose,tune,u13_pitch,u13_program": "fc713e144a701866e168290cb076ecceffc8151ddf89bf9f5ddc0276ccedfb6e",
+  "zone_chop": "2a2d93647d2bb26e7b72736603a667a5d1bd85f01c5f2bb791904e2386877c85",
+  "sampling": "2f5096f1a7a1a20fb9a7350b00c7b576bcabbe57609c2a1380b0d2ef196ee649",
+  "mute,mute8": "bf7a27ccc831702e47d4875a1b7df514d72d5c916e7b4a19548d4d7cf147e9a6",
+  "double_stop,format,hpf,input_thru,mute,mute8,param_copy,ram_init,runtime,sampling,step_move,transpose,tune,u13_pitch,u13_program,zone_chop": "bc612475222d5fa6dde740946a6e95b21ffeeea26cc69bbb78a461a013eb6095",
+  "dark,double_stop,format,hpf,input_thru,mute,param_copy,ram_init,runtime,sampling,step_move,transpose,tune,u13_pitch,u13_program,zone_chop": "73826e1e0df9b166d6b47c11ef9b97518fafed114037d32bb12570a51058c43c"
+ }
+};</script>
+<script>/* DAVEY patcher engine (browser). Same algorithm as engine.py; see that file for the data format. */
+const MPCEngine = (() => {
+  const b64 = s => { const bin = atob(s); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
+  const hex = u8 => Array.from(u8, b => b.toString(16).padStart(2, '0')).join('');
+  // pure-JS SHA-256 fallback: crypto.subtle is missing on non-secure origins (plain http on a LAN host)
+  function sha256js(u8) {
+    const K = new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+    const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
+    const n = u8.length, pad = ((n + 9 + 63) >> 6) << 6, m = new Uint8Array(pad); m.set(u8); m[n] = 0x80;
+    const dv = new DataView(m.buffer); dv.setUint32(pad - 8, Math.floor(n / 0x20000000)); dv.setUint32(pad - 4, (n << 3) >>> 0);
+    const w = new Uint32Array(64), rr = (x, k) => (x >>> k) | (x << (32 - k));
+    for (let o = 0; o < pad; o += 64) {
+      for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+      for (let i = 16; i < 64; i++) { const a = rr(w[i-15],7)^rr(w[i-15],18)^(w[i-15]>>>3), b = rr(w[i-2],17)^rr(w[i-2],19)^(w[i-2]>>>10); w[i] = (w[i-16] + a + w[i-7] + b) >>> 0; }
+      let [a,b,c,d,e,f,g,h] = H;
+      for (let i = 0; i < 64; i++) {
+        const t1 = (h + (rr(e,6)^rr(e,11)^rr(e,25)) + ((e&f)^(~e&g)) + K[i] + w[i]) >>> 0, t2 = ((rr(a,2)^rr(a,13)^rr(a,22)) + ((a&b)^(a&c)^(b&c))) >>> 0;
+        h=g; g=f; f=e; e=(d+t1)>>>0; d=c; c=b; b=a; a=(t1+t2)>>>0;
+      }
+      H[0]+=a; H[1]+=b; H[2]+=c; H[3]+=d; H[4]+=e; H[5]+=f; H[6]+=g; H[7]+=h;
+    }
+    return Array.from(H, v => v.toString(16).padStart(8, '0')).join('');
+  }
+  async function sha256(u8) {
+    if (typeof crypto !== 'undefined' && crypto.subtle) return hex(new Uint8Array(await crypto.subtle.digest('SHA-256', u8)));
+    return sha256js(u8);
+  }
+  const byId = data => Object.fromEntries(data.modules.map(m => [m.id, m]));
+  function closure(data, sel) {
+    const mods = byId(data), out = new Set(), todo = [...sel];
+    while (todo.length) {
+      const x = todo.pop();
+      if (out.has(x)) continue;
+      if (!mods[x]) throw new Error('unknown module ' + x);
+      out.add(x); todo.push(...mods[x].requires);
+    }
+    for (const x of out) for (const e of (mods[x].excludes || []))
+      if (out.has(e)) throw new Error(mods[x].name + ' cannot be combined with ' + mods[e].name);
+    return out;
+  }
+  function dependents(data, id) {            // modules that (directly or not) require id
+    const res = new Set(), mods = data.modules;
+    let grew = true; res.add(id);
+    while (grew) { grew = false; for (const m of mods) if (!res.has(m.id) && m.requires.some(r => res.has(r))) { res.add(m.id); grew = true; } }
+    res.delete(id); return res;
+  }
+  function points(data, S) { const mods = byId(data); let p = 0; for (const x of S) p += mods[x].weight; return p; }
+  const key = S => [...S].sort().join(',');
+  async function build(data, original, selection) {
+    if (original.length !== data.base.size) throw new Error('input is not the original OS 1.20 (size ' + original.length + ')');
+    const inSha = await sha256(original);
+    if (inSha !== data.base.sha256) throw new Error('input is not the exact original OS 1.20 (sha256 ' + inSha + ')');
+    const S = closure(data, selection), d = new Uint8Array(original);
+    let patches = 0, xorPatches = 0, setPatches = 0;
+    for (const m of data.modules) {
+      if (!S.has(m.id) || m.kind !== 'xor') continue;
+      for (const p of m.patches) {
+        const x = b64(p.xor);
+        if (p.offset < 0 || p.offset + x.length > data.finalize.unchanged[0]) throw new Error('module ' + m.id + ': patch outside the OS area');
+        for (let i = 0; i < x.length; i++) d[p.offset + i] ^= x[i]; patches++; xorPatches++;
+      }
+    }
+    for (const r of data.rules) {
+      if (r.host !== null && !S.has(r.host)) continue;
+      let x = b64(r.default);
+      for (const v of r.variants) {
+        const w = v.when;
+        if (w.all.every(a => S.has(a)) && (!w.any.length || w.any.some(a => S.has(a))) && !w.none.some(a => S.has(a))) { x = b64(v.xor); break; }
+      }
+      for (let i = 0; i < r.length && i < x.length; i++) d[r.offset + i] ^= x[i];
+    }
+    for (const m of data.modules) {
+      if (!S.has(m.id) || m.kind !== 'set') continue;
+      for (const p of m.patches) {
+        if ((p.when || []).some(w => !S.has(w)) || (p.unless || []).some(w => S.has(w))) continue;
+        const o = b64(p.old), n = b64(p.new);
+        if (o.length !== n.length || p.offset + n.length > data.finalize.unchanged[0]) throw new Error('module ' + m.id + ': malformed patch at 0x' + p.offset.toString(16));
+        for (let i = 0; i < o.length; i++) if (d[p.offset + i] !== o[i])
+          throw new Error('module ' + m.id + ': unexpected bytes at 0x' + (p.offset + i).toString(16));
+        d.set(n, p.offset); patches++; setPatches++;
+      }
+    }
+    const f = data.finalize, [a, b] = f.checksum.range;
+    let s = 0; for (let i = a; i < b; i += 2) s = (s + d[i] + (d[i + 1] << 8)) & 0xffff;
+    d[f.checksum.offset] = s & 255; d[f.checksum.offset + 1] = s >> 8;
+    const [ua, ub] = f.unchanged;
+    for (let i = ua; i < ub; i++) if (d[i] !== original[i]) throw new Error('boot region changed at 0x' + i.toString(16));
+    for (const [fa, fb] of (f.forbidden || []))   // RAM the OS uses at runtime (program slots 18-24): must stay as in the original
+      for (let i = fa; i < fb; i++) if (d[i] !== original[i]) throw new Error('a module writes into program memory at 0x' + i.toString(16));
+    const outSha = await sha256(d);
+    const ref = (data.verified || {})[key(S)];
+    return { bytes: d, report: { modules: [...S].sort(), points: points(data, S), patches, xorPatches, setPatches, checksum: s, inputSha: inSha, sha256: outSha,
+                                 reference: ref ? (ref === outSha ? 'match' : 'MISMATCH') : 'untested-combination' } };
+  }
+  return { build, closure, dependents, points, sha256, key, sha256js };
+})();
+if (typeof module !== 'undefined') module.exports = MPCEngine;
+</script>
+<script>/* DAVEY intro: tiny WebAudio module. Dark ambient: drone + pads (Aphex side), sine data blips, clicks and
+   noise flickers on a precise grid (Ikeda side), FM bloops through long delay and reverb. 90 BPM, 32 bars (~85 s), seamless. */
+const Chip = (() => {
+  const BPM = 90, STEP = 60 / BPM / 4, BARS = 32, STEPS = BARS * 16;
+  const hz = s => { const m = {C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
+    const k = s.slice(0, -1), o = +s.slice(-1); return 440 * Math.pow(2, (m[k] + (o - 4) * 12 - 9) / 12); };
+  const PROG = ['Dm9','Ebmaj7','Gm','A7b9'];                              // 4 bars each, twice per loop
+  const PAD = { Dm9:['D3','F3','A3','E4'], Ebmaj7:['Eb3','G3','Bb3','D4'], Gm:['G2','Bb2','D3','F3'], A7b9:['A2','C#3','G3','Bb3'] };
+  const SCALE = ['D5','F5','G5','A5','C6','D6','F6','A6'];
+  let ctx, out, dry, verb, dl, dr, noise, timer, step = 0, next = 0, on = true, an, data, seed = 7, drone;
+  try { on = localStorage.getItem('davey_snd') !== 'off'; } catch (e) {}
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  function init() {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    out = ctx.createGain(); out.gain.value = on ? 0.6 : 0;
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3;
+    an = ctx.createAnalyser(); an.fftSize = 64; data = new Uint8Array(an.frequencyBinCount);
+    out.connect(comp); comp.connect(an); an.connect(ctx.destination);
+    dry = ctx.createGain(); dry.connect(out);
+    verb = ctx.createConvolver(); const len = ctx.sampleRate * 3.5, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); let lp = 0;
+      for (let i = 0; i < len; i++) { lp = lp * 0.86 + (Math.random() * 2 - 1) * 0.14; d[i] = lp * Math.pow(1 - i / len, 2.2) * 2.4; } }
+    verb.buffer = ir; const vg = ctx.createGain(); vg.gain.value = 0.7; verb.connect(vg); vg.connect(out);
+    const m = ctx.createChannelMerger(2); dl = ctx.createDelay(3); dr = ctx.createDelay(3);
+    dl.delayTime.value = STEP * 3; dr.delayTime.value = STEP * 3;
+    const fb = ctx.createGain(); fb.gain.value = 0.58; const lp = ctx.createBiquadFilter(); lp.frequency.value = 3200;
+    dl.connect(dr); dr.connect(lp); lp.connect(fb); fb.connect(dl);
+    dl.connect(m, 0, 0); dr.connect(m, 0, 1); const dg = ctx.createGain(); dg.gain.value = 0.5; m.connect(dg); dg.connect(out); dg.connect(verb);
+    const b = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; noise = b;
+    // drone: D1 + D2 sines, detuned saws through a slowly breathing lowpass, faint Eb shadow for menace
+    const dg2 = ctx.createGain(); dg2.gain.value = 0.0001; dg2.gain.setTargetAtTime(1, ctx.currentTime, 2);
+    const df = ctx.createBiquadFilter(); df.type = 'lowpass'; df.frequency.value = 260; df.Q.value = 6;
+    const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 1 / 23; lg.gain.value = 180; lfo.connect(lg); lg.connect(df.frequency); lfo.start();
+    [['sine', hz('D1'), 0, .28], ['sine', hz('D2'), 0, .12], ['sawtooth', hz('D2'), -7, .05], ['sawtooth', hz('D2'), 8, .05], ['sawtooth', hz('Eb3'), 3, .012]]
+      .forEach(([ty, f, de, v]) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = ty; o.frequency.value = f; o.detune.value = de; g.gain.value = v;
+        o.connect(g); g.connect(ty === 'sine' ? dg2 : df); o.start(); });
+    df.connect(dg2); dg2.connect(dry); const ds = ctx.createGain(); ds.gain.value = .35; dg2.connect(ds); ds.connect(verb); drone = dg2;
+  }
+  function route(node, { to = dry, send = 0, dsend = 0, pan = 0 } = {}) {
+    let tail = node; if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); tail = p; }
+    tail.connect(to); if (send) { const s = ctx.createGain(); s.gain.value = send; tail.connect(s); s.connect(verb); }
+    if (dsend) { const s = ctx.createGain(); s.gain.value = dsend; tail.connect(s); s.connect(dl); }
+  }
+  function sine(t, f, dur, vol, o) { const osc = ctx.createOscillator(), g = ctx.createGain(); osc.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); osc.connect(g); route(g, o); osc.start(t); osc.stop(t + dur + .02); }
+  function click(t, vol, pan) { const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter(); s.buffer = noise;
+    f.type = 'highpass'; f.frequency.value = 3000; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + .004);
+    s.connect(f); f.connect(g); route(g, { pan }); s.start(t, rnd() * .9); s.stop(t + .01); }
+  function flicker(t, dur, vol, pan) { const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter(); s.buffer = noise;
+    f.type = 'bandpass'; f.frequency.value = 4000 + rnd() * 6000; f.Q.value = 2; g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); route(g, { pan, send: .3 }); s.start(t, rnd() * .8); s.stop(t + dur + .01); }
+  function bloop(t, f, vol, o) {                                       // FM bloop: falling index, slight pitch drop
+    const c = ctx.createOscillator(), mo = ctx.createOscillator(), mg = ctx.createGain(), g = ctx.createGain();
+    c.frequency.setValueAtTime(f, t); c.frequency.exponentialRampToValueAtTime(f * .94, t + .25);
+    mo.frequency.value = f * 1.5; mg.gain.setValueAtTime(f * 2.2, t); mg.gain.exponentialRampToValueAtTime(1, t + .2);
+    mo.connect(mg); mg.connect(c.frequency); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + .45);
+    c.connect(g); route(g, o); c.start(t); mo.start(t); c.stop(t + .5); mo.stop(t + .5); }
+  function pad(t, notes, dur, bright) { notes.forEach((nn, k) => { [k % 2 ? 6 : -6].forEach(de => {
+    const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.value = hz(nn); o.detune.value = de;
+    f.type = 'lowpass'; f.frequency.setValueAtTime(300, t); f.frequency.linearRampToValueAtTime(bright, t + dur * .5); f.frequency.linearRampToValueAtTime(300, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.026, t + dur * .35); g.gain.linearRampToValueAtTime(.0001, t + dur);
+    o.connect(f); f.connect(g); route(g, { send: .8, pan: (k - 1.5) * .4 }); o.start(t); o.stop(t + dur + .1); }); }); }
+  // generative patch: each module fires on its own Euclidean pattern; lengths differ (16, 13, 11, 9, 7) so they drift
+  const LVL = [0,0,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,1,0];   // last bar: drone and bleeps only
+  const euclid = (k, n, rot = 0) => Array.from({ length: n }, (_, j) => ((j + rot) * k) % n < k ? 1 : 0);
+  const E = { click: euclid(5, 16), click2: euclid(7, 16, 3), kick: euclid(3, 16), kick3: euclid(5, 16, 1), snap: euclid(2, 16, 4),
+              bleep: euclid(5, 13), bleep2: euclid(4, 11, 2), bloop: euclid(3, 11), flick: euclid(2, 9), roll: euclid(1, 7) };
+  const PENTA = ['D','F','G','A','C'];
+  function kick(t, vol) { sine(t, 56, .18, vol, {}); click(t, vol * .35, 0); }
+  function snap(t, vol, pan) { const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter(); s.buffer = noise;
+    f.type = 'highpass'; f.frequency.value = 1400; g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(.0001, t + .025);
+    s.connect(f); f.connect(g); route(g, { pan, send: .45 }); s.start(t, rnd() * .8); s.stop(t + .04); }
+  const pick = (lo, hi) => hz(PENTA[Math.floor(rnd() * 5)] + (lo + Math.floor(rnd() * (hi - lo + 1))));
+  function play(i, t) {
+    if (i === 0) seed = 7;
+    const bar = i >> 4, s = i & 15, L = LVL[bar], ch = PROG[(bar >> 3) & 1];                // pads: Dm9 / Ebmaj7, 6-bar swell every 8 bars
+    if (L >= 1 && s === 0 && bar % 8 === 2) pad(t, PAD[ch], STEP * 96, L >= 3 ? 1300 : 900);
+    // clicks (two patterns), quiet, panned apart
+    if (E.click[s]) click(t, L >= 2 ? .16 : .09, -.5);
+    if (L >= 2 && E.click2[s]) click(t + STEP * .5, .07, .6);
+    // beats: soft sine thumps, sub heartbeat, rare snaps at the peak
+    if (L >= 2 && (L >= 3 ? E.kick3 : E.kick)[s]) kick(t, L >= 3 ? .55 : .45);
+    if (L >= 2 && (s === 0 || s === 3)) sine(t, hz('D1'), .35, s ? .26 : .36, {});
+    // bleeps: polymetric, random pentatonic notes over 2 octaves, mostly wet
+    if (E.bleep[i % 13] && rnd() < (L === 0 ? .35 : .7)) sine(t, pick(6, 7), .05, .035, { send: .55, dsend: .6, pan: rnd() * 1.6 - .8, to: dry });
+    if (L >= 1 && E.bleep2[i % 11] && rnd() < .6) sine(t + STEP * .25, pick(5, 6), .08, .03, { send: .7, dsend: .7, pan: rnd() * 1.6 - .8 });
+    // bloops: quiet, buried in reverb, never in the last bars
+    if (L >= 1 && bar < 30 && E.bloop[i % 11] && rnd() < .45) bloop(t, pick(3, 4), .06, { send: .9, dsend: .6, pan: rnd() - .5 });
+    if (L >= 2 && E.flick[i % 9] && rnd() < .4) flicker(t, .03 + rnd() * .05, .07, rnd() < .5 ? -.9 : .9);
+  }
+  function tick() {
+    if (on && ctx.state !== 'running') ctx.resume();                               // phone paused the audio: bring it back
+    if (next < ctx.currentTime - .2) next = ctx.currentTime + .05;                   // timer was late: skip, never burst a backlog
+    while (next < ctx.currentTime + .15) { play(step, next); next += STEP; step = (step + 1) % STEPS; } }
+  function start() { init(); if (ctx.state === 'suspended') ctx.resume(); if (timer) return; next = ctx.currentTime + .05; timer = setInterval(tick, 25); }
+  function set(v) { on = v; try { localStorage.setItem('davey_snd', v ? 'on' : 'off'); } catch (e) {}
+    if (v) { start(); out.gain.setTargetAtTime(.6, ctx.currentTime, .05); } else if (ctx) out.gain.setTargetAtTime(0, ctx.currentTime, .05); }
+  function level() { if (!an) return null; an.getByteFrequencyData(data); return data; }
+  return { start, set, isOn: () => on, level, running: () => !!timer, bar: () => (step >> 4) + 1 };
+})();
+</script>
+<script>
+const $ = id => document.getElementById(id);
+const L = {
+ en:{tag:'MPC2000XL · OS 1.20 · OFFLINE', presets:'PRESETS', chop:'CHOP · PICK ONE', feat:'FEATURES', open:'OPEN', drop:'drop the original MPC2KXL.BIN here',
+  ok:'original 1.20', notorig:'not the original OS 1.20', wrongsize:'wrong size', pts:'pts', tested:'tested ≤ ', above:'above tested set',
+  P:{davey:'DAVEY',vubeatz_base_only:'VU BASE',light:'LIGHT',clear:'CLEAR'}, patch:'▶ PATCH', needfile:'open the original OS first',
+  match:'same as the tested build ✓', untested:'NOT TESTED AS A SET: flash only with your restore path ready', mismatch:'does not match the tested build: do not use',
+  ack:['The ORIGINAL MPC2KXL.BIN is on my card and computer, and I know the restore: LOAD, pick it, DO IT.','If this build’s update screen ever fails, only a hardware recovery (ROM chip) can bring the unit back.','This tool cannot test the real flash write.'],
+  save:'SAVE', report:'report.txt', savedhint:'Copy it to the card in its own folder. Never save over the original.',
+  safe:['original on card','restore = LOAD › DO IT','emulator-tested only'], verify:'verify a saved file', vsame:'✓ identical to the file you created', vdiff:'✗ different from the file you created: copy it again', vnone:'create a file first',
+  needs:'needs: ', exp:'EXPERIMENTAL: never tested on real hardware', expack:'I have the recovery ROM chip ready (experimental module selected)', fx:'needs the EB16 effects board', comb:'cannot be combined', helper:'helper'},
+ ru:{tag:'MPC2000XL · OS 1.20 · ОФЛАЙН', presets:'ПРЕСЕТЫ', chop:'НАРЕЗКА · ВЫБЕРИ ОДНО', feat:'ФУНКЦИИ', open:'ОТКРЫТЬ', drop:'перетащите сюда оригинальный MPC2KXL.BIN',
+  ok:'оригинал 1.20', notorig:'это не оригинальная OS 1.20', wrongsize:'неверный размер', pts:'очк', tested:'проверено ≤ ', above:'выше проверенного',
+  P:{davey:'DAVEY',vubeatz_base_only:'БАЗА VU',light:'ЛЁГКИЙ',clear:'СБРОС'}, patch:'▶ СОЗДАТЬ', needfile:'сначала откройте оригинальную OS',
+  match:'совпадает с проверенной сборкой ✓', untested:'НЕ ПРОВЕРЕНО КАК НАБОР: прошивайте только с готовым путём восстановления', mismatch:'не совпадает с проверенной сборкой: не использовать',
+  ack:['ОРИГИНАЛЬНЫЙ MPC2KXL.BIN есть на карте и на компьютере, и я знаю восстановление: LOAD, выбрать, DO IT.','Если экран обновления этой сборки откажет, вернуть прибор поможет только аппаратное восстановление (микросхема).','Программа не может проверить реальную запись во флеш.'],
+  save:'СОХРАНИТЬ', report:'отчёт.txt', savedhint:'Скопируйте на карту в отдельную папку. Никогда не сохраняйте поверх оригинала.',
+  safe:['оригинал на карте','восстановление = LOAD › DO IT','проверено только в эмуляторе'], verify:'проверить сохранённый файл', vsame:'✓ совпадает с созданным файлом', vdiff:'✗ отличается от созданного файла: скопируйте заново', vnone:'сначала создайте файл',
+  needs:'нужно: ', exp:'ЭКСПЕРИМЕНТАЛЬНО: не проверялось на железе', expack:'У меня готова микросхема восстановления (выбран экспериментальный модуль)', fx:'нужна плата эффектов EB16', comb:'нельзя совместить', helper:'служебный'}};
+const SHORT = {   // [EN name, RU name, EN tip, RU tip]
+ tune:['Tune ±360','Tune ±360','TUNE goes to ±360 (three octaves).','Поле TUNE до ±360 (три октавы).'],
+ transpose:['Transpose ±36','Транспонир. ±36','Program transpose ±36 semitones (ASSIGN page).','Транспонирование программы ±36 полутонов (страница ASSIGN).'],
+ mute:['Mute 1–4','Mute 1–4','Mute groups 1–4 on the ASSIGN page Mode field.','Mute-группы 1–4 в поле Mode на странице ASSIGN.'],
+ mute8:['Mute 1–8','Mute 1–8','Adds MUTE 5–8 to Mute 1–4.','Добавляет MUTE 5–8 к Mute 1–4.'],
+ param_copy:['Param copy','Копия парам.','ALL: copy a parameter to the bank or whole program.','ALL: копирует параметр в банк или всю программу.'],
+ hpf:['LPF / HPF','LPF / HPF','Filter LPF / HPF with FREQ 0–200.','Фильтр LPF / HPF, FREQ 0–200.'],
+ input_thru:['Input thru','Input thru','Input Thru, plus PLAY / STOP on the RECORD page.','Input Thru и PLAY / STOP на странице RECORD.'],
+ format:['Format safe','Безопасный FORMAT','FORMAT keeps the disk geometry.','FORMAT сохраняет геометрию диска.'],
+ double_stop:['Double STOP','Двойной STOP','Press STOP twice to silence all voices.','Двойной STOP глушит все голоса.'],
+ step_move:['Step move','Step: перенос','STEP page: Move Event (SHIFT + F5).','Страница STEP: Move Event (SHIFT + F5).'],
+ sampling:['Sampling mode','Режим сэмплинга','SP1200 / S900 lo-fi or a custom rate for new recordings (SAMPLE › Mode › WINDOW).','SP1200 / S900 или своя частота для новых записей (SAMPLE › Mode › WINDOW).'],
+ delay670:['EB16 delay','EB16 delay','EB16 delay up to 670 ms.','Задержка EB16 до 670 мс.'],
+ date:['OS date','Дата OS','Version page date Oct. 11,2026.','Дата на странице версии: Oct. 11,2026.'],
+ dark:['Dark mode','Тёмный режим','Inverted LCD.','Инверсия LCD.'],
+ zone_chop:['Zone chop','Zone chop','TRIM › ZONE, press F3 again: waveform chop screen, 16/8/4/LAZY, UNDO, APPLY makes a drum program. 16 LEVELS stays free.','TRIM › ZONE, ещё раз F3: экран нарезки с волной, 16/8/4/LAZY, UNDO, APPLY создаёт программу. 16 LEVELS свободен.'],
+ regions:['VU Regions','VU Regions','REGION EDIT + lazy chop, played through 16 LEVELS. Adds the overdub fix.','REGION EDIT + lazy chop, через 16 LEVELS. Добавляет фикс overdub.']};
+const REGIONS_SET = ['regions', 'lazy', 'overdub_fix'];
+const FEATS = ['tune','transpose','mute','mute8','param_copy','hpf','input_thru','sampling','double_stop','step_move','format','delay670','date','dark'];
+let lang = 'en', original = null, fstate = null, sel = new Set(DATA.meter.sets[DATA.meter.limit_set]), last = null, building = false, urls = [];
+const byId = Object.fromEntries(DATA.modules.map(m => [m.id, m]));
+const t = () => L[lang], ru = () => lang === 'ru', nm = id => (SHORT[id] || [id, id])[ru() ? 1 : 0];
+function closureSafe(S) { try { return MPCEngine.closure(DATA, [...S]); } catch (e) { return null; } }
+function pts(S) { const c = closureSafe(S); return c ? MPCEngine.points(DATA, c) : 0; }
+function clearResult() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; last = null; $('result').hidden = true; $('result').innerHTML = ''; }
+function setSel(S) { clearResult(); sel = S; render(); }
+function toggle(id) {
+  const S = new Set(sel);
+  if (S.has(id)) { S.delete(id); for (const d of MPCEngine.dependents(DATA, id)) S.delete(d); }
+  else { S.add(id); for (const r of byId[id].requires) if (!byId[r].hidden) S.add(r); }
+  setSel(S);
+}
+function pickChop(which) {
+  const S = new Set(sel), hasC = S.has('zone_chop'), hasR = S.has('regions');
+  REGIONS_SET.forEach(x => S.delete(x)); S.delete('zone_chop');
+  if (which === 'zone_chop' && !hasC) S.add('zone_chop');
+  if (which === 'regions' && !hasR) REGIONS_SET.forEach(x => S.add(x));
+  setSel(S);
+}
+function paintSegs(ghost) {
+  const max = DATA.meter.maximum, lim = DATA.meter.limit, p = pts(sel), sg = $('segs');
+  if (sg.children.length !== max) { sg.innerHTML = ''; for (let i = 0; i < max; i++) sg.appendChild(document.createElement('i')); }
+  [...sg.children].forEach((e, i) => { e.className = (i < p ? 'on' + (i >= lim ? ' hot' : '') : (i < p + ghost ? 'gh' : '')) + (i === lim - 1 ? ' lim' : ''); });
+  $('pts').innerHTML = '<b style="color:var(--hi)">' + p + '</b>/' + max + ' ' + t().pts;
+  $('ptsnote').innerHTML = p > lim ? '<span class="warn">' + t().above + '</span>' : t().tested + lim;
+}
+function tile(id, opts = {}) {
+  const m = byId[id], on = opts.on !== undefined ? opts.on : sel.has(id), el = document.createElement('div'), w = opts.weight !== undefined ? opts.weight : m.weight;
+  el.className = 't' + (on ? ' on' : '') + (m.experimental ? ' exp' : '') + (id === 'delay670' ? ' fx' : ''); el.tabIndex = 0; el.setAttribute('role', 'checkbox'); el.setAttribute('aria-checked', on);
+  const req = m.requires.filter(r => !byId[r].hidden).map(nm).join(', ');
+  const s = SHORT[id] || [m.name, m.name, m.desc, m.desc];
+  el.innerHTML = '<span class="box"></span><span class="n"></span><span class="p ' + (w >= 2 ? 'w2' : '') + '">' + (id === 'delay670' ? 'FX' : '+' + w) + '</span><span class="tip"></span>';
+  el.querySelector('.n').textContent = nm(id);
+  el.querySelector('.tip').innerHTML = '<b></b> · ' + w + ' pt<br><span class="d"></span>' + (req ? '<span class="x">' + t().needs + req + '</span>' : '') +
+    (id === 'delay670' ? '<span class="x">' + t().fx + '</span>' : '') + (m.experimental ? '<span class="xp">' + t().exp + '</span>' : '');
+  el.querySelector('.tip b').textContent = nm(id); el.querySelector('.tip .d').textContent = s[ru() ? 3 : 2];
+  const act = opts.act || (() => toggle(id));
+  el.onclick = e => { if (!e.target.closest('.tip')) act(); };
+  el.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); act(); } };
+  el.onmouseenter = () => { el.querySelector('.tip').classList.toggle('l', el.getBoundingClientRect().left + 280 > document.documentElement.clientWidth);
+    if (on) return; const S = new Set(sel); (opts.adds || [id]).forEach(x => S.add(x)); (opts.removes || []).forEach(x => S.delete(x)); paintSegs(Math.max(0, pts(S) - pts(sel))); };
+  el.onmouseleave = () => paintSegs(0);
+  return el;
+}
+function render() {
+  const T = t();
+  $('t_tag').textContent = T.tag; $('t_presets').textContent = T.presets; $('t_chop').textContent = T.chop; $('t_feat').textContent = T.feat;
+  $('pick').textContent = T.open; $('make').textContent = T.patch; $('langbtn').textContent = ru() ? 'EN' : 'RU'; $('vpick').textContent = T.verify;
+  $('safety').innerHTML = T.safe.map(x => '<span>' + x + '</span>').join('');
+  paintFile();
+  const pr = $('presets'); pr.innerHTML = '';
+  [...Object.keys(DATA.meter.sets), 'clear'].forEach(k => { const b = document.createElement('button'); b.textContent = T.P[k] || k;
+    const S = k === 'clear' ? new Set() : new Set(DATA.meter.sets[k]); if (S.size === sel.size && [...S].every(x => sel.has(x))) b.classList.add('sel');
+    b.onclick = () => setSel(S); pr.appendChild(b); });
+  const ch = $('chop'); ch.innerHTML = '';
+  const rw = REGIONS_SET.reduce((a, x) => a + byId[x].weight, 0);
+  ch.appendChild(tile('zone_chop', { act: () => pickChop('zone_chop'), removes: REGIONS_SET }));
+  const or = document.createElement('span'); or.className = 'or'; or.textContent = 'OR'; ch.appendChild(or);
+  ch.appendChild(tile('regions', { on: sel.has('regions'), weight: rw, act: () => pickChop('regions'), adds: REGIONS_SET, removes: ['zone_chop'] }));
+  const g = $('mods'); g.innerHTML = ''; FEATS.forEach(id => g.appendChild(tile(id)));
+  paintSegs(0);
+  const exp = [...(closureSafe(sel) || [])].some(x => byId[x].experimental);
+  $('make').disabled = building || !original || sel.size === 0;
+  $('status').textContent = !original ? T.needfile : '';
+  if (exp && !$('expwrap')) { const d = document.createElement('label'); d.id = 'expwrap'; d.style.cssText = 'display:flex;gap:8px;margin-top:10px;color:var(--bad);font-size:12px';
+    d.innerHTML = '<input type="checkbox" id="expack"><span></span>'; d.querySelector('span').textContent = T.expack; $('mods').after(d); $('expack').onchange = render; }
+  if (!exp && $('expwrap')) $('expwrap').remove();
+  if (exp && !$('expack').checked) $('make').disabled = true;
+}
+function paintFile() {
+  const fi = $('fileinfo'), T = t();
+  if (!fstate) { fi.textContent = original ? T.ok : T.drop; return; }
+  fi.innerHTML = '';
+  const nmEl = document.createElement('b'); nmEl.style.color = 'var(--fg)'; nmEl.textContent = fstate.name + ' ';
+  const st = document.createElement('span');
+  if (fstate.kind === 'ok') { st.className = 'ok'; st.textContent = '✓ ' + T.ok; }
+  else if (fstate.kind === 'size') { st.className = 'bad'; st.textContent = '✗ ' + T.wrongsize; }
+  else if (fstate.kind === 'other') { st.className = 'bad'; st.textContent = '✗ ' + T.notorig + ' · ' + fstate.sha.slice(0, 12); }
+  else { st.className = 'bad'; st.textContent = fstate.msg; }
+  fi.append(nmEl, st);
+}
+async function loadFile(f) {
+  clearResult(); original = null;
+  try {
+    if (f.size !== DATA.base.size) fstate = { name: f.name, kind: 'size' };
+    else {
+      const buf = new Uint8Array(await f.arrayBuffer()), sha = await MPCEngine.sha256(buf);
+      if (sha === DATA.base.sha256) { original = buf; fstate = { name: f.name, kind: 'ok' }; } else fstate = { name: f.name, kind: 'other', sha };
+    }
+  } catch (e) { fstate = { name: f.name, kind: 'err', msg: e.message }; }
+  render();
+}
+$('pick').onclick = () => $('file').click(); $('file').onchange = e => e.target.files[0] && loadFile(e.target.files[0]);
+const dz = $('drop');
+['dragenter', 'dragover'].forEach(e => dz.addEventListener(e, ev => { ev.preventDefault(); dz.classList.add('hot'); }));
+['dragleave', 'drop'].forEach(e => dz.addEventListener(e, ev => { ev.preventDefault(); dz.classList.remove('hot'); }));
+dz.addEventListener('drop', ev => { const f = ev.dataTransfer.files[0]; if (f) loadFile(f); });
+$('langbtn').onclick = () => { lang = ru() ? 'en' : 'ru'; render(); if (last) showResult(); };
+function reportText(r, n) {
+  return ['DAVEY MPC PATCHER report', 'release: ' + DATA.release, 'input sha256: ' + r.inputSha, 'output sha256: ' + r.sha256, 'size: ' + n,
+    'modules: ' + r.modules.join(', '), 'points: ' + r.points + ' / ' + DATA.meter.maximum + ' (tested set ' + DATA.meter.limit + ')',
+    'patches: ' + r.patches + ' (xor ' + r.xorPatches + ', verified-old ' + r.setPatches + ')', 'checksum word: 0x' + r.checksum.toString(16).padStart(4, '0') + ' at 0x77FFE',
+    'boot region 0x78000-0x7FFFF: unchanged', 'program memory 0x70000-0x741AF: unchanged', 'reference: ' + r.reference,
+    'Emulator-tested only. Keep the ORIGINAL MPC2KXL.BIN on the card; restore = LOAD, pick it, DO IT.'].join('\n');
+}
+function showResult() {
+  const T = t(), r = last.report, res = $('result'); urls.forEach(u => URL.revokeObjectURL(u)); urls = [];
+  const bin = URL.createObjectURL(new Blob([last.bytes], { type: 'application/octet-stream' })), txt = URL.createObjectURL(new Blob([reportText(r, last.bytes.length)], { type: 'text/plain' }));
+  urls = [bin, txt]; const fname = 'MPC2KXL_DAVEY_' + r.sha256.slice(0, 8) + '.BIN';
+  const state = r.reference === 'match' ? '<span class="ok">' + T.match + '</span>' : r.reference === 'untested-combination' ? '<span class="warn">' + T.untested + '</span>' : '<span class="bad">' + T.mismatch + '</span>';
+  res.innerHTML = '<div>' + state + '</div><div class="mono" style="color:var(--mut);font-size:11px;margin:4px 0 8px">sha ' + r.sha256 + ' · ' + r.points + ' ' + T.pts + '</div>' +
+    T.ack.map((a, i) => '<label><input type="checkbox" class="ack" id="ack' + i + '"><span></span></label>').join('') +
+    '<div class="row" style="margin-top:8px"><a id="dl" download="' + fname + '" href="' + bin + '"><button class="go" id="savebtn" disabled>' + T.save + '</button></a>' +
+    '<a download="' + fname.replace('.BIN', '_report.txt') + '" href="' + txt + '"><button>' + T.report + '</button></a><span style="color:var(--mut);font-size:12px">' + fname + '</span></div>' +
+    '<div style="color:var(--mut);font-size:12px;margin-top:6px">' + T.savedhint + '</div>';
+  res.querySelectorAll('label span').forEach((s, i) => s.textContent = T.ack[i]);
+  const acks = [...res.querySelectorAll('.ack')], dl = $('dl');
+  const upd = () => { const ok = acks.every(a => a.checked); $('savebtn').disabled = !ok; dl.style.pointerEvents = ok ? 'auto' : 'none'; };
+  acks.forEach(a => a.onchange = upd); upd(); res.hidden = false;
+}
+$('make').onclick = async () => {
+  if (building) return; building = true; clearResult(); $('make').disabled = true; $('status').textContent = '…';
+  try { last = await MPCEngine.build(DATA, original, [...sel]); showResult(); $('status').textContent = ''; }
+  catch (e) { $('status').innerHTML = '<span class="bad"></span>'; $('status').firstChild.textContent = e.message; }
+  building = false; render();
+};
+$('vpick').onclick = () => $('vfile').click();
+$('vfile').onchange = async e => { const f = e.target.files[0]; if (!f) return; const sha = await MPCEngine.sha256(new Uint8Array(await f.arrayBuffer()));
+  $('vresult').innerHTML = !last ? '<span class="warn">' + t().vnone + '</span>' : sha === last.report.sha256 ? '<span class="ok">' + t().vsame + '</span>' : '<span class="bad">' + t().vdiff + '</span>'; };
+/* music: on by default; browsers allow sound only after the first click or key, so it also starts on the first interaction */
+const snd = $('snd');
+const ICON_ON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+const ICON_OFF = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>';
+const paintSnd = () => { snd.innerHTML = Chip.isOn() ? ICON_ON : ICON_OFF; snd.classList.toggle('off', !Chip.isOn()); };
+snd.onclick = e => { e.stopPropagation(); Chip.set(Chip.running() ? !Chip.isOn() : true); paintSnd(); };
+const firstTouch = () => { if (Chip.isOn()) Chip.start(); };
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('#snd')) return; firstTouch(); }, { once: true }));
+try { if (Chip.isOn()) Chip.start(); } catch (e) {}
+paintSnd();
+window.__test = { build: s => MPCEngine.build(DATA, original, s), loadBytes: async b => { original = b; render(); return MPCEngine.sha256(b); }, DATA, sel: () => [...sel], pickChop, toggle, setSel };
+render();
+</script>

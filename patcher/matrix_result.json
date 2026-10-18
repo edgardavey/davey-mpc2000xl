@@ -1,0 +1,12 @@
+[
+ [
+  "set_light",
+  1,
+  9,
+  "PASS",
+  "ok",
+  "restore-by-update:ok",
+  "restore-by-bootdisk:ok",
+  "diff(84, 10, 215, 27)"
+ ]
+]

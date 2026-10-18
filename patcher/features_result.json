@@ -1,0 +1,17 @@
+{
+ "sampling SP1200 22050: L/R vs model (OUTL 4096/4096, OUTR 4096/4096), KEEP text pixels=1068": true,
+ "sampling S900 completes, KEEP text pixels=1068": true,
+ "regions+lazy+overdub_fix (regions_suite2 vs FR1)": false,
+ "  regions detail": [
+  "0019.png",
+  "0020.png",
+  "0021.png",
+  "0022.png",
+  "0023.png",
+  "0024.png"
+ ],
+ "zone_lazy (counts equal to FR1; max tap diff 2 ms, max boundary diff 89 frames)": true,
+ "tune/transpose/ALL/double STOP (vs FR1)": true,
+ "dark mode (71-screen tour = exact inversion of original)": true,
+ "mute8 (mute matrix, 12 pairs)": true
+}

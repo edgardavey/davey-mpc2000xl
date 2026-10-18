@@ -1,0 +1,116 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Patcher chiptune</title>
+<style>
+:root{--bg:#050805;--fg:#8dff9a;--hi:#d6ffdb;--mut:#3f9a52;--dim:#1f5a2a}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--fg);font:13px "SF Mono",ui-monospace,Menlo,Consolas,monospace;display:flex;align-items:center;justify-content:center}
+.box{border:1px solid var(--dim);padding:18px 22px;text-align:center;min-width:260px}
+#snd{background:#0b130b;border:1px solid var(--fg);color:var(--fg);width:46px;height:46px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+#snd.off{border-color:var(--dim);color:var(--mut)}
+#viz{display:flex;gap:2px;height:28px;align-items:flex-end;justify-content:center;margin:12px 0}
+#viz i{width:6px;background:var(--fg);height:2px}
+.mut{color:var(--mut);font-size:11px;letter-spacing:2px}
+</style></head><body>
+<div class="box">
+ <div class="mut">DAVEY PATCHER · INTRO TUNE</div>
+ <div id="viz"></div>
+ <button id="snd" aria-label="Sound on or off" title="Sound on/off"></button>
+ <div class="mut" id="st" style="margin-top:10px">click anywhere to start</div>
+</div>
+<script>
+/* DAVEY chiptune: tiny WebAudio tracker. A minor, 125 BPM, 16 bars, seamless loop. */
+const Chip = (() => {
+  const BPM = 125, STEP = 60 / BPM / 4;                      // 16th notes
+  const n = s => { const m = {C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11};
+    const k = s.slice(0, -1), o = +s.slice(-1); return 440 * Math.pow(2, (m[k] + (o - 4) * 12 - 9) / 12); };
+  const CH = { Am: ['A3','C4','E4','A4'], F: ['F3','A3','C4','F4'], Dm: ['D3','F3','A3','D4'], E: ['E3','G#3','B3','E4'] };
+  const PROG = ['Am','F','Dm','E'];
+  const BASS = { Am:'A1', F:'F1', Dm:'D2', E:'E1' };
+  const LEAD = [ // 8th notes per bar, '' = rest, '-' = hold
+    ['A5','','C6','','E6','D6','C6','B5'], ['A5','-','F5','','A5','C6','-',''],
+    ['D6','','F6','E6','D6','C6','A5',''], ['G#5','','B5','','E6','-','D6','B5'] ];
+  const LEAD2 = [
+    ['E6','-','D6','C6','B5','-','A5',''], ['C6','-','A5','','F5','A5','C6','F6'],
+    ['F6','-','E6','D6','A5','-','D6','F6'], ['E6','-','-','B5','G#5','-','B5','D6'] ];
+  let ctx, out, echo, noise, pulse, timer, step = 0, next = 0, on = true, an, data;
+  try { on = localStorage.getItem('davey_snd') !== 'off'; } catch (e) {}
+  function init() {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    out = ctx.createGain(); out.gain.value = on ? 0.22 : 0;
+    an = ctx.createAnalyser(); an.fftSize = 64; data = new Uint8Array(an.frequencyBinCount);
+    out.connect(an); an.connect(ctx.destination);
+    echo = ctx.createDelay(); echo.delayTime.value = STEP * 3;                     // dotted-8th echo
+    const fb = ctx.createGain(); fb.gain.value = 0.38; const ef = ctx.createBiquadFilter(); ef.frequency.value = 2200;
+    echo.connect(ef); ef.connect(fb); fb.connect(echo); ef.connect(out);
+    const b = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; noise = b;
+    const re = new Float32Array(32), im = new Float32Array(32);                   // 25% pulse (C64-style)
+    for (let k = 1; k < 32; k++) im[k] = (2 / (k * Math.PI)) * Math.sin(k * Math.PI * 0.25);
+    pulse = ctx.createPeriodicWave(re, im);
+  }
+  function tone(t, f, dur, type, vol, dest, cut) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    if (type === 'pulse') o.setPeriodicWave(pulse); else o.type = type;
+    o.frequency.value = f; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    let last = o;
+    if (cut) { const fl = ctx.createBiquadFilter(); fl.type = 'lowpass'; fl.Q.value = 9;
+      fl.frequency.setValueAtTime(cut, t); fl.frequency.exponentialRampToValueAtTime(140, t + dur); o.connect(fl); last = fl; }
+    last.connect(g); g.connect(dest || out); o.start(t); o.stop(t + dur + 0.02);
+  }
+  function hit(t, kind) {
+    if (kind === 'kick') { const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.16);
+      g.gain.setValueAtTime(0.9, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + 0.25); return; }
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noise;
+    const snare = kind === 'snare'; f.type = snare ? 'bandpass' : 'highpass'; f.frequency.value = snare ? 1800 : 7000;
+    g.gain.setValueAtTime(snare ? 0.5 : 0.12, t); g.gain.exponentialRampToValueAtTime(0.001, t + (snare ? 0.14 : 0.04));
+    s.connect(f); f.connect(g); g.connect(out); s.start(t, Math.random() * 0.5); s.stop(t + 0.2);
+  }
+  function play(i, t) {                                       // i = 0..255 (16 bars x 16 steps)
+    const bar = i >> 4, s = i & 15, sec = bar >> 2, ch = PROG[bar & 3];
+    // drums: section 0 sparse intro, then full
+    if (s === 0 || s === 8 || (sec > 0 && s === 11)) hit(t, 'kick');
+    if (sec > 0 && (s === 4 || s === 12)) hit(t, 'snare');
+    if (sec > 0 && s % 2 === 1) hit(t, 'hat');
+    if (sec === 3 && bar % 4 === 3 && s >= 12) hit(t, 'snare');                    // fill into the loop point
+    // bass: 8th-note octave pulse with filter squelch
+    if (s % 2 === 0) tone(t, n(BASS[ch]) * (s % 4 === 2 ? 2 : 1), STEP * 1.8, 'sawtooth', 0.32, out, s % 8 === 0 ? 1800 : 900);
+    // arpeggio: 16ths over the chord, up an octave in sections 2-3
+    const ar = CH[ch], f = n(ar[s % 4]) * (sec >= 2 ? 4 : 2);
+    tone(t, f, STEP * 0.9, 'pulse', sec === 0 ? 0.05 : 0.07, out);
+    // lead: sections 1 and 3, with echo
+    if ((sec === 1 || sec === 3) && s % 2 === 0) {
+      const pat = (sec === 1 ? LEAD : LEAD2)[bar & 3], k = s >> 1, note = pat[k];
+      if (note && note !== '-') { let len = 1; while (pat[k + len] === '-') len++;
+        const fr = n(note); tone(t, fr, STEP * 2 * len * 0.95, 'pulse', 0.11, out); tone(t, fr, STEP * 2 * len * 0.95, 'pulse', 0.05, echo); }
+    }
+  }
+  function tick() {
+    while (next < ctx.currentTime + 0.12) { play(step, next); next += STEP; step = (step + 1) % 256; }
+  }
+  function start() { init(); if (ctx.state === 'suspended') ctx.resume(); if (timer) return;
+    next = ctx.currentTime + 0.05; timer = setInterval(tick, 25); }
+  function set(v) { on = v; try { localStorage.setItem('davey_snd', v ? 'on' : 'off'); } catch (e) {}
+    if (v) { start(); out.gain.setTargetAtTime(0.22, ctx.currentTime, 0.05); }
+    else if (ctx) out.gain.setTargetAtTime(0, ctx.currentTime, 0.05); }
+  function level() { if (!an) return null; an.getByteFrequencyData(data); return data; }
+  return { start, set, isOn: () => on, level, running: () => !!timer };
+})();
+
+/* speaker button + autostart (browsers allow sound only after the first click or key) */
+const btn = document.getElementById('snd'), st = document.getElementById('st');
+const ICON_ON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>';
+const ICON_OFF = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>';
+function paint() { btn.innerHTML = Chip.isOn() ? ICON_ON : ICON_OFF; btn.classList.toggle('off', !Chip.isOn());
+  st.textContent = !Chip.running() ? (Chip.isOn() ? 'click anywhere to start' : 'sound off') : (Chip.isOn() ? 'playing' : 'sound off'); }
+btn.addEventListener('click', e => { e.stopPropagation(); Chip.set(!Chip.isOn()); paint(); });
+function kick() { if (Chip.isOn()) Chip.start(); paint(); }
+try { if (Chip.isOn()) Chip.start(); } catch (e) {}
+['pointerdown', 'keydown'].forEach(ev => document.addEventListener(ev, kick, { once: true }));
+paint();
+const viz = document.getElementById('viz'); for (let i = 0; i < 16; i++) viz.appendChild(document.createElement('i'));
+(function draw() { const d = Chip.level(); if (d) [...viz.children].forEach((b, i) => b.style.height = (2 + d[i + 1] / 9) + 'px'); requestAnimationFrame(draw); })();
+</script>
+</body></html>

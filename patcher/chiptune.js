@@ -1,0 +1,102 @@
+/* DAVEY intro: tiny WebAudio module. Dark ambient: drone + pads (Aphex side), sine data blips, clicks and
+   noise flickers on a precise grid (Ikeda side), FM bloops through long delay and reverb. 90 BPM, 32 bars (~85 s), seamless. */
+const Chip = (() => {
+  const BPM = 90, STEP = 60 / BPM / 4, BARS = 32, STEPS = BARS * 16;
+  const hz = s => { const m = {C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
+    const k = s.slice(0, -1), o = +s.slice(-1); return 440 * Math.pow(2, (m[k] + (o - 4) * 12 - 9) / 12); };
+  const PROG = ['Dm9','Ebmaj7','Gm','A7b9'];                              // 4 bars each, twice per loop
+  const PAD = { Dm9:['D3','F3','A3','E4'], Ebmaj7:['Eb3','G3','Bb3','D4'], Gm:['G2','Bb2','D3','F3'], A7b9:['A2','C#3','G3','Bb3'] };
+  const SCALE = ['D5','F5','G5','A5','C6','D6','F6','A6'];
+  let ctx, out, dry, verb, dl, dr, noise, timer, step = 0, next = 0, on = true, an, data, seed = 7, drone;
+  try { on = localStorage.getItem('davey_snd') !== 'off'; } catch (e) {}
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  function init() {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    out = ctx.createGain(); out.gain.value = on ? 0.6 : 0;
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3;
+    an = ctx.createAnalyser(); an.fftSize = 64; data = new Uint8Array(an.frequencyBinCount);
+    out.connect(comp); comp.connect(an); an.connect(ctx.destination);
+    dry = ctx.createGain(); dry.connect(out);
+    verb = ctx.createConvolver(); const len = ctx.sampleRate * 3.5, ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) { const d = ir.getChannelData(c); let lp = 0;
+      for (let i = 0; i < len; i++) { lp = lp * 0.86 + (Math.random() * 2 - 1) * 0.14; d[i] = lp * Math.pow(1 - i / len, 2.2) * 2.4; } }
+    verb.buffer = ir; const vg = ctx.createGain(); vg.gain.value = 0.7; verb.connect(vg); vg.connect(out);
+    const m = ctx.createChannelMerger(2); dl = ctx.createDelay(3); dr = ctx.createDelay(3);
+    dl.delayTime.value = STEP * 3; dr.delayTime.value = STEP * 3;
+    const fb = ctx.createGain(); fb.gain.value = 0.58; const lp = ctx.createBiquadFilter(); lp.frequency.value = 3200;
+    dl.connect(dr); dr.connect(lp); lp.connect(fb); fb.connect(dl);
+    dl.connect(m, 0, 0); dr.connect(m, 0, 1); const dg = ctx.createGain(); dg.gain.value = 0.5; m.connect(dg); dg.connect(out); dg.connect(verb);
+    const b = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; noise = b;
+    // drone: D1 + D2 sines, detuned saws through a slowly breathing lowpass, faint Eb shadow for menace
+    const dg2 = ctx.createGain(); dg2.gain.value = 0.0001; dg2.gain.setTargetAtTime(1, ctx.currentTime, 2);
+    const df = ctx.createBiquadFilter(); df.type = 'lowpass'; df.frequency.value = 260; df.Q.value = 6;
+    const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 1 / 23; lg.gain.value = 180; lfo.connect(lg); lg.connect(df.frequency); lfo.start();
+    [['sine', hz('D1'), 0, .28], ['sine', hz('D2'), 0, .12], ['sawtooth', hz('D2'), -7, .05], ['sawtooth', hz('D2'), 8, .05], ['sawtooth', hz('Eb3'), 3, .012]]
+      .forEach(([ty, f, de, v]) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = ty; o.frequency.value = f; o.detune.value = de; g.gain.value = v;
+        o.connect(g); g.connect(ty === 'sine' ? dg2 : df); o.start(); });
+    df.connect(dg2); dg2.connect(dry); const ds = ctx.createGain(); ds.gain.value = .35; dg2.connect(ds); ds.connect(verb); drone = dg2;
+  }
+  function route(node, { to = dry, send = 0, dsend = 0, pan = 0 } = {}) {
+    let tail = node; if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); tail = p; }
+    tail.connect(to); if (send) { const s = ctx.createGain(); s.gain.value = send; tail.connect(s); s.connect(verb); }
+    if (dsend) { const s = ctx.createGain(); s.gain.value = dsend; tail.connect(s); s.connect(dl); }
+  }
+  function sine(t, f, dur, vol, o) { const osc = ctx.createOscillator(), g = ctx.createGain(); osc.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur); osc.connect(g); route(g, o); osc.start(t); osc.stop(t + dur + .02); }
+  function click(t, vol, pan) { const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter(); s.buffer = noise;
+    f.type = 'highpass'; f.frequency.value = 3000; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + .004);
+    s.connect(f); f.connect(g); route(g, { pan }); s.start(t, rnd() * .9); s.stop(t + .01); }
+  function flicker(t, dur, vol, pan) { const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter(); s.buffer = noise;
+    f.type = 'bandpass'; f.frequency.value = 4000 + rnd() * 6000; f.Q.value = 2; g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); route(g, { pan, send: .3 }); s.start(t, rnd() * .8); s.stop(t + dur + .01); }
+  function bloop(t, f, vol, o) {                                       // FM bloop: falling index, slight pitch drop
+    const c = ctx.createOscillator(), mo = ctx.createOscillator(), mg = ctx.createGain(), g = ctx.createGain();
+    c.frequency.setValueAtTime(f, t); c.frequency.exponentialRampToValueAtTime(f * .94, t + .25);
+    mo.frequency.value = f * 1.5; mg.gain.setValueAtTime(f * 2.2, t); mg.gain.exponentialRampToValueAtTime(1, t + .2);
+    mo.connect(mg); mg.connect(c.frequency); g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + .45);
+    c.connect(g); route(g, o); c.start(t); mo.start(t); c.stop(t + .5); mo.stop(t + .5); }
+  function pad(t, notes, dur, bright) { notes.forEach((nn, k) => { [k % 2 ? 6 : -6].forEach(de => {
+    const o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.value = hz(nn); o.detune.value = de;
+    f.type = 'lowpass'; f.frequency.setValueAtTime(300, t); f.frequency.linearRampToValueAtTime(bright, t + dur * .5); f.frequency.linearRampToValueAtTime(300, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(.026, t + dur * .35); g.gain.linearRampToValueAtTime(.0001, t + dur);
+    o.connect(f); f.connect(g); route(g, { send: .8, pan: (k - 1.5) * .4 }); o.start(t); o.stop(t + dur + .1); }); }); }
+  // generative patch: each module fires on its own Euclidean pattern; lengths differ (16, 13, 11, 9, 7) so they drift
+  const LVL = [0,0,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,2,1,0];   // last bar: drone and bleeps only
+  const euclid = (k, n, rot = 0) => Array.from({ length: n }, (_, j) => ((j + rot) * k) % n < k ? 1 : 0);
+  const E = { click: euclid(5, 16), click2: euclid(7, 16, 3), kick: euclid(3, 16), kick3: euclid(5, 16, 1), snap: euclid(2, 16, 4),
+              bleep: euclid(5, 13), bleep2: euclid(4, 11, 2), bloop: euclid(3, 11), flick: euclid(2, 9), roll: euclid(1, 7) };
+  const PENTA = ['D','F','G','A','C'];
+  function kick(t, vol) { sine(t, 56, .18, vol, {}); click(t, vol * .35, 0); }
+  function snap(t, vol, pan) { const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter(); s.buffer = noise;
+    f.type = 'highpass'; f.frequency.value = 1400; g.gain.setValueAtTime(vol, t); g.gain.setValueAtTime(.0001, t + .025);
+    s.connect(f); f.connect(g); route(g, { pan, send: .45 }); s.start(t, rnd() * .8); s.stop(t + .04); }
+  const pick = (lo, hi) => hz(PENTA[Math.floor(rnd() * 5)] + (lo + Math.floor(rnd() * (hi - lo + 1))));
+  function play(i, t) {
+    if (i === 0) seed = 7;
+    const bar = i >> 4, s = i & 15, L = LVL[bar], ch = PROG[(bar >> 3) & 1];                // pads: Dm9 / Ebmaj7, 6-bar swell every 8 bars
+    if (L >= 1 && s === 0 && bar % 8 === 2) pad(t, PAD[ch], STEP * 96, L >= 3 ? 1300 : 900);
+    // clicks (two patterns), quiet, panned apart
+    if (E.click[s]) click(t, L >= 2 ? .16 : .09, -.5);
+    if (L >= 2 && E.click2[s]) click(t + STEP * .5, .07, .6);
+    // beats: soft sine thumps, sub heartbeat, rare snaps at the peak
+    if (L >= 2 && (L >= 3 ? E.kick3 : E.kick)[s]) kick(t, L >= 3 ? .55 : .45);
+    if (L >= 2 && (s === 0 || s === 3)) sine(t, hz('D1'), .35, s ? .26 : .36, {});
+    // bleeps: polymetric, random pentatonic notes over 2 octaves, mostly wet
+    if (E.bleep[i % 13] && rnd() < (L === 0 ? .35 : .7)) sine(t, pick(6, 7), .05, .035, { send: .55, dsend: .6, pan: rnd() * 1.6 - .8, to: dry });
+    if (L >= 1 && E.bleep2[i % 11] && rnd() < .6) sine(t + STEP * .25, pick(5, 6), .08, .03, { send: .7, dsend: .7, pan: rnd() * 1.6 - .8 });
+    // bloops: quiet, buried in reverb, never in the last bars
+    if (L >= 1 && bar < 30 && E.bloop[i % 11] && rnd() < .45) bloop(t, pick(3, 4), .06, { send: .9, dsend: .6, pan: rnd() - .5 });
+    if (L >= 2 && E.flick[i % 9] && rnd() < .4) flicker(t, .03 + rnd() * .05, .07, rnd() < .5 ? -.9 : .9);
+  }
+  function tick() {
+    if (on && ctx.state !== 'running') ctx.resume();                               // phone paused the audio: bring it back
+    if (next < ctx.currentTime - .2) next = ctx.currentTime + .05;                   // timer was late: skip, never burst a backlog
+    while (next < ctx.currentTime + .15) { play(step, next); next += STEP; step = (step + 1) % STEPS; } }
+  function start() { init(); if (ctx.state === 'suspended') ctx.resume(); if (timer) return; next = ctx.currentTime + .05; timer = setInterval(tick, 25); }
+  function set(v) { on = v; try { localStorage.setItem('davey_snd', v ? 'on' : 'off'); } catch (e) {}
+    if (v) { start(); out.gain.setTargetAtTime(.6, ctx.currentTime, .05); } else if (ctx) out.gain.setTargetAtTime(0, ctx.currentTime, .05); }
+  function level() { if (!an) return null; an.getByteFrequencyData(data); return data; }
+  return { start, set, isOn: () => on, level, running: () => !!timer, bar: () => (step >> 4) + 1 };
+})();

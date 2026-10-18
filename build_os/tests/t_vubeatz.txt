@@ -1,0 +1,587 @@
+wait 28
+down shift
+up shift
+wait 0.3
+press n3
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 2
+press f6
+wait 3
+press n3
+press n5
+press enter
+wait 6
+press f5
+wait 3
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n6
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+press f1
+wait 2
+press down
+press right
+press minus
+wait 0.5
+press minus
+wait 0.8
+snap
+press down
+wait 0.5
+press down
+wait 0.5
+press down
+wait 0.5
+snap
+press n3
+press n6
+press enter
+wait 0.8
+snap
+press n4
+press n0
+press enter
+wait 0.8
+snap
+press n0
+press enter
+wait 0.8
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+wait 0.5
+snap
+press n0
+press enter
+wait 0.8
+snap
+press f2
+wait 2
+press down
+press right
+press right
+wait 0.6
+snap
+press n3
+press n6
+press n0
+press enter
+wait 0.8
+snap
+press n4
+press n0
+press n0
+press enter
+wait 0.8
+snap
+press n0
+press enter
+wait 0.8
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+tap minus 0.2
+wait 0.5
+snap
+press n0
+press enter
+wait 0.8
+snap
+press f1
+wait 1.5
+press f2
+wait 2
+press up
+wait 0.3
+press up
+wait 0.3
+press up
+wait 0.3
+press up
+wait 0.3
+press up
+wait 0.3
+press up
+wait 0.3
+press up
+wait 0.3
+press down
+wait 0.5
+snap
+press n7
+press enter
+wait 0.8
+snap
+press f2
+wait 1.5
+snap
+press f4
+wait 1.5
+snap
+tap pad2 0
+wait 1
+snap
+press bankb
+wait 1
+tap pad1 0
+wait 1
+snap
+press banka
+wait 1
+press down
+wait 0.5
+press n9
+press enter
+wait 0.8
+snap
+press f2
+wait 1.5
+press f5
+wait 1.5
+snap
+press bankb
+wait 1
+tap pad1 0
+wait 1
+snap
+press bankc
+wait 1
+tap pad3 0
+wait 1
+snap
+press banka
+wait 1
+press main
+wait 1
+tap pad1 0
+wait 0.4
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for v=0,31 do local b=0x582b0+0x9609+v*20 local n=sp:read_u8(b+1) if n~=255 and n~=204 then t[#t+1]=v..":"..n end end print("VA play "..table.concat(t," "))
+tap stop 0
+wait 1
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for v=0,31 do local b=0x582b0+0x9609+v*20 local n=sp:read_u8(b+1) if n~=255 and n~=204 then t[#t+1]=v..":"..n end end print("VA single_stop "..table.concat(t," "))
+tap pad1 0
+wait 0.4
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for v=0,31 do local b=0x582b0+0x9609+v*20 local n=sp:read_u8(b+1) if n~=255 and n~=204 then t[#t+1]=v..":"..n end end print("VA play2 "..table.concat(t," "))
+tap stop 0.3
+tap stop 0
+wait 1
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for v=0,31 do local b=0x582b0+0x9609+v*20 local n=sp:read_u8(b+1) if n~=255 and n~=204 then t[#t+1]=v..":"..n end end print("VA double_stop "..table.concat(t," "))
+exit

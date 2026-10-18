@@ -1,0 +1,152 @@
+wait 28
+down shift
+up shift
+wait 0.3
+press n3
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 2
+press f6
+wait 3
+press n3
+press n5
+press enter
+wait 6
+press f5
+wait 3
+press main
+wait 1
+down shift
+up shift
+wait 0.3
+press n5
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+press f3
+wait 1.5
+press right
+press right
+press right
+press right
+wait 1
+press window
+wait 1.5
+press f6
+wait 2
+down f6
+wait 0.3
+tap pad2 0
+wait 0.4
+tap pad3 0
+wait 0.4
+tap pad4 0
+wait 0.4
+tap pad5 0
+wait 0.4
+tap pad6 0
+wait 0.3
+up f6
+wait 0.5
+snap
+press f5
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local b=0x582b0 local t={} for i=0,7 do t[#t+1]=sp:read_u16(b+0x8e72+i*4)+65536*sp:read_u16(b+0x8e74+i*4) end print("ZONES first_zone_chop n="..sp:read_u8(b+0xd7dc).." B="..table.concat(t," "))
+snap
+press main
+wait 1.5
+press pad1
+press levels
+wait 1
+press down
+press plus
+press plus
+press f2
+wait 2
+press f3
+press f3
+press f3
+wait 1
+wait 0.5
+tap pad1 0
+wait 0.090
+tap pad2 0
+wait 0.234
+tap pad3 0
+wait 0.060
+tap pad4 0
+wait 0.274
+tap pad5 0
+wait 0.494
+tap pad6 0
+wait 0.305
+tap pad7 0
+wait 0.179
+tap pad8 0
+wait 0.165
+tap pad9 0
+wait 0.145
+tap pad10 0
+wait 0.169
+tap pad11 0
+wait 0.055
+tap pad12 0
+wait 0.075
+tap pad13 0
+wait 0.199
+tap pad14 0
+wait 1.2
+snap
+press f5
+wait 1.5
+press f6
+wait 2
+snap
+press main
+wait 1.5
+tap pad8 0
+wait 1.5
+down shift
+up shift
+wait 0.3
+press n5
+wait 0.3
+down shift
+up shift
+wait 0.3
+wait 1.5
+press f3
+wait 1.5
+press right
+press right
+press right
+press right
+wait 1
+press window
+wait 1.5
+press f6
+wait 2
+down f6
+wait 0.3
+tap pad2 0
+wait 0.4
+tap pad3 0
+wait 0.4
+tap pad4 0
+wait 0.4
+tap pad5 0
+wait 0.4
+tap pad6 0
+wait 0.3
+up f6
+wait 0.5
+snap
+press f5
+wait 2
+lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local b=0x582b0 local t={} for i=0,7 do t[#t+1]=sp:read_u16(b+0x8e72+i*4)+65536*sp:read_u16(b+0x8e74+i*4) end print("ZONES second_zone_chop n="..sp:read_u8(b+0xd7dc).." B="..table.concat(t," "))
+snap
+exit

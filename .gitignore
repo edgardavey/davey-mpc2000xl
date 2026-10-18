@@ -45,7 +45,7 @@ __pycache__/
 # Local editor configuration and private credentials
 /AGENTS.md
 /AGENTS.override.md
-/CLAUDE.md
+# /CLAUDE.md  (DAVEY fork: shared on purpose, it holds the project rules for every contributor's agent)
 /GEMINI.md
 /.agents/
 /.codex/
@@ -60,3 +60,19 @@ __pycache__/
 *.p12
 *.pfx
 *.dmp
+
+# DAVEY fork (2026-10-18): private data, generated output and anything containing Akai's OS stays local
+/archive/
+/candidate_FR*/
+/card_backup_*/
+/test_log/
+/release/
+/fixed/
+/system*/
+/patcher/native/build/
+/patcher/MPC2000XL-DAVEY-Patcher.html
+/exp_reloc/sys_exp*/
+/exp_reloc/test_result.json
+/exp_reloc/*.log
+/build_os/sys_*/
+*.zip
