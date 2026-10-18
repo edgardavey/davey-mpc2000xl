@@ -54,6 +54,8 @@ panel/panel_artwork.py
 panel/panel_input.lua
 panel/startup.lua
 run.py
+src/devices/sound/l7a1045_l6028_dsp_a.cpp
+src/devices/sound/l7a1045_l6028_dsp_a.h
 src/mpc2000xldiag.cpp
 system/README.md
 tests/test_source_tools.py
