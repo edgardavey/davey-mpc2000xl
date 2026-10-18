@@ -31,8 +31,15 @@ CHECKS = {
 EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
 
 
+# DAVEY fork: OS patch data (vubeatz's modules by permission + our code bytes; no Akai OS code, checked 2026-10-18) is base64 by design
+PATCH_DATA = {'patcher/modules.json'}
+SHARED_AGENT_RULES = {'CLAUDE.md'}   # DAVEY fork: the root CLAUDE.md is the shared project rulebook (public on purpose); agent files anywhere else stay private
+
+
 def private_path(name):
     path = PurePosixPath(name)
+    if name in SHARED_AGENT_RULES:
+        return False
     return (any(part.casefold() in PRIVATE_DIRS or part.casefold() in PRIVATE_NAMES
                 or part.casefold().startswith('.env.') for part in path.parts)
             or path.suffix.lower() in PRIVATE_SUFFIXES
@@ -115,6 +122,8 @@ def audit(root, strict=False):
         if b'\0' in data or data.startswith((b'MZ', b'HXCPICFE', b'\x7fELF')):
             errors.append('Binary/firmware signature: ' + name)
         for label, pattern in CHECKS.items():
+            if label == 'Large encoded payload' and name in PATCH_DATA:
+                continue
             for match in pattern.finditer(text):
                 line = text.count('\n', 0, match.start()) + 1
                 # Report location only; never print a possible secret.

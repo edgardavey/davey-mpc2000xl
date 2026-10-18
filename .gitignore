@@ -76,3 +76,5 @@ __pycache__/
 /exp_reloc/*.log
 /build_os/sys_*/
 *.zip
+/patcher/DAVEY_MPC_PATCHER_artifact.html
+/exp_reloc/*.png

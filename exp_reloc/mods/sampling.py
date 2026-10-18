@@ -1,8 +1,9 @@
 """Sampling Mode (SAMPLE page, cursor on Mode, WINDOW): preset OFF / SP1200 (26.04 kHz, 12-bit) / S900 (30 kHz) or a custom
 rate 8000-44100 Hz. After a recording finishes the new sound is resampled in place to the chosen rate.
 
-The 1866-byte code block comes from a community-built MPC2000XL OS found online (open source / DIY project, no licence text);
-it is stored unmodified in blobs/sampling_mode_77620.bin and must sit at linear 0x77620 (segment 0x7762).
+The 1866-byte code block is vubeatz's Sampling Mode (module `lofi_window` of his MPC2000XL Updater 2, github.com/dariuszchynek),
+used with his permission. It is taken unmodified from his Updater data (XOR patch at 0x77620 applied to the stock OS) or from a
+local copy in blobs/sampling_mode_77620.bin, and must sit at linear 0x77620 (segment 0x7762).
 Hooks (2 x 5 bytes): the SAMPLE-page screen-update call (0x48ad7, entry +0x0000) and the call that runs after a recording
 finishes (0x48a20, entry +0x0198). Both hooks call the original routine themselves, so with preset OFF nothing changes.
 Two fixes on top of the original:
@@ -17,6 +18,23 @@ import os
 
 BLK = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'blobs', 'sampling_mode_77620.bin')
 BLK_LIN = 0x77620
+BLK_LEN = 1866
+STOCK = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'build_os', 'sys_stock', 'MPC2KXL.BIN')
+VU_JSON = os.environ.get('VU_UPDATER_JSON', os.path.expanduser('~/Documents/CLAUDE/mpc-private-refs/vubeatz/MPC2000XL Updater 2.app/Contents/Resources/modular.json'))
+
+def load_block():
+    """vubeatz's Sampling Mode block: the local copy if present, else rebuilt from his Updater 2 data (lofi_window XOR stock)."""
+    if os.path.exists(BLK):
+        return open(BLK, 'rb').read()
+    import base64, json
+    stock = open(STOCK, 'rb').read()
+    for m in json.load(open(VU_JSON))['modules']:
+        if m['id'] == 'lofi_window':
+            for p in m['patches']:
+                if p.get('offset') == BLK_LIN and 'xor' in p:
+                    x = base64.b64decode(p['xor'])
+                    return bytes(a ^ b for a, b in zip(x, stock[BLK_LIN:BLK_LIN + len(x)]))[:BLK_LEN]
+    raise SystemExit('Sampling Mode block not found: set VU_UPDATER_JSON to vubeatz Updater 2 modular.json')
 STUB_OFF = 0x7c0                      # stub position inside the block's 64 KiB segment (physical 0x77de0, free)
 NUM_CALL = 0x89                       # 'mov bx,0x508' (3 bytes) just before the number print 'int 0x90'
 MSG_SITE = 0x1d7                      # 19 bytes: push/push/push/push/lcall 0x35b0:0x2568/add sp,8 (the stock message box)
@@ -36,7 +54,7 @@ def apply(img):
     """Experimental line: the ORIGINAL black "processing" box stays (stock 35b0:2568). Its missing counterpart is added at
     the routine's exit: stock 3e19:0c22 (posts UI event 0x19, what stock pages call after their own long jobs) and a page
     redraw request, so the KEEP / RETRY window is drawn at once instead of staying blank."""
-    blk = bytearray(open(BLK, 'rb').read())
+    blk = bytearray(load_block())
     assert len(blk) == 1866
     assert blk[NUM_CALL:NUM_CALL + 3] == bytes.fromhex('bb0805')
     rel = (STUB_OFF - (NUM_CALL + 3)) & 0xffff
