@@ -23,6 +23,13 @@ def main():
         raise ValueError('Unexpected upstream driver; use the pinned MAME source')
     subprocess.run([sys.executable, str(ROOT / 'tools/patch_mame_keyboard.py'), '--source', str(source)], check=True)
     shutil.copyfile(ROOT / 'src/mpc2000xldiag.cpp', source / 'src/mame/akai/mpc2000xldiag.cpp')
+    # device models we correct for accuracy live in this repo (src/devices/...) and replace MAME's copies at build time
+    for f in sorted((ROOT / 'src/devices').rglob('*')):
+        if f.is_file():
+            dest = source / 'src/devices' / f.relative_to(ROOT / 'src/devices')
+            if not dest.exists():
+                raise ValueError(f'override has no upstream counterpart: {dest}')
+            shutil.copyfile(f, dest)
     listing = source / 'src/mame/mame.lst'
     text = listing.read_text()
     entry = '@source:akai/mpc2000xldiag.cpp\nmpc2000xldiag\n'

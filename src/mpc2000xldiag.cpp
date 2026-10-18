@@ -47,6 +47,7 @@ public:
 	DECLARE_INPUT_CHANGED_MEMBER(shift_input);
 
 protected:
+	void machine_start() override;
 	void machine_reset() override;
 
 private:
@@ -68,6 +69,20 @@ private:
 	bool m_shift_held = false, m_shift_latched = false, m_shift_sent = false;
 	int m_variation_sent = -1;
 	u32 m_lcd_writes = 0;
+
+	// Boot/OS flash: Intel 28F400BV-T, byte-wide (BYTE# low). Evidence: OS 1.20 flash writer (0x25bc) accepts ID 0089/70 first,
+	// uses the Intel command set (20/D0 erase, 40 program, 70 status, 90 ID, FF read) and never erases the top 16 KiB.
+	// Geometry, lock rules and timings: Intel 4-Mbit SmartVoltage Boot Block datasheet (290530), sections 2.1, 3.4, 4.8.
+	enum { FL_ARRAY, FL_ID, FL_STATUS, FL_PROG, FL_ERASE_SETUP };
+	u8 m_fl_mode = FL_ARRAY, m_fl_status = 0x80;
+	bool m_fl_busy = false, m_fl_wp_low = true;
+	u32 m_fl_base = 0, m_fl_len = 0;
+	emu_timer *m_fl_timer = nullptr;
+	u16 flash_r(offs_t offset, u16 mem_mask);
+	void flash_w(offs_t offset, u16 data, u16 mem_mask);
+	void flash_byte_w(u32 a, u8 d);
+	static void flash_block(u32 a, u32 &base, u32 &len);
+	TIMER_CALLBACK_MEMBER(flash_done);
 	int m_fdc_selected = 0, m_fdc_irq = 0, m_fdc_drq = 0, m_ata_irq = 0, m_ata_drq = 0;
 
 	void recalc_storage();
@@ -105,7 +120,7 @@ void mpc2000xldiag_state::memory_map(address_map &map)
 	// eight 512 KiB banks, interleaved with mirrors of the 512 KiB boot ROM.
 	for (u32 bank = 0; bank < 8; ++bank)
 		map(bank * 0x100000, bank * 0x100000 + 0x7ffff).ram();
-	map(0x080000, 0x0fffff).rom().region("maincpu", 0).mirror(0x700000);
+	map(0x080000, 0x0fffff).rw(FUNC(mpc2000xldiag_state::flash_r), FUNC(mpc2000xldiag_state::flash_w)).mirror(0x700000);
 }
 
 void mpc2000xldiag_state::io_map(address_map &map)
@@ -144,8 +159,91 @@ void mpc2000xldiag_state::dsp_map(address_map &map)
 	map(0, 0x01ffffff).ram(); // 32 MiB sample RAM, as in the XL reference
 }
 
+void mpc2000xldiag_state::machine_start()
+{
+	m_fl_timer = timer_alloc(FUNC(mpc2000xldiag_state::flash_done), this);
+	// WP# wiring on the XL board is not documented; default = boot block locked (the safe assumption: a build that touches it fails loudly)
+	m_fl_wp_low = !getenv("MPC2000XL_FLASH_WP_HIGH");
+	save_item(NAME(m_fl_mode)); save_item(NAME(m_fl_status)); save_item(NAME(m_fl_busy)); save_item(NAME(m_fl_base)); save_item(NAME(m_fl_len));
+}
+
+void mpc2000xldiag_state::flash_block(u32 a, u32 &base, u32 &len)
+{
+	// 28F400BV-T, byte addresses: 3 x 128 KiB, 96 KiB main, 2 x 8 KiB parameter, 16 KiB boot (top)
+	if (a < 0x60000) { base = a & ~0x1ffff; len = 0x20000; }
+	else if (a < 0x78000) { base = 0x60000; len = 0x18000; }
+	else if (a < 0x7c000) { base = a & ~0x1fff; len = 0x2000; }
+	else { base = 0x7c000; len = 0x4000; }
+}
+
+u16 mpc2000xldiag_state::flash_r(offs_t offset, u16 mem_mask)
+{
+	const u32 a = (offset << 1) & 0x7ffff;
+	const u8 *rom = memregion("maincpu")->base();
+	auto lane = [&](u32 b) -> u8 {
+		if (m_fl_busy || m_fl_mode == FL_STATUS || m_fl_mode == FL_PROG || m_fl_mode == FL_ERASE_SETUP) return m_fl_busy ? (m_fl_status & 0x7f) : m_fl_status;
+		if (m_fl_mode == FL_ID) return (b >> 1) & 1 ? 0x70 : 0x89;   // byte mode: chip A0 = CPU A1; DQ15/A-1 is don't-care
+		return rom[b];
+	};
+	return lane(a) | (u16(lane(a | 1)) << 8);
+}
+
+void mpc2000xldiag_state::flash_w(offs_t offset, u16 data, u16 mem_mask)
+{
+	const u32 a = (offset << 1) & 0x7ffff;
+	if (ACCESSING_BITS_0_7) flash_byte_w(a, data & 0xff);       // byte-wide chip: a word write is two bus cycles
+	if (ACCESSING_BITS_8_15) flash_byte_w(a | 1, data >> 8);
+}
+
+void mpc2000xldiag_state::flash_byte_w(u32 a, u8 d)
+{
+	u8 *rom = memregion("maincpu")->base();
+	u32 base, len; flash_block(a, base, len);
+	if (m_fl_busy) { osd_printf_info("FLASH IGNORED write %02x @%05x while busy\n", d, a); return; }
+	if (m_fl_mode == FL_PROG) {
+		m_fl_mode = FL_STATUS;
+		if (base == 0x7c000 && m_fl_wp_low) { m_fl_status |= 0x10; osd_printf_info("FLASH BLOCKED program %05x: boot block locked (WP# low)\n", a); return; }
+		rom[a] &= d;                                              // programming only clears bits (erase first)
+		m_fl_busy = true; m_fl_status &= 0x7f; m_fl_timer->adjust(attotime::from_usec(10));   // datasheet 4.8: byte program 10 us typ
+		return;
+	}
+	if (m_fl_mode == FL_ERASE_SETUP) {
+		m_fl_mode = FL_STATUS;
+		if (d != 0xd0) { m_fl_status |= 0x30; osd_printf_info("FLASH SEQUENCE ERROR: erase setup followed by %02x\n", d); return; }
+		if (base == 0x7c000 && m_fl_wp_low) { m_fl_status |= 0x20; osd_printf_info("FLASH BLOCKED erase %05x: boot block locked (WP# low)\n", a); return; }
+		m_fl_base = base; m_fl_len = len; m_fl_busy = true; m_fl_status &= 0x7f;
+		osd_printf_info("FLASH ERASE block %05x-%05x\n", base, base + len - 1);
+		m_fl_timer->adjust(attotime::from_msec(len >= 0x18000 ? 1900 : 800));   // datasheet 4.8 (5 V): main 1.9 s, boot/parameter 0.8 s typ
+		return;
+	}
+	switch (d) {
+	case 0xff: m_fl_mode = FL_ARRAY; break;
+	case 0x90: m_fl_mode = FL_ID; break;
+	case 0x70: m_fl_mode = FL_STATUS; break;
+	case 0x50: m_fl_status &= 0x80; break;                        // clear status
+	case 0x40: case 0x10: m_fl_mode = FL_PROG; break;
+	case 0x20: m_fl_mode = FL_ERASE_SETUP; break;
+	default: osd_printf_info("FLASH UNMODELLED command %02x @%05x\n", d, a); m_fl_mode = FL_STATUS; break;
+	}
+}
+
+TIMER_CALLBACK_MEMBER(mpc2000xldiag_state::flash_done)
+{
+	if (m_fl_len) {
+		std::fill_n(memregion("maincpu")->base() + m_fl_base, m_fl_len, 0xff);
+		osd_printf_info("FLASH ERASED block %05x\n", m_fl_base);
+	}
+	m_fl_len = 0; m_fl_busy = false; m_fl_status |= 0x80;
+}
+
 void mpc2000xldiag_state::machine_reset()
 {
+	if (m_fl_busy && m_fl_len) {                                  // reset/power loss during erase: block contents undefined (datasheet 3.6)
+		std::fill_n(memregion("maincpu")->base() + m_fl_base, m_fl_len / 2, 0xa5);
+		osd_printf_info("FLASH ERASE INTERRUPTED block %05x: contents undefined\n", m_fl_base);
+	}
+	if (m_fl_timer) m_fl_timer->adjust(attotime::never);
+	m_fl_mode = FL_ARRAY; m_fl_status = 0x80; m_fl_busy = false; m_fl_len = 0;   // RP# follows system reset
 	m_shift_held = m_shift_latched = m_shift_sent = false;
 	m_shift_active = 0;
 	m_variation_sent = -1;
