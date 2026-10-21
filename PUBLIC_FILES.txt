@@ -92,6 +92,7 @@ exp_reloc/mods/mute_all.py
 exp_reloc/mods/prog_mono.py
 exp_reloc/mods/sampling.py
 exp_reloc/mods/timing_q4.py
+exp_reloc/mods/wave_fast.py
 exp_reloc/mods/zone_chop.py
 exp_reloc/test_exp.py
 licenses/BSD-3-Clause

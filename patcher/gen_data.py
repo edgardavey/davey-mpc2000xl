@@ -82,7 +82,7 @@ mods.append({'id': 'overdub_fix', 'name': 'REGIONS overdub fix', 'group': 'davey
 # ---- relocated DAVEY modules (exp_reloc line): built on the VU base WITHOUT REGIONS, placed only in measured-free RAM
 sys.path.insert(0, os.path.join(ROOT, 'exp_reloc')); sys.path.insert(0, os.path.join(ROOT, 'exp_reloc', 'mods'))
 import make_exp, engine
-import sampling as x_sampling, zone_chop as x_chop, mute8 as x_mute8, prog_mono as x_pmono, timing_q4 as x_q4, mute_all as x_mall
+import sampling as x_sampling, zone_chop as x_chop, mute8 as x_mute8, prog_mono as x_pmono, timing_q4 as x_q4, mute_all as x_mall, wave_fast as x_wfast
 tmp = {'base': {'size': 524288, 'sha256': vub['files']['MPC2KXL.BIN']['sha256']}, 'modules': [m for m in mods if m['kind'] == 'xor'],
        'rules': vub['rules'], 'finalize': {'checksum': {'range': [0, 0x77ffe], 'offset': 0x77ffe}, 'unchanged': [0x78000, 0x80000]}}
 base_noreg, _ = engine.build(tmp, stock, make_exp.VUB)
@@ -101,6 +101,9 @@ mods.append({'id': 'timing_q4', 'name': '1/4 timing', 'group': 'davey', 'source'
 mods.append({'id': 'mute_all', 'name': 'Mute group for bank / program', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 1, 'requires': ['param_copy'],
              'kind': 'set', 'desc': 'PROGRAM > ASSIGN, cursor on Mode:, WINDOW: vubeatz ALL FOR window copies the pad Mode (MUTE n, NORMAL ...) to the bank or the whole program.',
              'patches': patches_from(base_noreg, exp_apply(x_mall.apply))})
+mods.append({'id': 'wave_fast', 'name': 'Fast waveform', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 1, 'requires': [],
+             'kind': 'set', 'desc': 'TRIM / LOOP / ZONE / chop waveform appears up to ~10x sooner on long sounds (examines every Nth sample, same picture within 1-2 pixels).',
+             'patches': patches_from(base_noreg, exp_apply(x_wfast.apply))})
 MUTE8_AT = 0x77f00          # free with and without REGIONS (never written in 33 coverage runs over both configurations)
 make_exp.FREE.append((0x77f00, 0x77f80))
 mods.append({'id': 'mute8', 'name': 'Mute groups 1-8', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 0, 'requires': ['mute'],
@@ -132,12 +135,12 @@ for m in mods:
             seen[i] = m['id']
 
 rules = vub['rules']
-data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.1 EXPERIMENTAL (EXP10)',
+data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.2 EXPERIMENTAL (EXP11)',
         'base': {'file': 'MPC2KXL.BIN', 'size': 524288, 'sha256': vub['files']['MPC2KXL.BIN']['sha256']},
         'modules': mods, 'rules': rules,
         'finalize': {'checksum': {'range': [0, 0x77ffe], 'offset': 0x77ffe}, 'unchanged': [0x78000, 0x80000],
                      'forbidden': [[0x70000, 0x741b0]]}}
-davey = make_exp.VUB + ['zone_chop', 'sampling', 'prog_mono', 'timing_q4', 'mute_all']   # = EXP10 (experimental line; EXP7 stable patcher is released separately)
+davey = make_exp.VUB + ['zone_chop', 'sampling', 'prog_mono', 'timing_q4', 'mute_all', 'wave_fast']   # = EXP11 (experimental line; EXP7 stable patcher is released separately)
 allw = lambda ids: engine.points(data, engine.closure(data, ids))
 data['meter'] = {'limit': allw(davey),
                  'maximum': allw([m['id'] for m in mods if not m['hidden']]),
@@ -146,9 +149,9 @@ data['meter'] = {'limit': allw(davey),
                           'light': ['tune', 'transpose', 'param_copy', 'format']}}
 # the DAVEY preset must be byte-identical to the emulator-tested experimental file
 out, rep = engine.build(data, stock, davey)
-exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP10.BIN'), 'rb').read()
-assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP10.BIN'
-print('DAVEY preset == DAVEY_EXP10.BIN', rep['sha256'][:16])
+exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP11.BIN'), 'rb').read()
+assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP11.BIN'
+print('DAVEY preset == DAVEY_EXP11.BIN', rep['sha256'][:16])
 # tested combinations (emulator gates passed on the exact file); more are added by finalize_verified.py after the gate runs
 data['verified'] = {engine.sel_key(engine.closure(data, davey)): rep['sha256']}
 _extra = os.path.join(HERE, 'verified_extra.json')       # written by exp_reloc/gate_presets.py: only selections that passed both restore gates

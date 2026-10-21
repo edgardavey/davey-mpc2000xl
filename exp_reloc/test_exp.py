@@ -349,10 +349,36 @@ def t_wave_chop():
     L += P.shift_key('n5') + ['wait 0.3', 'press f3', 'wait 0.6', 'press f3', 'wait 0.3', P.T(C, 'enter'), 'wait 20', P.T(C, 'later'), 'snap', 'exit']
     d = H.run('exp_wave_chop', L, 'exp', 'floppy/funky.img', 150, sound=False)
     c = {l.split()[1]: int(l.split()[2]) for l in log(d, 'WCOUNT')}
-    R[f"wave chop: waveform calculation in the chop screen {c.get('enter')} -> {c.get('later')} of 245 columns"] = c.get('enter', 999) < 245 and c.get('later') == 245
+    # with the fast waveform (EXP11) the calculation usually finishes before the chop screen opens; the EXP10 run proved
+    # the unfinished case (193 -> 245; EXP8 froze at 148). Required now: complete in the chop screen either way.
+    R[f"wave chop: waveform calculation in the chop screen {c.get('enter')} -> {c.get('later')} of 245 columns"] = c.get('enter', 999) <= 245 and c.get('later') == 245
     R['wave chop: run healthy'] = healthy(d)
 
-TESTS = {'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'q4': t_q4, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
+def t_wave_fast():
+    """fast waveform (2026-10-21): a 10 s recording's waveform is complete within ~1 s of opening TRIM (stock ~5 s), and
+    FUNKY's 245 columns match the VU base's (stock) calculation within 2 pixel rows, >= 80 % identical"""
+    C = 'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] print(string.format("WT %.2f %d",manager.machine.time:as_double(),sp:read_u16(0x7c3dc)))'
+    L = P.boot() + P.load_first_file(35) + ['down shift', 'up shift', 'wait 0.3', 'press n4', 'wait 0.3', 'down shift', 'up shift', 'wait 2', 'press down', 'wait 0.5']
+    L += ['press minus', 'wait 0.1'] * 70 + ['wait 0.5', 'press f6', 'wait 2', 'press f6', 'wait 12', 'press f5', 'wait 3']
+    L += P.shift_key('n5') + [x for _ in range(8) for x in ('wait 0.25', C)] + ['exit']
+    d = H.run('exp_wave_fast_t', L, 'exp', 'floppy/funky.img', 150, sound=False)
+    pts = [(float(l.split()[1]), int(l.split()[2])) for l in log(d, 'WT ')]
+    t_done = next((round(t - pts[0][0] + 0.25, 2) for t, c in pts if c >= 245), None) if pts else None
+    W = ('lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local t={} for i=0,244 do t[#t+1]=sp:read_u16(0x7c008+2*i)..","..sp:read_u16(0x7c1f2+2*i) end '
+         'print("WS "..sp:read_u16(0x7c3dc).." "..table.concat(t," "))')
+    Ls = P.boot() + P.load_first_file(35) + P.shift_key('n5') + ['wait 8', W, 'exit']
+    cols = {}
+    for name, b in (('fast', 'exp'), ('stock', 'expbase')):
+        r = H.run('exp_wave_fast_s_' + name, Ls, b, 'floppy/funky.img', 100, sound=False)
+        w = (log(r, 'WS ') or ['WS 0'])[0].split()
+        cols[name] = (int(w[1]), [tuple(map(int, x.split(','))) for x in w[2:]])
+    (cf, A), (cs_, B) = cols['fast'], cols['stock']
+    same = sum(1 for x, y in zip(A, B) if x == y); worst = max((max(abs(x[0] - y[0]), abs(x[1] - y[1])) for x, y in zip(A, B)), default=99)
+    R[f'wave fast: 10 s recording, waveform complete after {t_done} s in TRIM'] = t_done is not None and t_done <= 1.0
+    R[f'wave fast: FUNKY columns vs stock: {same} of {len(A)} identical, worst {worst} rows'] = cf == cs_ == 245 and len(A) == 245 and worst <= 2 and same >= 196
+    R['wave fast: runs healthy'] = healthy(d)
+
+TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'q4': t_q4, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
 if __name__ == '__main__' and sys.argv[1:2] == ['--make-refs']:
     d = H.run('exp_ref_boot', BOOT_LINES, 'stock', GOLD, 120, sound=False); print(d, snaps(d)); sys.exit()
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 {
  "format": "davey-patcher",
  "schema_version": 2,
- "release": "DAVEY patcher 4.1 EXPERIMENTAL (EXP10)",
+ "release": "DAVEY patcher 4.2 EXPERIMENTAL (EXP11)",
  "base": {
   "file": "MPC2KXL.BIN",
   "size": 524288,
@@ -1862,6 +1862,74 @@
    ]
   },
   {
+   "id": "wave_fast",
+   "name": "Fast waveform",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 1,
+   "requires": [],
+   "kind": "set",
+   "desc": "TRIM / LOOP / ZONE / chop waveform appears up to ~10x sooner on long sounds (examines every Nth sample, same picture within 1-2 pixels).",
+   "patches": [
+    {
+     "offset": 360721,
+     "old": "JoM+3AMAdAPpkwE=",
+     "new": "mmEAoHRyA+mUAZA="
+    },
+    {
+     "offset": 360751,
+     "old": "/wZYjoAGZ44BgxZojgCDBlqOAYMWXI4A",
+     "new": "mkUAoHSQkJCQkJCQkJCQkJCQkJCQkJCQ"
+    },
+    {
+     "offset": 477696,
+     "old": "AAAAAAAAAAAAAAAA",
+     "new": "uBAAgz5kjgB0A+k3"
+    },
+    {
+     "offset": 477709,
+     "old": "AA==",
+     "new": "oQ=="
+    },
+    {
+     "offset": 477710,
+     "old": "AAAAAA==",
+     "new": "Yo7R6A=="
+    },
+    {
+     "offset": 477714,
+     "old": "AA==",
+     "new": "0Q=="
+    },
+    {
+     "offset": 477715,
+     "old": "AAAAAAAAAAAAAAAAAAAA",
+     "new": "6NHo0ejR6NHo0ejR6NHo"
+    },
+    {
+     "offset": 477730,
+     "old": "AAA=",
+     "new": "0eg="
+    },
+    {
+     "offset": 477732,
+     "old": "AAAA",
+     "new": "0ehR"
+    },
+    {
+     "offset": 477735,
+     "old": "AA==",
+     "new": "uQ=="
+    },
+    {
+     "offset": 477736,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "AQCD+RByA+kPAFHR4TnBWXYD6QQA0eHr6YnIWcNQ6Lf/AQZYjgAGZ46DFmiOAAEGWo6DFlyOAFjLJoM+3AMAdQPpHABQLv4GigDoi/8uOAaKAFhzA+kIAC7GBooAAPjL+csAAEUAYQ=="
+    }
+   ]
+  },
+  {
    "id": "mute8",
    "name": "Mute groups 1-8",
    "group": "davey",
@@ -2542,8 +2610,8 @@
   ]
  },
  "meter": {
-  "limit": 15,
-  "maximum": 17,
+  "limit": 16,
+  "maximum": 18,
   "limit_set": "davey",
   "sets": {
    "davey": [
@@ -2560,7 +2628,8 @@
     "sampling",
     "prog_mono",
     "timing_q4",
-    "mute_all"
+    "mute_all",
+    "wave_fast"
    ],
    "light": [
     "tune",
@@ -2571,14 +2640,15 @@
   }
  },
  "verified": {
-  "double_stop,format,hpf,input_thru,mute,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_q4,transpose,tune,u13_pitch,u13_program,zone_chop": "742e2423ee6265ee2cef20707103cca882b848b4c0900532cb973963ed4712d0",
+  "double_stop,format,hpf,input_thru,mute,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_q4,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "a8c4de4093da77080d39bd9ff1cf32edd4c056991ad241ece840db845a7e13ff",
   "format,param_copy,transpose,tune,u13_pitch,u13_program": "9b0057cf4b6b4d3b32835b8e244852f8915d507de18a52eda21212d37f47f29a",
   "timing_q4": "8c7980e7f7c5227877a492acbb9e0eaaa1879293721f4413bf8b923b7ef9e782",
+  "wave_fast": "492dbafe75d7ac7e6adf442ce2c98346b5206db87bd6c10395271dc0b55df3f6",
   "mute_all,param_copy,u13_program": "474e71cc0a2a8d22e0eed9ebd6c2a38987f73c658d0fedbbdde0da6c20002b5e",
   "zone_chop": "aa7f0df833dc5793cadd03b325bd360bfdd765fd1a49beffd8ca5f5ec4d93b6f",
   "sampling": "ea8c00df14b1f1215a540e488d5985e0ecea221d2a43dd9d0e119f827c7adc7f",
   "prog_mono": "35391466c86cac801c5a374b9aa5b7ca63db69b5020e027395a2564c74875a09",
   "mute,mute8": "6beb23509b04ec75f8219a58e51fffefa4fd1ce759eb648461695af7b96e9e31",
-  "double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_q4,transpose,tune,u13_pitch,u13_program,zone_chop": "cd795ff9b13450d5408208dbbd69e7804dffc0406d771081f8f96e14a6b5300e"
+  "double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_q4,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "49734509536d6b52585509045270239fc4bbf6fced2cc3a5b867cb4e5704e102"
  }
 }

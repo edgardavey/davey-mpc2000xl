@@ -127,10 +127,11 @@ const SHORT = {   // [EN name, RU name, EN tip, RU tip]
  date:['OS date','Дата OS','Version page date Oct. 11,2026.','Дата на странице версии: Oct. 11,2026.'],
  dark:['Dark mode','Тёмный режим','Inverted LCD.','Инверсия LCD.'],
  timing_q4:['1/4 timing','Тайминг 1/4','Timing / Note value: 1/32(3) becomes 1/4 (quarter-note quantize). Stock units read it as 1/32(3).','Timing / Note value: 1/32(3) становится 1/4 (квантайз по четвертям). Стоковая OS читает это как 1/32(3).'],
+ wave_fast:['Fast waveform','Быстрая волна','The waveform in TRIM / LOOP / ZONE / chop appears up to ~10x sooner on long sounds.','Волна в TRIM / LOOP / ZONE / нарезке появляется до ~10 раз быстрее на длинных звуках.'],
  mute_all:['Mute ALL','Mute ВСЕМ','ASSIGN > Mode: > WINDOW: copy this pad’s Mode (MUTE n, NORMAL…) to the bank or the whole program.','ASSIGN > Mode: > WINDOW: копирует Mode пэда (MUTE n, NORMAL…) на банк или всю программу.'],
  prog_mono:['Program MONO','Program MONO','MONO pads choke each other: ALL › MONO makes the whole program mono (like newer MPCs). One MONO pad works as stock.','MONO-пэды глушат друг друга: ALL › MONO делает всю программу моно (как на новых MPC). Один MONO-пэд работает как в стоке.'],
  zone_chop:['Zone chop','Zone chop','TRIM › ZONE, press F3 again: waveform chop screen, 16/8/4/LAZY, UNDO, pads and F6 PLAY preview slices, SHIFT+cursor sets the step, APPLY makes a drum program. On TRIM a pad hit selects that pad’s sound. 16 LEVELS stays free.','TRIM › ZONE, ещё раз F3: экран нарезки с волной, 16/8/4/LAZY, UNDO, пэды и F6 PLAY прослушивают слайсы, SHIFT+курсор задаёт шаг, APPLY создаёт программу. На TRIM удар по пэду выбирает его звук. 16 LEVELS свободен.']};
-const FEATS = ['zone_chop','prog_mono','timing_q4','mute_all','tune','transpose','mute','mute8','param_copy','hpf','input_thru','sampling','double_stop','step_move','format','delay670','date','dark'];
+const FEATS = ['zone_chop','prog_mono','timing_q4','mute_all','wave_fast','tune','transpose','mute','mute8','param_copy','hpf','input_thru','sampling','double_stop','step_move','format','delay670','date','dark'];
 let lang = 'en', original = null, fstate = null, sel = new Set(DATA.meter.sets[DATA.meter.limit_set]), last = null, building = false, urls = [];
 const byId = Object.fromEntries(DATA.modules.map(m => [m.id, m]));
 const t = () => L[lang], ru = () => lang === 'ru', nm = id => (SHORT[id] || [id, id])[ru() ? 1 : 0];
