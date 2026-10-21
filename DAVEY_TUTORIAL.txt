@@ -1,0 +1,132 @@
+DAVEY OS: quick tutorial
+========================
+
+DAVEY OS is a mod of the MPC2000XL OS 1.20, built on vubeatz's work. Free and open source, never sold.
+Status: beta, emulator-tested. Always keep the original OS on your card.
+
+============================================================
+
+0. Install and restore
+----------------------
+
+Make your OS file
+1. Open the DAVEY MPC PATCHER (Windows, Mac or browser).
+2. OPEN your own original MPC2KXL.BIN (OS 1.20).
+3. Pick the DAVEY preset (or your own features), then PATCH → SAVE.
+
+Install
+1. Back up your card.
+2. Keep the original MPC2KXL.BIN in the card root.
+3. Put the new file in its own folder on the card.
+4. On the MPC: LOAD → pick the new file → DO IT.
+
+Restore the stock OS any time: LOAD the original MPC2KXL.BIN → DO IT.
+
+Important: the file's time stamp. On some units (those with a newer 16-bit flash chip) the OS reads the OS file's
+time of day as a version number and refuses files stamped before 01:14 with "OS version too old".
+The Mac and Windows patcher apps handle this for you. With the browser version, don't save between midnight and 1:14 AM.
+When copying the original MPC2KXL.BIN, keep its time stamp (Finder copy or cp -p).
+
+============================================================
+
+1. Chop screen (waveform chop)
+------------------------------
+
+Open it: SHIFT+5 (TRIM) → F3 (ZONE) → F3 again. The top line shows ZONE CHOP  Zones:nn  Taps:nn.
+
+Even slices
+-----------
+  * F3 cycles 16 → 8 → 4 → LAZY.
+  * F2 EVEN redoes the even split.
+
+Lazy chop
+---------
+1. Press F3 until you reach LAZY.
+2. Hit any pad: the sample starts playing (that's slice 1).
+3. While it plays, hit a new pad at every point where a new slice should start.
+   Each pad cuts only once, so a repeated pad is ignored.
+4. F4 UNDO takes back the last cut. F2 CLEAN starts over.
+
+Check and fine-tune
+-------------------
+  * Pad n plays slice n and selects it.
+  * F6 PLAY (hold) plays the current slice.
+  * Cursor → to End: and turn the DATA wheel to move the slice end.
+  * Zone: + wheel steps through the slices.
+  * SHIFT + ← / → on St:/End: sets the wheel step (1 / 10 / 100 / 1000), like the stock TRIM page.
+
+Make the drum program
+---------------------
+F5 APPLY opens the stock Edit window with SLICE SOUND → DO IT.
+You get one sound per slice and a new drum program with the slices on the pads.
+
+Other keys:
+  * F1 BACK leaves and puts back the zones you had.
+  * WINDOW leaves and keeps the slices as plain zones.
+
+16 LEVELS stays free. Up to 16 slices.
+
+============================================================
+
+2. TRIM pad select
+------------------
+
+On the TRIM page (SHIFT+5), hitting a pad switches Snd: to the sound on that pad and plays it: name, St/End and waveform.
+
+After a chop + APPLY, hit pad 3 to fix slice 3. A pad with no sound just plays the current sound, as before.
+
+============================================================
+
+3. Program MONO
+---------------
+
+1. SHIFT+6 (PROGRAM) → F2 (PARAMS) → Voice overlap: → MONO.
+2. Pads set to MONO choke each other, like a mono program on the newer MPCs.
+3. To make the whole program mono, set MONO on every pad. Use ALL (param copy) to apply it in one go.
+
+A single MONO pad among POLY pads works as stock (it only cuts itself). Your programs on disk don't change.
+
+============================================================
+
+4. Mute groups
+--------------
+
+SHIFT+6 → F1 (ASSIGN) → Mode: → MUTE 1 … MUTE 4 (MUTE 5–8 with the *Mute 1–8* patcher option).
+
+Pads in the same group cut each other: classic open/closed hi-hat. NORMAL = no group.
+
+============================================================
+
+5. Sampling Mode (SP1200 / S900)
+--------------------------------
+
+1. SHIFT+4 (SAMPLE) → cursor on Mode: → WINDOW.
+2. Pick a preset:
+   - SP1200: 26.04 kHz, 12-bit;
+   - S900: 30 kHz;
+   - or set Sample Rate (8000–44100 Hz).
+
+   Then F5 DO IT.
+3. Record as usual. A black processing box shows while the sound is crunched, then KEEP / RETRY.
+4. OFF = normal recording.
+
+Tip: TRIM shows one channel of a stereo sound (View: LEFT / RIGHT). If the waveform looks empty, try the other side. A mono source on one input leaves the other channel silent.
+
+============================================================
+
+6. vubeatz features (included)
+------------------------------
+
+  * Tune ±360 (three octaves)
+  * Transpose ±36 on the ASSIGN page
+  * ALL: copy a parameter to the bank or the whole program
+  * LPF / HPF with FREQ 0–200
+  * Input Thru, plus PLAY / STOP on the RECORD page
+  * Format safe
+  * Double STOP silences all voices
+  * Step move: STEP page, SHIFT+F5
+
+============================================================
+
+Found a bug? Note the exact steps and the screen (a photo helps) and report it.
+Thanks to vubeatz (github.com/dariuszchynek (https://github.com/dariuszchynek)), the base of all of this.

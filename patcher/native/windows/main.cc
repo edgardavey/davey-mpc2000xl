@@ -61,6 +61,15 @@ static std::string native_save(HWND owner, const std::string &req) {
   if (h == INVALID_HANDLE_VALUE) return "false";
   DWORD written = 0;
   BOOL ok = WriteFile(h, data.data(), (DWORD)data.size(), &written, nullptr);
+  // The MPC update code reads Akai's version marker from the OS file's TIME stamp and refuses times before 01:14
+  // ("OS version too old", units with a 16-bit flash chip). A file saved between 00:00 and 01:13 gets 01:14 today.
+  SYSTEMTIME lt;
+  GetLocalTime(&lt);
+  if (ok && lt.wHour * 60 + lt.wMinute < 74) {
+    lt.wHour = 1; lt.wMinute = 14; lt.wSecond = 0; lt.wMilliseconds = 0;
+    SYSTEMTIME ut; FILETIME ft;
+    if (TzSpecificLocalTimeToSystemTime(nullptr, &lt, &ut) && SystemTimeToFileTime(&ut, &ft)) SetFileTime(h, nullptr, nullptr, &ft);
+  }
   CloseHandle(h);
   return (ok && written == data.size()) ? "true" : "false";
 }

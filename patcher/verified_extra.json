@@ -1,8 +1,10 @@
 {
  "format,param_copy,transpose,tune,u13_pitch,u13_program": "9b0057cf4b6b4d3b32835b8e244852f8915d507de18a52eda21212d37f47f29a",
- "zone_chop": "c640dee40220536f22993bcef010fe2f93a56e94ae8378c2fa8e618ca27b0f74",
+ "timing_q4": "8c7980e7f7c5227877a492acbb9e0eaaa1879293721f4413bf8b923b7ef9e782",
+ "mute_all,param_copy,u13_program": "474e71cc0a2a8d22e0eed9ebd6c2a38987f73c658d0fedbbdde0da6c20002b5e",
+ "zone_chop": "aa7f0df833dc5793cadd03b325bd360bfdd765fd1a49beffd8ca5f5ec4d93b6f",
  "sampling": "ea8c00df14b1f1215a540e488d5985e0ecea221d2a43dd9d0e119f827c7adc7f",
  "prog_mono": "35391466c86cac801c5a374b9aa5b7ca63db69b5020e027395a2564c74875a09",
  "mute,mute8": "6beb23509b04ec75f8219a58e51fffefa4fd1ce759eb648461695af7b96e9e31",
- "double_stop,format,hpf,input_thru,mute,mute8,param_copy,prog_mono,ram_init,runtime,sampling,step_move,transpose,tune,u13_pitch,u13_program,zone_chop": "269854c225d7188349f7ba8f08ca0938e14bfe0b64305115fb6fbb5a1585f128"
+ "double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_q4,transpose,tune,u13_pitch,u13_program,zone_chop": "cd795ff9b13450d5408208dbbd69e7804dffc0406d771081f8f96e14a6b5300e"
 }

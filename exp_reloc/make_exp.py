@@ -46,9 +46,11 @@ def build(out):
     stock = open(STOCK, 'rb').read(); assert hashlib.sha256(stock).hexdigest() == STOCK_SHA
     base, rep = engine.build(engine.load_data(), stock, VUB)
     img = Img(base)
-    import sampling, zone_chop, mute8, prog_mono
+    import sampling, zone_chop, mute8, prog_mono, timing_q4, mute_all
     sizes = {'sampling': sampling.apply(img), 'zone_chop': zone_chop.apply(img, PLACE['zone_chop']),
-             'prog_mono': prog_mono.apply(img, PLACE['prog_mono'])}     # EXP4 (2026-10-17): MONO pads choke each other
+             'prog_mono': prog_mono.apply(img, PLACE['prog_mono']),     # EXP4 (2026-10-17): MONO pads choke each other
+             'timing_q4': timing_q4.apply(img),                           # EXP8 (2026-10-20): 1/32(3) -> 1/4
+             'mute_all': mute_all.apply(img)}                             # EXP8: ASSIGN Mode -> WINDOW -> ALL FOR BANK/PROGRAM
     if '--mute8' in sys.argv: sizes['mute8'] = mute8.apply(img, PLACE['mute8'])     # EXP2 default: Mute 1-4 only (user choice 2026-10-16)
     d = img.d
     assert d[PROGRAM_RAM[0]:PROGRAM_RAM[1]] == stock[PROGRAM_RAM[0]:PROGRAM_RAM[1]], 'program RAM area changed'

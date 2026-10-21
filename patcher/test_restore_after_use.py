@@ -9,7 +9,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, 'build_os', 'suite'))
 import engine, harness as H, phases
 data = engine.load_data(); orig = open(os.path.join(ROOT, 'build_os', 'sys_stock', 'MPC2KXL.BIN'), 'rb').read()
-GOLD = '/tmp/gold_floppy.img'      # funky.img + the ORIGINAL MPC2KXL.BIN (built by test_matrix preparation)
+GOLD = os.path.join(ROOT, 'floppy', 'gold_floppy.img')      # funky.img + the ORIGINAL MPC2KXL.BIN (built by test_matrix preparation)
 REF = os.path.join(ROOT, 'test_log', 'runs', 'mx_ref', 'mx_ref', 'snap')        # prompt/loading/erase of the untouched original: snaps 3,4,5
 UPDATE = ['press main', 'wait 1', 'down shift', 'up shift', 'wait 0.3', 'press n3', 'wait 0.3', 'down shift', 'up shift', 'wait 2.5',
           'press plus', 'wait 0.5', 'press plus', 'wait 0.5', 'press plus', 'wait 1.5', 'press f6', 'wait 3', 'snap', 'press f5', 'wait 3', 'snap', 'wait 12', 'snap', 'wait 25', 'snap', 'exit']

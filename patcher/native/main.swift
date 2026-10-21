@@ -5,6 +5,7 @@ import WebKit
 final class App: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate {
     var win: NSWindow!
     var web: WKWebView!
+    var savedTo: URL?
 
     func applicationDidFinishLaunching(_ n: Notification) {
         let cfg = WKWebViewConfiguration()
@@ -33,7 +34,16 @@ final class App: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDele
     func download(_ d: WKDownload, decideDestinationUsing r: URLResponse, suggestedFilename: String,
                   completionHandler: @escaping (URL?) -> Void) {
         let p = NSSavePanel(); p.nameFieldStringValue = suggestedFilename
-        p.begin { resp in completionHandler(resp == .OK ? p.url : nil) }
+        p.begin { resp in self.savedTo = resp == .OK ? p.url : nil; completionHandler(self.savedTo) }
+    }
+    // The MPC update code reads Akai's version marker from the OS file's TIME stamp and refuses times before 01:14
+    // ("OS version too old", units with a 16-bit flash chip). A file saved between 00:00 and 01:13 gets 01:14 today.
+    func downloadDidFinish(_ d: WKDownload) {
+        guard let u = savedTo else { return }
+        let cal = Calendar.current, now = Date(), c = cal.dateComponents([.hour, .minute], from: now)
+        if (c.hour ?? 0) * 60 + (c.minute ?? 0) < 74, let safe = cal.date(bySettingHour: 1, minute: 14, second: 0, of: now) {
+            try? FileManager.default.setAttributes([.modificationDate: safe], ofItemAtPath: u.path)
+        }
     }
     // file chooser (<input type=file>)
     func webView(_ w: WKWebView, runOpenPanelWith p: WKOpenPanelParameters, initiatedByFrame f: WKFrameInfo,

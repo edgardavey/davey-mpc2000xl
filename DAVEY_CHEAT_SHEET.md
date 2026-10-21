@@ -47,6 +47,11 @@ Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). A mono s
 
 Keep the original `MPC2KXL.BIN` at the root of the card. LOAD → pick it → DO IT. (Boot-from-disk also works.)
 
+**Important: the file's time stamp.** On some units (those with a newer 16-bit flash chip) the OS reads the OS file's
+*time of day* as a version number and refuses files stamped before **01:14** with "OS version too old".
+The Mac and Windows patcher apps handle this for you. With the browser version, don't save between midnight and 1:14 AM.
+When copying the original `MPC2KXL.BIN`, keep its time stamp (Finder copy or `cp -p`).
+
 ---
 
 ## РУССКИЙ
@@ -93,3 +98,7 @@ SHIFT+4 (SAMPLE) → курсор на `Mode:` → WINDOW. Пресет OFF / SP
 ### 6. ВОССТАНОВЛЕНИЕ ОРИГИНАЛЬНОЙ OS
 
 Держите оригинальный `MPC2KXL.BIN` в корне карты. LOAD → выбрать → DO IT. (Загрузка с диска тоже работает.)
+
+**Важно: время файла.** На некоторых приборах (с новой 16-битной флеш-памятью) OS считывает *время* файла OS как номер версии
+и отказывается от файлов со временем раньше **01:14** («OS version too old»). Приложения патчера для Mac и Windows это учитывают.
+В браузерной версии не сохраняйте файл между полуночью и 1:14. Копируя оригинальный `MPC2KXL.BIN`, сохраняйте его время (копия в Finder или `cp -p`).

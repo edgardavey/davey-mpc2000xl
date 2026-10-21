@@ -6,12 +6,14 @@ CONTRIBUTING.md
 Choose System and Launch.cmd
 Choose System and Launch.command
 DAVEY_CHEAT_SHEET.md
+DAVEY_TUTORIAL.txt
 LICENSE
 Launch Emulator.cmd
 Launch Emulator.command
 PUBLIC_FILES.txt
 README.md
 THIRD_PARTY.md
+TUTORIAL.md
 artwork/mpc2000xldiag/blue-0.svg
 artwork/mpc2000xldiag/blue-1.svg
 artwork/mpc2000xldiag/cursor_down-0.svg
@@ -86,8 +88,10 @@ exp_reloc/gate_presets.py
 exp_reloc/make_exp.py
 exp_reloc/mods/asm16.py
 exp_reloc/mods/mute8.py
+exp_reloc/mods/mute_all.py
 exp_reloc/mods/prog_mono.py
 exp_reloc/mods/sampling.py
+exp_reloc/mods/timing_q4.py
 exp_reloc/mods/zone_chop.py
 exp_reloc/test_exp.py
 licenses/BSD-3-Clause
@@ -118,6 +122,7 @@ patcher/finalize_verified.py
 patcher/gen_data.py
 patcher/matrix_result.json
 patcher/modules.json
+patcher/native/build_mac.sh
 patcher/native/main.swift
 patcher/native/make_icon.py
 patcher/native/windows/app.rc

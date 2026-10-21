@@ -647,6 +647,9 @@ h_tpad:
 
 h_tick:
     ENTER
+    push ds
+    FC 0x4e16, 0x9ec4          /* the stock ZONE tick's only job: next step of the waveform calculation (it froze in the chop screen) */
+    pop ds
     DSNOW
     mov word ptr cs:[V_BEAT], ax
     cmp byte ptr cs:[V_RUN], 1           /* lazy playback reached the end of the sound: tapping is over */

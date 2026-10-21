@@ -10,7 +10,7 @@ sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, 'build_os', 'sui
 import engine, harness as H
 data = engine.load_data()
 orig = open(os.path.join(ROOT, 'build_os', 'sys_stock', 'MPC2KXL.BIN'), 'rb').read()
-FLOPPY = '/tmp/gold_floppy.img'   # holds the ORIGINAL Akai MPC2KXL.BIN: the restore source
+FLOPPY = os.path.join(ROOT, 'floppy', 'gold_floppy.img')   # holds the ORIGINAL Akai MPC2KXL.BIN: the restore source
 LINES = ['wait 28', 'snap', 'down shift', 'up shift', 'wait 0.3', 'press n8', 'wait 0.3', 'down shift', 'up shift', 'wait 2', 'press f3', 'wait 1.5', 'snap',
          'press main', 'wait 1', 'down shift', 'up shift', 'wait 0.3', 'press n3', 'wait 0.3', 'down shift', 'up shift', 'wait 2.5', 'press plus', 'wait 1.5', 'snap',
          'press f6', 'wait 3', 'snap', 'press f5', 'wait 3', 'snap', 'wait 12', 'snap', 'wait 25', 'snap', 'exit']

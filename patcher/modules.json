@@ -1,7 +1,7 @@
 {
  "format": "davey-patcher",
  "schema_version": 2,
- "release": "DAVEY patcher 4.0",
+ "release": "DAVEY patcher 4.1 EXPERIMENTAL (EXP10)",
  "base": {
   "file": "MPC2KXL.BIN",
   "size": 524288,
@@ -901,7 +901,7 @@
     {
      "offset": 479022,
      "old": "AAAAAAA=",
-     "new": "hwjgdDM="
+     "new": "jgjgdDM="
     },
     {
      "offset": 479027,
@@ -1296,7 +1296,7 @@
     {
      "offset": 480380,
      "old": "AAA=",
-     "new": "6D8="
+     "new": "6EY="
     },
     {
      "offset": 480382,
@@ -1481,287 +1481,277 @@
     {
      "offset": 480651,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-     "new": "A+kfAKPC14kWxNceUlCa5r8ZPoPEBB8euOcPjtjGBmMAAR8HH2Hqjs0ZPmAeBrgrWI7YHrjnD47YoYoLHy6jSgEugD5BAQF0A+kbAC4rBkYBLjsGSAFzA+kMAC7GBkEBAC7GBkQBAS6APsMBAXQD6R8ALsYGwwEALqDCAToG3Nd2A+kMAKLd1+ha/egV/egF/S6APg=="
+     "new": "A+kfAKPC14kWxNceUlCa5r8ZPoPEBB8euOcPjtjGBmMAAR8HH2Hqjs0ZPmAeBrgrWI7YHprEnhZOHx645w+O2KGKCx8uo0oBLoA+QQEBdAPpGwAuKwZGAS47BkgBcwPpDAAuxgZBAQAuxgZEAQEugD7DAQF0A+kfAC7GBsMBAC6gwgE6BtzXdgPpDACi3dfoU/3oDg=="
     },
     {
      "offset": 480799,
      "old": "AA==",
-     "new": "Qw=="
+     "new": "/Q=="
     },
     {
      "offset": 480800,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-     "new": "AQF0A+k0AC7GBkMBAC6APkEBAXUD"
+     "new": "6P78LoA+QwEBdAPpNAAuxgZDAQAu"
     },
     {
      "offset": 480821,
      "old": "AA==",
-     "new": "6Q=="
+     "new": "gA=="
     },
     {
      "offset": 480822,
      "old": "AAAAAAAAAAAAAAA=",
-     "new": "IwAxwOj2+S6APkE="
+     "new": "PkEBAXUD6SMAMcA="
     },
     {
      "offset": 480833,
      "old": "AA==",
-     "new": "AQ=="
+     "new": "6A=="
     },
     {
      "offset": 480834,
      "old": "AAAAAAAAAAA=",
-     "new": "AXQD6RMALsY="
+     "new": "7/kugD5BAQE="
     },
     {
      "offset": 480842,
      "old": "AA==",
-     "new": "Bg=="
+     "new": "dA=="
     },
     {
      "offset": 480843,
-     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-     "new": "QgEBLscGVgEAAC7GBkQBAS6APkQBAXQD6R0="
+     "old": "AAAAAAAAAAAA",
+     "new": "A+kTAC7GBkIB"
+    },
+    {
+     "offset": 480852,
+     "old": "AA==",
+     "new": "AQ=="
+    },
+    {
+     "offset": 480853,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "LscGVgEAAC7GBkQBAS6APkQ="
     },
     {
      "offset": 480870,
      "old": "AA==",
-     "new": "Lg=="
+     "new": "AQ=="
     },
     {
      "offset": 480871,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-     "new": "xgZEAQAugD5CAQB1A+kJAOhEAaDc16Ld1+ie/AcfYctgHga4K1iO2A=="
+     "new": "AXQD6R0ALsYGRAEALoA+QgEAdQPpCQDoRAGg3Nei3dfol/wHH2HLYA=="
     },
     {
      "offset": 480911,
      "old": "AAA=",
-     "new": "oC4="
+     "new": "HgY="
     },
     {
      "offset": 480913,
      "old": "AAAAAA==",
-     "new": "iy6izg=="
+     "new": "uCtYjg=="
     },
     {
      "offset": 480917,
      "old": "AAA=",
-     "new": "AaE="
+     "new": "2KA="
     },
     {
      "offset": 480919,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-     "new": "WI0uo88B/zZYjR6aQPQZPh9bg/sDcwPpFQCD+wR2A+kNAIkeWI1r2yoe/5+GKB+hWI0uOwbPAXQD6QcALqDOAaIuix6azPIZPh/NjxQAAPgJoNzXMOSxCvbxBTAwLg=="
+     "new": "Losuos4BoViNLqPPAf82WI0emkD0GT4fW4P7A3MD6RUAg/sEdgPpDQCJHliNa9sqHv+fhigfoViNLjsGzwF0A+kHAC6gzgGiLosemszyGT4fzY8UAAD4CaDc1zDksQ=="
     },
     {
      "offset": 481013,
      "old": "AA==",
-     "new": "ow=="
+     "new": "Cg=="
     },
     {
      "offset": 481014,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAA",
-     "new": "HgkuoEIBMOT28QUwMC6jKAnN"
+     "new": "9vEFMDAuoyUJLqBCATDk9vEF"
     },
     {
      "offset": 481032,
      "old": "AAA=",
-     "new": "jwU="
+     "new": "MDA="
     },
     {
-     "offset": 481035,
-     "old": "AAAA",
-     "new": "AVpP"
+     "offset": 481034,
+     "old": "AAAAAA==",
+     "new": "LqMvCQ=="
     },
     {
      "offset": 481038,
      "old": "AAA=",
-     "new": "TkU="
+     "new": "zY8="
     },
     {
      "offset": 481040,
      "old": "AAAAAA==",
-     "new": "IENITw=="
+     "new": "BQABWg=="
     },
     {
      "offset": 481044,
      "old": "AAA=",
-     "new": "UCA="
+     "new": "T04="
     },
     {
      "offset": 481046,
      "old": "AAAAAA==",
-     "new": "ICBabw=="
+     "new": "RSBDSA=="
     },
     {
      "offset": 481050,
      "old": "AAA=",
-     "new": "bmU="
+     "new": "T1A="
     },
     {
      "offset": 481052,
      "old": "AAAAAAAAAAAA",
-     "new": "czowMCAgIFRh"
+     "new": "ICAgWm9uZXM6"
     },
     {
      "offset": 481061,
      "old": "AA==",
-     "new": "cA=="
+     "new": "MA=="
     },
     {
      "offset": 481062,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-     "new": "czowMCAgICAgICAgIADNjxkBAUJBQ0sALoA+wAEDdQPpPQDNjxkCAUVWRU4AzY8ZBAEgAC6APsABAXUD6Q8AdgM="
+     "new": "MCAgIFRhcHM6MDAgICAgICAgICAAzY8ZAQFCQUNLAC6APsABA3UD6T0AzY8ZAgFFVkVOAM2PGQQBIAAugD7AAQE="
     },
     {
      "offset": 481127,
      "old": "AA==",
-     "new": "6Q=="
+     "new": "dQ=="
     },
     {
      "offset": 481128,
-     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-     "new": "EwDNjxkDAjE2AOsxzY8ZAwI4AOsozY8ZAwI0AOsfzY8ZAg=="
-    },
-    {
-     "offset": 481162,
-     "old": "AA==",
-     "new": "AQ=="
-    },
-    {
-     "offset": 481163,
-     "old": "AAAAAA==",
-     "new": "Q0xFQQ=="
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "A+kPAHYD6RMAzY8ZAwIxNgDrMc2PGQMCOADrKM2PGQMCNADrH82P"
     },
     {
      "offset": 481167,
      "old": "AA==",
-     "new": "Tg=="
+     "new": "GQ=="
     },
     {
-     "offset": 481169,
-     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-     "new": "zY8ZAwJMQVpZAM2PGQQBVU5ETwDNjxkFAUFQUExZAM2PGQYB"
+     "offset": 481168,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "AgFDTEVBTgDNjxkDAkxBWlkAzY8ZBAFVTkRPAM2PGQUBQVBQTA=="
     },
     {
      "offset": 481205,
      "old": "AA==",
-     "new": "UA=="
+     "new": "WQ=="
     },
     {
-     "offset": 481206,
-     "old": "AAAAAAAAAAAAAAAA",
-     "new": "TEFZAAcfYcvEPsLX"
+     "offset": 481207,
+     "old": "AAAAAAAAAAAAAAA=",
+     "new": "zY8ZBgFQTEFZAAc="
     },
     {
      "offset": 481218,
      "old": "AA==",
-     "new": "Jg=="
+     "new": "Hw=="
     },
     {
      "offset": 481219,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-     "new": "i0UuLqNMASaLRTAuo04BJotFOC6jUAExwKNyjqN0ji6jUgEu"
+     "new": "YcvEPsLXJotFLi6jTAEmi0UwLqNOASaLRTguo1ABMcCjco6j"
     },
     {
      "offset": 481255,
      "old": "AA==",
-     "new": "ow=="
+     "new": "dA=="
     },
     {
      "offset": 481256,
      "old": "AAAAAAA=",
-     "new": "VAG7do4="
+     "new": "ji6jUgE="
     },
     {
      "offset": 481261,
      "old": "AA==",
-     "new": "MQ=="
+     "new": "Lg=="
     },
     {
      "offset": 481262,
      "old": "AAAAAAA=",
-     "new": "9jHtLqA="
+     "new": "o1QBu3Y="
     },
     {
      "offset": 481267,
      "old": "AA==",
-     "new": "Qg=="
+     "new": "jg=="
     },
     {
      "offset": 481268,
      "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-     "new": "ATDkOcZyA+lhAIn30ecui4VWAVMuix5QAejS91suOxZOAXY="
+     "new": "MfYx7S6gQgEw5DnGcgPpYQCJ99HnLouFVgFTLoseUAHoy/c="
     },
     {
      "offset": 481303,
      "old": "AA==",
-     "new": "Aw=="
+     "new": "Ww=="
     },
     {
      "offset": 481304,
-     "old": "AAAAAAAAAAAAAAAAAAA=",
-     "new": "6UQAcwPpCgAuOwZMAXI="
-    },
-    {
-     "offset": 481318,
-     "old": "AA==",
-     "new": "Aw=="
-    },
-    {
-     "offset": 481319,
-     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-     "new": "6TUACe11A+kZAC47FlQBcwPpIQB2A+kKAC47BlIBdwPpEgCJBw=="
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "LjsWTgF2A+lEAHMD6QoALjsGTAFyA+k1AAntdQPpGQAuOxZUAXMD6SEAdgPpCgAuOwZSAQ=="
     },
     {
      "offset": 481356,
      "old": "AA==",
-     "new": "iQ=="
+     "new": "dw=="
     },
     {
      "offset": 481357,
      "old": "AAAAAAAAAAAAAAAAAA==",
-     "new": "VwIuo1IBLokWVAGDww=="
+     "new": "A+kSAIkHiVcCLqNSAQ=="
     },
     {
      "offset": 481370,
      "old": "AA==",
-     "new": "BA=="
+     "new": "Lg=="
     },
     {
      "offset": 481371,
      "old": "AAA=",
-     "new": "RUY="
+     "new": "iRY="
     },
     {
      "offset": 481373,
      "old": "AA==",
-     "new": "6w=="
+     "new": "VA=="
     },
     {
      "offset": 481374,
      "old": "AAAAAAAAAAAAAAAAAA==",
-     "new": "kgntdAPpDQDHBwAAxw=="
+     "new": "AYPDBEVG65IJ7XQD6Q=="
     },
     {
      "offset": 481387,
      "old": "AA==",
-     "new": "Rw=="
+     "new": "DQ=="
     },
     {
-     "offset": 481388,
-     "old": "AAAAAAAAAAAAAA==",
-     "new": "AgAAg8MERS6hTA=="
+     "offset": 481389,
+     "old": "AAAAAAAAAA==",
+     "new": "xwcAAMdHAg=="
     },
     {
      "offset": 481398,
      "old": "AA==",
-     "new": "AQ=="
+     "new": "gw=="
     },
     {
      "offset": 481399,
-     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-     "new": "iQcuoU4BiUcCieii3NfDEAeMAooD"
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "wwRFLqFMAYkHLqFOAYlHAonootzXwwAQB4wCigM="
     }
    ]
   },
@@ -1805,6 +1795,69 @@
      "offset": 482892,
      "old": "AAA=",
      "new": "ygQ="
+    }
+   ]
+  },
+  {
+   "id": "timing_q4",
+   "name": "1/4 timing",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 0,
+   "requires": [],
+   "kind": "set",
+   "desc": "Timing / Note value: 1/32(3) becomes 1/4 (quarter-note quantize). Sequences stay compatible: a stock OS reads it as 1/32(3).",
+   "patches": [
+    {
+     "offset": 83625,
+     "old": "CA==",
+     "new": "YA=="
+    },
+    {
+     "offset": 145070,
+     "old": "MzIoMyk=",
+     "new": "NCAgICA="
+    },
+    {
+     "offset": 145961,
+     "old": "Aw==",
+     "new": "Lw=="
+    }
+   ]
+  },
+  {
+   "id": "mute_all",
+   "name": "Mute group for bank / program",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 1,
+   "requires": [
+    "param_copy"
+   ],
+   "kind": "set",
+   "desc": "PROGRAM > ASSIGN, cursor on Mode:, WINDOW: vubeatz ALL FOR window copies the pad Mode (MUTE n, NORMAL ...) to the bank or the whole program.",
+   "patches": [
+    {
+     "offset": 372383,
+     "old": "cP8ZPg==",
+     "new": "jA4Adw=="
+    },
+    {
+     "offset": 487864,
+     "old": "g+gC",
+     "new": "6a0M"
+    },
+    {
+     "offset": 488325,
+     "old": "mloFFk4=",
+     "new": "6DELkJA="
+    },
+    {
+     "offset": 491105,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "AQAACwDQDoP4CXQD6QUAvmAO+MOD6AKD+AZ2A+kKAMHgA740BAHG+MP5wx5oK1gfgz5ejQYfdQPpBQDqcP8ZPpqW/xk+YB4GaCtYHy7GBtkEALgJAOkj8y6DPtAECXUD6QYAmloFFk7DmvD7GT7DAgccEFBhcmFtZXRlcjogTU9ERQ=="
     }
    ]
   },
@@ -2489,8 +2542,8 @@
   ]
  },
  "meter": {
-  "limit": 14,
-  "maximum": 16,
+  "limit": 15,
+  "maximum": 17,
   "limit_set": "davey",
   "sets": {
    "davey": [
@@ -2505,7 +2558,9 @@
     "step_move",
     "zone_chop",
     "sampling",
-    "prog_mono"
+    "prog_mono",
+    "timing_q4",
+    "mute_all"
    ],
    "light": [
     "tune",
@@ -2516,12 +2571,14 @@
   }
  },
  "verified": {
-  "double_stop,format,hpf,input_thru,mute,param_copy,prog_mono,ram_init,runtime,sampling,step_move,transpose,tune,u13_pitch,u13_program,zone_chop": "0a8dddc3ad97bca7383337ad96eba03dd86e4d812a9751a6ca879e770b25f932",
+  "double_stop,format,hpf,input_thru,mute,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_q4,transpose,tune,u13_pitch,u13_program,zone_chop": "742e2423ee6265ee2cef20707103cca882b848b4c0900532cb973963ed4712d0",
   "format,param_copy,transpose,tune,u13_pitch,u13_program": "9b0057cf4b6b4d3b32835b8e244852f8915d507de18a52eda21212d37f47f29a",
-  "zone_chop": "c640dee40220536f22993bcef010fe2f93a56e94ae8378c2fa8e618ca27b0f74",
+  "timing_q4": "8c7980e7f7c5227877a492acbb9e0eaaa1879293721f4413bf8b923b7ef9e782",
+  "mute_all,param_copy,u13_program": "474e71cc0a2a8d22e0eed9ebd6c2a38987f73c658d0fedbbdde0da6c20002b5e",
+  "zone_chop": "aa7f0df833dc5793cadd03b325bd360bfdd765fd1a49beffd8ca5f5ec4d93b6f",
   "sampling": "ea8c00df14b1f1215a540e488d5985e0ecea221d2a43dd9d0e119f827c7adc7f",
   "prog_mono": "35391466c86cac801c5a374b9aa5b7ca63db69b5020e027395a2564c74875a09",
   "mute,mute8": "6beb23509b04ec75f8219a58e51fffefa4fd1ce759eb648461695af7b96e9e31",
-  "double_stop,format,hpf,input_thru,mute,mute8,param_copy,prog_mono,ram_init,runtime,sampling,step_move,transpose,tune,u13_pitch,u13_program,zone_chop": "269854c225d7188349f7ba8f08ca0938e14bfe0b64305115fb6fbb5a1585f128"
+  "double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_q4,transpose,tune,u13_pitch,u13_program,zone_chop": "cd795ff9b13450d5408208dbbd69e7804dffc0406d771081f8f96e14a6b5300e"
  }
 }

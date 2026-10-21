@@ -12,7 +12,7 @@ from PIL import Image, ImageChops
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, 'build_os', 'suite'))
 import phases as P, harness as H
-GOLD = '/tmp/gold_floppy.img'                                   # funky.img + the ORIGINAL Akai MPC2KXL.BIN
+GOLD = os.path.join(ROOT, 'floppy', 'gold_floppy.img')                                   # funky.img + the ORIGINAL Akai MPC2KXL.BIN
 REF = os.path.join(ROOT, 'test_log', 'runs', 'mx_ref', 'mx_ref', 'snap')
 REFBOOT = os.path.join(ROOT, 'test_log', 'runs', 'exp_ref_boot', 'stock', 'snap')     # made by: test_exp.py --make-refs
 UPDATE = ['press main', 'wait 1', 'down shift', 'up shift', 'wait 0.3', 'press n3', 'wait 0.3', 'down shift', 'up shift', 'wait 2.5',
@@ -292,7 +292,67 @@ def t_lazy_repeat():
     R[f"lazy repeat: pads 1,2,3,2,4 give {n('after')} slices (4 expected, repeated pad2 ignored), UNDO -> {n('undo')} (3)"] = n('after') == 4 and n('undo') == 3
     R['lazy repeat: run healthy'] = healthy(d)
 
-TESTS = {'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
+def t_q4():
+    """1/4 timing (2026-10-20): the last Timing value reads 1/4, the live quantizer uses a 96-tick grid, and off-grid
+    hits land on quarter notes (found when stepping the 1/4 grid in the step editor)"""
+    G = 'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] print("GRID %s timing="..sp:read_u8(0x22e67).." grid="..sp:read_u16(0xfe70+0x4856))'
+    L = P.boot() + P.load_first_file(37) + ['press main', 'wait 1', 'press down', 'wait 0.4', 'press right', 'wait 0.4', 'press right', 'wait 0.6']
+    L += ['press plus', 'wait 0.4'] * 3 + ['snap']
+    L += ['down rec', 'wait 0.2', 'press play', 'wait 0.2', 'up rec', 'wait 2.5', 'tap pad1 0', P.T(G, 'hit1'), 'wait 0.62', 'tap pad1 0', 'wait 0.71', 'tap pad1 0', 'wait 1.5', 'press stop', 'wait 1']
+    L += ['press f1', 'wait 2'] + ['press stepnext', 'wait 0.8', 'snap'] * 9 + ['exit']
+    d = H.run('exp_q4', L, 'exp', 'floppy/funky.img', 150, sound=False)
+    g = (log(d, 'GRID') or ['grid=-1'])[0]
+    s = snaps(d)
+    found = sum(1 for p in s[1:] if sum(1 for x in range(20, 120) for y in range(11, 20) if L_px(p, x, y)) > 60)    # an event row (">N: 37/A01 ...")
+    R[f'q4: Timing 1/4 -> quantizer grid ({g.split(" ", 2)[-1]}), recorded off-grid hits on quarter notes: {found} of 3'] = 'grid=96' in g and found == 3
+    R['q4: run healthy'] = healthy(d)
+
+def L_px(path, x, y):
+    from PIL import Image
+    im = Image.open(path).convert('L'); return im.getpixel((x, y)) < 100
+
+def t_mute_all():
+    """ASSIGN > Mode > WINDOW (2026-10-21): vubeatz's ALL FOR window copies the pad's Mode to the bank (16 pads) or the
+    whole program (64 notes); CANCEL changes nothing; every path returns to the ASSIGN page; pads set this way choke"""
+    MODES = ('lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local o=sp:read_u16(0x5c*4) local s=sp:read_u16(0x5c*4+2) local L=s*16+o '
+             'local t={} for n=0,63 do t[#t+1]=string.format("%x",sp:read_u8(L+0x1e+0x18*n)) end print("MODES %s "..table.concat(t," "))')
+    bank_a = sorted(n - 35 for n in (37, 36, 42, 82, 40, 38, 46, 44, 48, 47, 45, 43, 49, 55, 51, 53))
+    res = {}
+    for key, name in (('f5', 'program'), ('f4', 'bank'), ('f2', 'cancel')):
+        L = P.boot() + P.load_first_file(37) + P.pad2_gets_sound() + P.shift_key('n6') + ['wait 1.5', 'press f1', 'wait 2'] + P.set_mode_for_pad(1, 2)
+        L += ['wait 0.5', 'snap', 'press window', 'wait 1.5', 'snap', f'press {key}', 'wait 2', 'snap', P.T(MODES, name)]
+        if name == 'program':            # A01 and A02 now share MUTE 2: hitting A02 must cut A01
+            L += ['wait 3', 'tap pad1 0', 'wait 0.45', 'tap pad2 0', 'wait 0.45', P.T(P.VOICES_PN, 'choke')]
+        L += ['exit']
+        d = H.run(f'exp_mute_all_{name}', L, 'exp', 'floppy/funky.img', 150, sound=False)
+        m = [int(x, 16) for x in (log(d, 'MODES') or ['MODES x'])[0].split()[2:]]
+        s_ = snaps(d)
+        back = len(s_) >= 3 and not diff(L_img(s_[-3]), L_img(s_[-1]))     # just before WINDOW vs after the button
+        res[name] = (m, back, d, log(d, 'PLAYING'))
+    pm, pb, _, pv = res['program']; bm, bb, _, _ = res['bank']; cm, cb, _, _ = res['cancel']
+    R[f'mute all: PROGRAM -> all 64 notes MUTE 2 ({pm.count(5)}), back on ASSIGN'] = len(pm) == 64 and pm.count(5) == 64 and pb
+    R[f'mute all: BANK -> exactly bank A ({[i for i, v in enumerate(bm) if v == 5] == bank_a}), back on ASSIGN'] = [i for i, v in enumerate(bm) if v == 5] == bank_a and bb
+    R['mute all: CANCEL changes nothing (only A01 = MUTE 2), back on ASSIGN'] = [i for i, v in enumerate(cm) if v == 5] == [2] and cb
+    R[f'mute all: pads set by PROGRAM choke each other ({pv})'] = bool(pv) and pv[0].split()[2:] == ['0:36']
+    R['mute all: runs healthy'] = all(healthy(r[2]) for r in res.values())
+
+def L_img(p):
+    from PIL import Image
+    return Image.open(p)
+
+def t_wave_chop():
+    """waveform keeps loading in the chop screen (user report 2026-10-21): record a long sound, open the chop screen at once;
+    the stock waveform calculation (7C00:03DC counts 0..0xF5 columns) must still reach the end"""
+    C = 'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] print("WCOUNT %s "..sp:read_u16(0x7c3dc))'
+    L = P.boot() + P.load_first_file(35) + ['down shift', 'up shift', 'wait 0.3', 'press n4', 'wait 0.3', 'down shift', 'up shift', 'wait 2', 'press down', 'wait 0.5']
+    L += ['press minus', 'wait 0.1'] * 70 + ['wait 0.5', 'press f6', 'wait 2', 'press f6', 'wait 12', 'press f5', 'wait 3']       # 10 s stereo recording, KEEP
+    L += P.shift_key('n5') + ['wait 0.3', 'press f3', 'wait 0.6', 'press f3', 'wait 0.3', P.T(C, 'enter'), 'wait 20', P.T(C, 'later'), 'snap', 'exit']
+    d = H.run('exp_wave_chop', L, 'exp', 'floppy/funky.img', 150, sound=False)
+    c = {l.split()[1]: int(l.split()[2]) for l in log(d, 'WCOUNT')}
+    R[f"wave chop: waveform calculation in the chop screen {c.get('enter')} -> {c.get('later')} of 245 columns"] = c.get('enter', 999) < 245 and c.get('later') == 245
+    R['wave chop: run healthy'] = healthy(d)
+
+TESTS = {'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'q4': t_q4, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
 if __name__ == '__main__' and sys.argv[1:2] == ['--make-refs']:
     d = H.run('exp_ref_boot', BOOT_LINES, 'stock', GOLD, 120, sound=False); print(d, snaps(d)); sys.exit()
 if __name__ == '__main__':
