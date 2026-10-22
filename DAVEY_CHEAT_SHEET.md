@@ -7,6 +7,7 @@ Build: DAVEY preset of the DAVEY MPC PATCHER (experimental line EXP6, emulator-t
 ### 1. ZONE CHOP (waveform chop screen)
 
 **Open:** SHIFT+5 (TRIM) → F3 (ZONE) → **F3 again**. The header reads `ZONE CHOP  Zones:nn  Taps:nn`.
+Patcher options: **Chop: even split** and/or **Lazy chop** (with only one, F3 offers only that kind).
 
 | Key | Action |
 |-----|--------|
@@ -36,6 +37,11 @@ SHIFT+6 → F2 (PARAMS) → `Voice overlap: MONO`. **MONO pads choke each other.
 ### 4. MUTE GROUPS
 
 SHIFT+6 → F1 (ASSIGN) → `Mode:` → `MUTE 1`…`MUTE 4` (`MUTE 5`…`8` with the Mute 1-8 option). Pads in the same group choke each other: use it for open/closed hi-hat. NORMAL = no group.
+Whole bank / program: cursor on `Mode:` → WINDOW → ALL FOR: BANK / PROGRAM.
+
+### 4b. 1/4 TIMING
+
+`Timing:` / `Note value:` now goes up to `1/4` and `1/4(3)` (after `1/32(3)`, nothing removed). Saved .ALL files read as 1/8 / 1/8(3) on a stock unit.
 
 ### 5. SAMPLING MODE
 
@@ -59,6 +65,7 @@ When copying the original `MPC2KXL.BIN`, keep its time stamp (Finder copy or `cp
 ### 1. ZONE CHOP (экран нарезки с волной)
 
 **Открыть:** SHIFT+5 (TRIM) → F3 (ZONE) → **ещё раз F3**. В заголовке `ZONE CHOP  Zones:nn  Taps:nn`.
+Опции патчера: **Chop: even split** и/или **Lazy chop** (если выбрана одна, F3 предлагает только её).
 
 | Клавиша | Действие |
 |---------|----------|
@@ -88,6 +95,11 @@ SHIFT+6 → F2 (PARAMS) → `Voice overlap: MONO`. **MONO-пэды глушат 
 ### 4. MUTE-ГРУППЫ
 
 SHIFT+6 → F1 (ASSIGN) → `Mode:` → `MUTE 1`…`MUTE 4` (`MUTE 5`…`8` с опцией Mute 1-8). Пэды одной группы глушат друг друга: для открытого/закрытого хэта. NORMAL = без группы.
+Весь банк / программа: курсор на `Mode:` → WINDOW → ALL FOR: BANK / PROGRAM.
+
+### 4b. ТАЙМИНГ 1/4
+
+`Timing:` / `Note value:` теперь доходит до `1/4` и `1/4(3)` (после `1/32(3)`, ничего не убрано). Сохранённые .ALL на стоковом MPC читаются как 1/8 / 1/8(3).
 
 ### 5. SAMPLING MODE
 

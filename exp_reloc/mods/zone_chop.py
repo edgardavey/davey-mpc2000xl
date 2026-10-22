@@ -93,6 +93,8 @@ v_prev:  .long 0
 v_taps:  .fill 16, 2, 0
 v_bak:   .fill 74, 1, 0
 v_mode:  .byte 0
+v_even_ok: .byte 0xe7                /* patcher options: even split (16/8/4) allowed, LAZY allowed */
+v_lazy_ok: .byte 0x1a                /* markers; apply() writes 0/1 */
 v_scr:   .byte 0
 v_pz:    .byte 0
 v_preq:  .byte 0
@@ -318,7 +320,17 @@ h_enter:
     cmp al, 4
     je .Le_mode
     mov byte ptr cs:[V_MODE], 3
-.Le_mode:
+.Le_mode:                               /* a mode this build leaves out: the other kind */
+    mov al, byte ptr cs:[V_MODE]
+    CALLN mode_ok
+    jc .Le_mok
+    mov byte ptr cs:[V_MODE], 3
+    mov al, 3
+    CALLN mode_ok
+    jc .Le_mok
+    mov byte ptr cs:[V_MODE], 0
+    mov word ptr cs:[V_N], 16
+.Le_mok:
     xor al, al
     cmp byte ptr cs:[V_MODE], 3
     jne .Le_arm
@@ -478,11 +490,31 @@ set_mode:
     jmp redraw
 ntab: .byte 16, 8, 4
 
-h_mode:
+mode_ok:                            /* al = mode: CF=1 when this build has it */
+    cmp al, 3
+    je .Lmo_lazy
+    cmp byte ptr cs:[V_EVEN_OK], 1
+    jmp .Lmo_t
+.Lmo_lazy:
+    cmp byte ptr cs:[V_LAZY_OK], 1
+.Lmo_t:
+    stc
+    je .Lmo_y
+    clc
+.Lmo_y:
+    .byte 0xc3
+
+h_mode:                             /* F3: next mode this build has (16 -> 8 -> 4 -> LAZY) */
     ENTER
     mov al, byte ptr cs:[V_MODE]
+    mov cx, 4
+.Lhm_next:
     inc al
     and al, 3
+    CALLN mode_ok
+    jc .Lhm_ok
+    loop .Lhm_next
+.Lhm_ok:
     mov byte ptr cs:[V_MODE], al
     CALLN set_mode
     LEAVE
@@ -866,19 +898,26 @@ build_zones:
 '''
 
 LABELS = ['v_endms','v_open','v_run','v_cnt','v_req','v_dirty','v_t0','v_beat','v_len','v_rate','v_prev','v_taps','v_bak','v_mode','v_n',
-          'h_enter','h_back','h_f2','h_mode','h_f4','h_apply','h_done','h_play','h_playoff','h_draw','h_tick','pad_hook','s_hdr','ntab','v_qh','v_ql','v_r','v_acc','v_scr','v_pz','v_preq','v_dig','v_dfld','v_lnote','h_tpad','v_tpad']
+          'h_enter','h_back','h_f2','h_mode','h_f4','h_apply','h_done','h_play','h_playoff','h_draw','h_tick','pad_hook','s_hdr','ntab','v_qh','v_ql','v_r','v_acc','v_scr','v_pz','v_preq','v_dig','v_dfld','v_lnote','h_tpad','v_tpad','v_even_ok','v_lazy_ok']
 
 def source(seg):
     consts = ''.join(f'.set {l.upper()}, {l} - start + BASE\n' for l in LABELS)
     consts += '.set T_CHOP_SEG, %d\n' % ((seg * 16 + T_CHOP) >> 4)
     return SRC.replace('.set SEGV, @SEG@\n', '.set SEGV, %d\n' % seg + consts, 1)
 
-def apply(img, lin):
-    """place the module at linear `lin` (code starts there), segment = (lin - BASE) / 16"""
+def apply(img, lin, even=True, lazy=True):
+    """place the module at linear `lin` (code starts there), segment = (lin - BASE) / 16.
+    even / lazy: which chop kinds F3 offers (patcher options 2026-10-22). Neither = the shared core only (TRIM pad
+    select, F6 PLAY; the patcher adds one or both bytes); a real build always has at least one."""
+    global OPT_AT
     assert (lin - BASE) % 16 == 0
     seg = (lin - BASE) >> 4
     p = tempfile.mktemp(suffix='.S'); open(p, 'w').write(source(seg))
     code = assemble(p); os.remove(p)
+    assert code.count(b'\xe7\x1a') == 1
+    i = code.index(b'\xe7\x1a')                      # v_even_ok, v_lazy_ok
+    code = code[:i] + bytes([int(even), int(lazy)]) + code[i + 2:]
+    OPT_AT = lin + i                                   # linear address of v_even_ok (v_lazy_ok follows); used by the patcher
     img.put(lin, code, 'zone_chop')
     tpad, pad, enter = struct.unpack('<HHH', code[-6:])
     # 1) pad events: stock `mov es,[430a]; mov di,[4854]` at 0x0a1b -> far call to pad_hook (+3 nops)

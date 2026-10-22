@@ -292,20 +292,79 @@ def t_lazy_repeat():
     R[f"lazy repeat: pads 1,2,3,2,4 give {n('after')} slices (4 expected, repeated pad2 ignored), UNDO -> {n('undo')} (3)"] = n('after') == 4 and n('undo') == 3
     R['lazy repeat: run healthy'] = healthy(d)
 
-def t_q4():
-    """1/4 timing (2026-10-20): the last Timing value reads 1/4, the live quantizer uses a 96-tick grid, and off-grid
-    hits land on quarter notes (found when stepping the 1/4 grid in the step editor)"""
+def t_timing():
+    """Full Timing list (2026-10-22): from the default 1/16 the DATA wheel reaches 1/32(3) (stock value 6, still the stock
+    grid and the same picture as the stock OS), then 1/4 (7, grid 96, off-grid hits land on quarter notes) and 1/4(3)
+    (8, grid 64), and stops there"""
     G = 'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] print("GRID %s timing="..sp:read_u8(0x22e67).." grid="..sp:read_u16(0xfe70+0x4856))'
-    L = P.boot() + P.load_first_file(37) + ['press main', 'wait 1', 'press down', 'wait 0.4', 'press right', 'wait 0.4', 'press right', 'wait 0.6']
-    L += ['press plus', 'wait 0.4'] * 3 + ['snap']
-    L += ['down rec', 'wait 0.2', 'press play', 'wait 0.2', 'up rec', 'wait 2.5', 'tap pad1 0', P.T(G, 'hit1'), 'wait 0.62', 'tap pad1 0', 'wait 0.71', 'tap pad1 0', 'wait 1.5', 'press stop', 'wait 1']
-    L += ['press f1', 'wait 2'] + ['press stepnext', 'wait 0.8', 'snap'] * 9 + ['exit']
-    d = H.run('exp_q4', L, 'exp', 'floppy/funky.img', 150, sound=False)
-    g = (log(d, 'GRID') or ['grid=-1'])[0]
-    s = snaps(d)
+    def run(n, build, rec=True, step=False):
+        L = P.boot() + P.load_first_file(37) + ['press main', 'wait 1', 'press down', 'wait 0.4', 'press right', 'wait 0.4', 'press right', 'wait 0.6']
+        L += ['press plus', 'wait 0.4'] * n + ['wait 0.5', 'snap', P.T(G, 'set')]
+        if rec:
+            L += ['down rec', 'wait 0.2', 'press play', 'wait 0.2', 'up rec', 'wait 2.5', 'tap pad1 0', P.T(G, 'hit1'), 'wait 0.62', 'tap pad1 0', 'wait 0.71', 'tap pad1 0', 'wait 1.5', 'press stop', 'wait 1']
+        if step: L += ['press f1', 'wait 2'] + ['press stepnext', 'wait 0.8', 'snap'] * 9
+        return H.run(f'exp_timing_{build}_{n}', L + ['exit'], build, 'floppy/funky.img', 150, sound=False)
+    def grid(d, tag): g = (log(d, 'GRID ' + tag) or ['timing=-1 grid=-1'])[0]; return g.split(' ', 2)[-1]
+    ds = run(3, 'stock', rec=False); d6 = run(3, 'exp')
+    same = len(snaps(ds)) > 0 and len(snaps(d6)) > 0 and not diff(L(snaps(ds)[0]).crop((0, 0, 248, 60)), LO(snaps(d6)[0]).crop((0, 0, 248, 60)))
+    R[f'timing: 1/32(3) kept: value 6, stock grid ({grid(d6, "hit1")}), screen = stock OS'] = grid(d6, 'hit1') == 'timing=6 grid=8' and same
+    d7 = run(4, 'exp', step=True)
+    s = snaps(d7)
     found = sum(1 for p in s[1:] if sum(1 for x in range(20, 120) for y in range(11, 20) if L_px(p, x, y)) > 60)    # an event row (">N: 37/A01 ...")
-    R[f'q4: Timing 1/4 -> quantizer grid ({g.split(" ", 2)[-1]}), recorded off-grid hits on quarter notes: {found} of 3'] = 'grid=96' in g and found == 3
-    R['q4: run healthy'] = healthy(d)
+    R[f'timing: 1/4 = value 7, grid 96 ({grid(d7, "hit1")}), off-grid hits on quarter notes: {found} of 3'] = grid(d7, 'hit1') == 'timing=7 grid=96' and found == 3
+    d8 = run(5, 'exp')
+    R[f'timing: 1/4(3) = value 8, grid 64 ({grid(d8, "hit1")})'] = grid(d8, 'hit1') == 'timing=8 grid=64'
+    d9 = run(9, 'exp', rec=False)
+    R[f'timing: the wheel stops at 1/4(3) ({grid(d9, "set")})'] = grid(d9, 'set').startswith('timing=8 ')
+    texts = [snaps(d)[0] for d in (d6, d7, d8) if snaps(d)]
+    R['timing: 1/32(3), 1/4, 1/4(3) look different'] = len(texts) == 3 and all(diff(LO(a).crop((0, 0, 248, 60)), LO(b).crop((0, 0, 248, 60))) for a, b in ((texts[0], texts[1]), (texts[1], texts[2])))
+    R['timing: runs healthy'] = all(healthy(d) for d in (d6, d7, d8, d9))
+
+def t_timing_disk():
+    """.ALL files with 1/4 (2026-10-22): DAVEY saves the header with 1/8 + a "DAVEYTC" trailer; a stock OS loads that file
+    as 1/8 and records without the divide error a raw value 7 causes; DAVEY loads it back as 1/4; a stock-saved .ALL
+    loads on DAVEY unchanged"""
+    sys.path.insert(0, os.path.join(ROOT, 'exp_reloc'))
+    from fat12 import read as fat_read
+    G = 'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] print("TC %s "..sp:read_u8(0x22e67).." grid="..sp:read_u16(0xfe70+0x4856))'
+    DIV = 'lua manager.machine.debugger:command("bpset 401,1,{printf \\"WR DIVERR\\"; g}") print("BPDIV")'
+    CON = 'lua for i,l in ipairs(manager.machine.debugger.consolelog) do if l:find("WR ") then print("CON "..l) end end'
+    def tc_field(n): return ['press main', 'wait 1', 'press down', 'wait 0.4', 'press right', 'wait 0.4', 'press right', 'wait 0.6'] + ['press plus', 'wait 0.4'] * n
+    SAVE = P.shift_key('n3') + ['wait 2', 'press f2', 'wait 1.5', 'press up', 'wait 0.5', 'press f6', 'wait 2', 'press f5', 'wait 6', 'snap']
+    LOAD = ['press main', 'wait 1'] + P.shift_key('n3') + ['wait 2', 'press f1', 'wait 1.5', 'press plus', 'wait 0.8', 'press plus', 'wait 0.8', 'snap', 'press f6', 'wait 3', 'snap', 'press f5', 'wait 8', 'snap', 'press main', 'wait 1.5', 'snap']
+    REC = ['down rec', 'wait 0.2', 'press play', 'wait 0.2', 'up rec', 'wait 2.5', 'tap pad1 0', 'wait 0.62', 'tap pad1 0', 'wait 1.5', 'press stop', 'wait 1.5', 'snap']
+    def tc(d, tag): return ((log(d, 'TC ' + tag) or ['TC x -1'])[0].split(' ', 2)[-1])
+    da = H.run('exp_tdisk_save', P.boot() + P.load_first_file(37) + tc_field(4) + SAVE + [P.T(G, 'after'), 'exit'], 'exp', 'floppy/funky.img', 150, sound=False)
+    fa = da + '/floppy_after.img'
+    f = fat_read(fa, 'ALL_SEQ_') if os.path.exists(fa) else b''
+    R[f'timing disk: DAVEY save keeps 1/4 in RAM ({tc(da, "after")}), file header 1/8 ({f[0x717] if f else None}), trailer {f[-8:] if f else None}'] = tc(da, 'after').startswith('7 ') and len(f) > 0x800 and f[0x717] == 1 and f[-8:] == b'DAVEYTC\x07'
+    ds = H.run('exp_tdisk_stock', P.boot() + [DIV] + LOAD + [P.T(G, 'loaded')] + REC + [P.T(G, 'rec'), CON, 'exit'], 'stock', fa, 160, sound=False)
+    div = any('DIVERR' in l for l in log(ds, 'CON'))
+    R[f'timing disk: stock OS loads it as 1/8 ({tc(ds, "loaded")}) and records without a divide error ({"ERROR" if div else "none"})'] = tc(ds, 'loaded').startswith('1 ') and not div and healthy(ds)
+    de = H.run('exp_tdisk_load', P.boot() + LOAD + [P.T(G, 'loaded'), 'exit'], 'exp', fa, 120, sound=False)
+    R[f'timing disk: DAVEY loads it back as 1/4 ({tc(de, "loaded")})'] = tc(de, 'loaded').startswith('7 ')
+    dk = H.run('exp_tdisk_stocksave', P.boot() + P.load_first_file(37) + tc_field(2) + SAVE + [P.T(G, 'after'), 'exit'], 'stock', 'floppy/funky.img', 150, sound=False)
+    dl = H.run('exp_tdisk_stockload', P.boot() + LOAD + [P.T(G, 'loaded'), 'exit'], 'exp', dk + '/floppy_after.img', 120, sound=False)
+    R[f'timing disk: a stock-saved .ALL (1/32 = {tc(dk, "after")}) loads on DAVEY unchanged ({tc(dl, "loaded")})'] = tc(dk, 'after').startswith('5 ') and tc(dl, 'loaded').startswith('5 ')
+    R['timing disk: runs healthy'] = all(healthy(d) for d in (da, de, dk, dl))
+
+def t_chop_opts():
+    """patcher options Chop: even split / Lazy chop (2026-10-22): a build with only one of them offers only that kind
+    on the chop screen (entry and F3: even = 16 -> 8 -> 4 -> 16, lazy = always LAZY)"""
+    import subprocess, hashlib
+    sys.path.insert(0, os.path.join(HERE, 'mods')); sys.path.insert(0, HERE)
+    import make_exp, engine, zone_chop
+    base, _ = engine.build(engine.load_data(), open(make_exp.STOCK, 'rb').read(), make_exp.VUB)
+    zone_chop.apply(make_exp.Img(base), make_exp.PLACE['zone_chop']); vmode = zone_chop.OPT_AT - 1
+    M = f'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] print("MODE %s "..sp:read_u8({vmode}))'
+    for kind, want in (('even', [0, 1, 2, 0]), ('lazy', [3, 3, 3, 3])):
+        sysd = os.path.join(ROOT, 'test_log', 'sys_chop_' + kind); os.makedirs(sysd, exist_ok=True)
+        subprocess.run([sys.executable, os.path.join(HERE, 'make_exp.py'), sysd + '/MPC2KXL.BIN', '--chop=' + kind], check=True, capture_output=True)
+        H.SYS['chop_' + kind] = sysd
+        L = P.boot() + P.load_first_file(37) + chop_enter() + ['snap', P.T(M, 'e')] + ['press f3', 'wait 1', 'snap', P.T(M, 'f')] * 3 + ['press f1', 'wait 1', 'exit']
+        d = H.run('exp_chop_' + kind, L, 'chop_' + kind, 'floppy/funky.img', 120, sound=False)
+        got = [int(l.split()[-1]) for l in log(d, 'MODE')]
+        R[f'chop opts: {kind} only: modes {got} (want {want})'] = got == want and healthy(d)
 
 def L_px(path, x, y):
     from PIL import Image
@@ -378,7 +437,7 @@ def t_wave_fast():
     R[f'wave fast: FUNKY columns vs stock: {same} of {len(A)} identical, worst {worst} rows'] = cf == cs_ == 245 and len(A) == 245 and worst <= 2 and same >= 196
     R['wave fast: runs healthy'] = healthy(d)
 
-TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'q4': t_q4, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
+TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'timing': t_timing, 'timing_disk': t_timing_disk, 'chop_opts': t_chop_opts, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
 if __name__ == '__main__' and sys.argv[1:2] == ['--make-refs']:
     d = H.run('exp_ref_boot', BOOT_LINES, 'stock', GOLD, 120, sound=False); print(d, snaps(d)); sys.exit()
 if __name__ == '__main__':

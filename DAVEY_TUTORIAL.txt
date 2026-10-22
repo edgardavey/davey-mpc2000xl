@@ -34,6 +34,9 @@ When copying the original MPC2KXL.BIN, keep its time stamp (Finder copy or cp -p
 
 Open it: SHIFT+5 (TRIM) → F3 (ZONE) → F3 again. The top line shows ZONE CHOP  Zones:nn  Taps:nn.
 
+In the patcher, "Chop: even split" and "Lazy chop" are separate options: pick one or both.
+With only one of them, F3 offers only that kind.
+
 Even slices
 -----------
   * F3 cycles 16 → 8 → 4 → LAZY.
@@ -94,6 +97,16 @@ A single MONO pad among POLY pads works as stock (it only cuts itself). Your pro
 SHIFT+6 → F1 (ASSIGN) → Mode: → MUTE 1 … MUTE 4 (MUTE 5–8 with the *Mute 1–8* patcher option).
 
 Pads in the same group cut each other: classic open/closed hi-hat. NORMAL = no group.
+
+Whole bank or program at once: cursor on Mode: → WINDOW → ALL FOR: BANK / PROGRAM copies this pad's Mode.
+
+============================================================
+
+4b. 1/4 timing
+--------------
+
+Main screen Timing: (and the TIMING CORRECT window Note value:): after 1/32(3) come 1/4 and 1/4(3).
+Nothing was removed. Saved .ALL files stay safe on a stock MPC2000XL, which reads them as 1/8 / 1/8(3).
 
 ============================================================
 

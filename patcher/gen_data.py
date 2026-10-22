@@ -56,7 +56,7 @@ def runs(before, after, skip=()):
     out = []
     for i in ch:
         o = frozenset(own.get(i, ()))
-        if out and i - out[-1][1] <= 3 and out[-1][2] == o: out[-1][1] = i
+        if out and i - out[-1][1] <= 3 and out[-1][2] == o and not any(out[-1][1] < k < i for k in skip): out[-1][1] = i
         else: out.append([i, i, o])
     return out
 
@@ -82,22 +82,30 @@ mods.append({'id': 'overdub_fix', 'name': 'REGIONS overdub fix', 'group': 'davey
 # ---- relocated DAVEY modules (exp_reloc line): built on the VU base WITHOUT REGIONS, placed only in measured-free RAM
 sys.path.insert(0, os.path.join(ROOT, 'exp_reloc')); sys.path.insert(0, os.path.join(ROOT, 'exp_reloc', 'mods'))
 import make_exp, engine
-import sampling as x_sampling, zone_chop as x_chop, mute8 as x_mute8, prog_mono as x_pmono, timing_q4 as x_q4, mute_all as x_mall, wave_fast as x_wfast
+import sampling as x_sampling, zone_chop as x_chop, mute8 as x_mute8, prog_mono as x_pmono, timing_full as x_tfull, mute_all as x_mall, wave_fast as x_wfast
 tmp = {'base': {'size': 524288, 'sha256': vub['files']['MPC2KXL.BIN']['sha256']}, 'modules': [m for m in mods if m['kind'] == 'xor'],
        'rules': vub['rules'], 'finalize': {'checksum': {'range': [0, 0x77ffe], 'offset': 0x77ffe}, 'unchanged': [0x78000, 0x80000]}}
 base_noreg, _ = engine.build(tmp, stock, make_exp.VUB)
 def exp_apply(fn):
     img = make_exp.Img(base_noreg); fn(img); return bytes(img.d)
-mods.append({'id': 'zone_chop', 'name': 'Zone chop', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 2, 'requires': [],
+_chop_core = exp_apply(lambda img: x_chop.apply(img, make_exp.PLACE['zone_chop'], even=False, lazy=False))
+_opt = x_chop.OPT_AT                                   # v_even_ok, v_lazy_ok (0 in the core)
+mods.append({'id': 'zone_chop', 'name': 'Chop screen (core)', 'group': 'davey', 'source': 'davey', 'hidden': True, 'weight': 2, 'requires': [],
              'excludes': ['regions'], 'kind': 'set',
-             'desc': 'TRIM > ZONE, press F3 again: chop screen with the waveform. F3 cycles 16 / 8 / 4 / LAZY, F4 UNDO, F5 APPLY makes the sounds and a drum program, F6 PLAY (hold) and the pads preview slices. 16 LEVELS stays free.',
-             'patches': patches_from(base_noreg, exp_apply(lambda img: x_chop.apply(img, make_exp.PLACE['zone_chop'])))})
+             'desc': 'Shared part of the chop options: chop screen (TRIM > ZONE > F3), F5 APPLY, F6 PLAY, TRIM pad select. Added by Chop: even split and/or Lazy chop.',
+             'patches': patches_from(base_noreg, _chop_core, skip=(0x77ffe, 0x77fff, _opt, _opt + 1))})
+mods.append({'id': 'chop_even', 'name': 'Chop: even split', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 0, 'requires': ['zone_chop'],
+             'kind': 'set', 'desc': 'TRIM > ZONE, press F3 again: chop screen with the waveform; F3 picks 16 / 8 / 4 even slices, F5 APPLY makes the sounds and a drum program. Pads and F6 PLAY preview slices; TRIM pads select their sound.',
+             'patches': [{'offset': _opt, 'old': b64(b'\x00'), 'new': b64(b'\x01')}]})
+mods.append({'id': 'chop_lazy', 'name': 'Lazy chop', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 0, 'requires': ['zone_chop'],
+             'kind': 'set', 'desc': 'Chop screen LAZY mode: hit a pad to play the sound, tap new pads where slices start, F4 UNDO, F5 APPLY makes the sounds and a drum program.',
+             'patches': [{'offset': _opt + 1, 'old': b64(b'\x00'), 'new': b64(b'\x01')}]})
 mods.append({'id': 'prog_mono', 'name': 'Program MONO', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 1, 'requires': [],
              'kind': 'set', 'desc': 'Pads set to Voice overlap MONO choke each other (newer-MPC style): ALL > MONO makes the whole program mono. A single MONO pad works as stock.',
              'patches': patches_from(base_noreg, exp_apply(lambda img: x_pmono.apply(img, make_exp.PLACE['prog_mono'])))})
-mods.append({'id': 'timing_q4', 'name': '1/4 timing', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 0, 'requires': [],
-             'kind': 'set', 'desc': 'Timing / Note value: 1/32(3) becomes 1/4 (quarter-note quantize). Sequences stay compatible: a stock OS reads it as 1/32(3).',
-             'patches': patches_from(base_noreg, exp_apply(x_q4.apply))})
+mods.append({'id': 'timing_full', 'name': '1/4 timing', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 1, 'requires': [],
+             'kind': 'set', 'desc': 'Timing / Note value gets 1/4 and 1/4(3) after 1/32(3) (nothing removed). .ALL files stay safe on stock units: they read 1/4 as 1/8 and 1/4(3) as 1/8(3).',
+             'patches': patches_from(base_noreg, exp_apply(x_tfull.apply))})
 mods.append({'id': 'mute_all', 'name': 'Mute group for bank / program', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 1, 'requires': ['param_copy'],
              'kind': 'set', 'desc': 'PROGRAM > ASSIGN, cursor on Mode:, WINDOW: vubeatz ALL FOR window copies the pad Mode (MUTE n, NORMAL ...) to the bank or the whole program.',
              'patches': patches_from(base_noreg, exp_apply(x_mall.apply))})
@@ -135,12 +143,12 @@ for m in mods:
             seen[i] = m['id']
 
 rules = vub['rules']
-data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.2 EXPERIMENTAL (EXP11)',
+data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.3 EXPERIMENTAL (EXP12)',
         'base': {'file': 'MPC2KXL.BIN', 'size': 524288, 'sha256': vub['files']['MPC2KXL.BIN']['sha256']},
         'modules': mods, 'rules': rules,
         'finalize': {'checksum': {'range': [0, 0x77ffe], 'offset': 0x77ffe}, 'unchanged': [0x78000, 0x80000],
                      'forbidden': [[0x70000, 0x741b0]]}}
-davey = make_exp.VUB + ['zone_chop', 'sampling', 'prog_mono', 'timing_q4', 'mute_all', 'wave_fast']   # = EXP11 (experimental line; EXP7 stable patcher is released separately)
+davey = make_exp.VUB + ['zone_chop', 'chop_even', 'chop_lazy', 'sampling', 'prog_mono', 'timing_full', 'mute_all', 'wave_fast']   # = EXP12 (experimental line; EXP7 stable patcher is released separately)
 allw = lambda ids: engine.points(data, engine.closure(data, ids))
 data['meter'] = {'limit': allw(davey),
                  'maximum': allw([m['id'] for m in mods if not m['hidden']]),
@@ -149,9 +157,9 @@ data['meter'] = {'limit': allw(davey),
                           'light': ['tune', 'transpose', 'param_copy', 'format']}}
 # the DAVEY preset must be byte-identical to the emulator-tested experimental file
 out, rep = engine.build(data, stock, davey)
-exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP11.BIN'), 'rb').read()
-assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP11.BIN'
-print('DAVEY preset == DAVEY_EXP11.BIN', rep['sha256'][:16])
+exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP12.BIN'), 'rb').read()
+assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP12.BIN'
+print('DAVEY preset == DAVEY_EXP12.BIN', rep['sha256'][:16])
 # tested combinations (emulator gates passed on the exact file); more are added by finalize_verified.py after the gate runs
 data['verified'] = {engine.sel_key(engine.closure(data, davey)): rep['sha256']}
 _extra = os.path.join(HERE, 'verified_extra.json')       # written by exp_reloc/gate_presets.py: only selections that passed both restore gates
