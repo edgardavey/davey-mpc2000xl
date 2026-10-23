@@ -236,7 +236,8 @@ v_rip:
     .word 0
 v_rcs:
     .word 0
-    .word GRID0, SWING, CAP, GRID2, DISP, SAVE_HDR, SAVE_TAIL, LOAD_TAIL
+    .word GRID0, SWING, CAP, GRID2, DISP, SAVE_HDR, SAVE_TAIL, LOAD_TAIL, STEP
+    .ascii "TFEND"                /* end marker: apply() checks the export table sits right before it */
 '''
 
 
@@ -255,7 +256,13 @@ def apply(img):
     p = tempfile.mktemp(suffix='.S'); open(p, 'w').write(source())
     code = assemble(p); os.remove(p)
     img.put(LIN, code, 'timing_full')
-    grid0, swing, cap, grid2, disp, save_hdr, save_tail, load_tail, step = struct.unpack('<9H', code[-18:])
+    assert code.endswith(b'TFEND'), 'export table / end marker missing'
+    exports = struct.unpack('<9H', code[-23:-5])
+    grid0, swing, cap, grid2, disp, save_hdr, save_tail, load_tail, step = exports
+    src = source()
+    for name, off in zip(('grid0', 'swing', 'cap', 'grid2', 'disp', 'save_hdr', 'save_tail', 'load_tail', 'step'), exports):
+        assert 0 < off < len(code) - 23 or name == 'grid0', f'export {name} out of range'
+    assert code[step:step + 6] == bytes.fromhex('813e3037') + b'\x17\x07', 'step export does not point at the step routine'
     # readers
     img.patch(0x04df2, bytes.fromhex('268a4407' 'bb3348' 'd7'), far(grid0) + b'\x90' * 3)
     for a in (0x04e20, 0x07f50):
