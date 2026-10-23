@@ -23,12 +23,14 @@ So .ALL files stay stock-safe:
 import os, struct, tempfile
 from asm16 import assemble
 
-LIN = 0x74a90                 # measured-free range 0x749A4-0x74CB1 (wave_fast ends at 0x74A90)
+LIN = 0x75a80                 # measured-free range 0x75A7E-0x75CE0
 SEG = LIN >> 4
 GRID = [1, 48, 32, 24, 16, 12, 8, 96, 64]          # 96 PPQN
 SWING = [0, 24, 0, 12, 0, 0, 0, 0, 0]
 CAP = [g // 2 - 1 if g > 1 else 0 for g in GRID]     # stock: 0, 23, 15, 11, 7, 5, 3
-NAMES = ['OFF', '1/8', '1/8(3)', '1/16', '1/16(3)', '1/32', '1/32(3)', '1/4', '1/4(3)']
+NAMES = ['OFF', '1/8', '1/8(3)', '1/16', '1/16(3)', '1/32', '1/32(3)', '1/4', '1/4(3)']     # by stored value
+ORDER = [0, 7, 8, 1, 2, 3, 4, 5, 6]          # DATA wheel order (user 2026-10-23): OFF, 1/4, 1/4(3), 1/8 ... 1/32(3)
+POS = [ORDER.index(v) for v in range(len(ORDER))]
 MAXV = len(NAMES) - 1
 
 SRC = r'''
@@ -95,6 +97,42 @@ swing_t:
     .byte %(SWING)s
 cap_t:
     .byte %(CAP)s
+pos2val_t:
+    .byte %(ORDER)s
+val2pos_t:
+    .byte %(POS)s
+step:                          /* 0:4509 in the OS's value step routine (ds = 0FE7): al = up, cx = down, field at [3730] */
+    cmp word ptr [0x3730], 0x0717
+    jne .Lst_stock
+    cmp word ptr [0x3732], 0x2275
+    jne .Lst_stock
+    les si, dword ptr [0x3730] /* the Timing field: step in wheel order, store the value */
+    push bx
+    mov ah, 0
+    mov bl, byte ptr es:[si]
+    .byte 0xe8
+    .word clamp - . - 2
+    mov bl, byte ptr cs:[bx + VAL2POS_T]
+    add ax, bx
+    sub ax, cx
+    jge .Lst_lo
+    xor ax, ax
+.Lst_lo:
+    cmp ax, %(MAXV)d
+    jle .Lst_hi
+    mov ax, %(MAXV)d
+.Lst_hi:
+    mov bx, ax
+    mov al, byte ptr cs:[bx + POS2VAL_T]
+    mov byte ptr es:[si], al
+    pop bx
+    add sp, 4                  /* drop our return: finish as the stock byte path does (call 4781 / retf to its caller) */
+    .byte 0xea
+    .word 0x4532, 0x0000
+.Lst_stock:
+    mov ah, 0
+    les si, dword ptr [0x3730]
+    .byte 0xcb
 list_t:
     .byte 7
     .ascii "%(LIST)s"
@@ -204,8 +242,8 @@ v_rcs:
 
 def source():
     sub = {'MAXV': MAXV, 'GRID': ', '.join(map(str, GRID)), 'SWING': ', '.join(map(str, SWING)), 'CAP': ', '.join(map(str, CAP)),
-           'LIST': ''.join(n.ljust(7) for n in NAMES)}
-    consts = ''.join(f'.set {n.upper()}, {n} - start\n' for n in ('grid0', 'swing', 'cap', 'grid2', 'disp', 'grid_t', 'swing_t', 'cap_t', 'list_t', 'save_hdr', 'save_tail', 'load_tail', 'trail', 'tbuf', 'v_saved', 'v_rip', 'v_rcs'))
+           'LIST': ''.join(n.ljust(7) for n in NAMES), 'ORDER': ', '.join(map(str, ORDER)), 'POS': ', '.join(map(str, POS))}
+    consts = ''.join(f'.set {n.upper()}, {n} - start\n' for n in ('grid0', 'swing', 'cap', 'grid2', 'disp', 'grid_t', 'swing_t', 'cap_t', 'list_t', 'save_hdr', 'save_tail', 'load_tail', 'trail', 'tbuf', 'v_saved', 'v_rip', 'v_rcs', 'pos2val_t', 'val2pos_t', 'step'))
     return (SRC % sub).replace('start:\n', consts + 'start:\n', 1)
 
 
@@ -217,7 +255,7 @@ def apply(img):
     p = tempfile.mktemp(suffix='.S'); open(p, 'w').write(source())
     code = assemble(p); os.remove(p)
     img.put(LIN, code, 'timing_full')
-    grid0, swing, cap, grid2, disp, save_hdr, save_tail, load_tail = struct.unpack('<8H', code[-16:])
+    grid0, swing, cap, grid2, disp, save_hdr, save_tail, load_tail, step = struct.unpack('<9H', code[-18:])
     # readers
     img.patch(0x04df2, bytes.fromhex('268a4407' 'bb3348' 'd7'), far(grid0) + b'\x90' * 3)
     for a in (0x04e20, 0x07f50):
@@ -232,6 +270,8 @@ def apply(img):
     for a in (0x273fe, 0x29b66, 0x2b996, 0x2f089):
         i = img.d.index(bytes.fromhex('ba0600'), a, a + 12)
         img.patch(i, bytes.fromhex('ba0600'), bytes([0xba, MAXV, 0]))
+    # DATA wheel order: the step routine's 'mov ah,0 / les si,[3730]' -> lcall step + nop
+    img.patch(0x4509, bytes.fromhex('b400' 'c4363037'), far(step) + b'\x90')
     # .ALL save / load
     img.patch(0x1f6c2, bytes.fromhex('be0000' 'b9060f' 'b309' 'cd91'), far(save_hdr) + b'\x90' * 5)
     img.patch(0x1f6e9, bytes.fromhex('b30a' 'cd91' '0e'), far(save_tail))

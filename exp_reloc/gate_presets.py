@@ -5,7 +5,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, 'patcher')); import engine
 data = engine.load_data(); stock = open(os.path.join(ROOT, 'build_os', 'sys_stock', 'MPC2KXL.BIN'), 'rb').read()
 S = data['meter']['sets']
-SEL = {'light': S['light'], 'only_timing': ['timing_full'], 'only_wave_fast': ['wave_fast'], 'only_mute_all': ['param_copy', 'mute_all'], 'only_chop_even': ['chop_even'], 'only_chop_lazy': ['chop_lazy'], 'only_sampling': ['sampling'], 'only_prog_mono': ['prog_mono'],
+SEL = {'light': S['light'], 'only_timing': ['timing_full'], 'only_rec_start0': ['rec_start0'], 'only_wave_fast': ['wave_fast'], 'only_mute_all': ['param_copy', 'mute_all'], 'only_chop_even': ['chop_even'], 'only_chop_lazy': ['chop_lazy'], 'only_sampling': ['sampling'], 'only_prog_mono': ['prog_mono'],
        'mute8': ['mute', 'mute8'], 'davey_mute8': S['davey'] + ['mute8']}
 out = {}; extra_path = os.path.join(ROOT, 'patcher', 'verified_extra.json')
 for name, sel in SEL.items():

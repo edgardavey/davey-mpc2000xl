@@ -46,12 +46,13 @@ def build(out):
     stock = open(STOCK, 'rb').read(); assert hashlib.sha256(stock).hexdigest() == STOCK_SHA
     base, rep = engine.build(engine.load_data(), stock, VUB)
     img = Img(base)
-    import sampling, zone_chop, mute8, prog_mono, timing_full, mute_all, wave_fast
+    import sampling, zone_chop, mute8, prog_mono, timing_full, mute_all, wave_fast, rec_start0
     sizes = {'sampling': sampling.apply(img), 'zone_chop': zone_chop.apply(img, PLACE['zone_chop'], even='--chop=lazy' not in sys.argv, lazy='--chop=even' not in sys.argv),
              'prog_mono': prog_mono.apply(img, PLACE['prog_mono']),     # EXP4 (2026-10-17): MONO pads choke each other
              'timing_full': timing_full.apply(img),                       # EXP12 (2026-10-22): + 1/4, 1/4(3); 1/32(3) kept
              'mute_all': mute_all.apply(img),                             # EXP8: ASSIGN Mode -> WINDOW -> ALL FOR BANK/PROGRAM
-             'wave_fast': wave_fast.apply(img)}                           # EXP11: faster waveform
+             'wave_fast': wave_fast.apply(img),                           # EXP11: faster waveform
+             'rec_start0': rec_start0.apply(img)}                        # EXP13: St = 0 after sampling
     if '--mute8' in sys.argv: sizes['mute8'] = mute8.apply(img, PLACE['mute8'])     # EXP2 default: Mute 1-4 only (user choice 2026-10-16)
     d = img.d
     assert d[PROGRAM_RAM[0]:PROGRAM_RAM[1]] == stock[PROGRAM_RAM[0]:PROGRAM_RAM[1]], 'program RAM area changed'

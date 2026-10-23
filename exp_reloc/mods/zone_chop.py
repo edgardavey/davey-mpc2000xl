@@ -98,6 +98,7 @@ v_lazy_ok: .byte 0x1a                /* markers; apply() writes 0/1 */
 v_scr:   .byte 0
 v_pz:    .byte 0
 v_preq:  .byte 0
+v_res:   .byte 0                      /* LAZY: last slice's pad hit again -> play on from that slice, keep tapping */
 v_n:     .word 16
 v_qh:    .word 0
 v_ql:    .word 0
@@ -203,6 +204,18 @@ pad_hook:
     push cx
     cmp byte ptr cs:[V_OPEN], 1          /* LAZY armed? */
     jne .Lph_prev
+    cmp byte ptr cs:[V_CNT], 0           /* the pad of the last slice again: resume from that slice (running or not) */
+    je .Lph_norm
+    mov cl, ah
+    and cl, 0x3f
+    xor bx, bx
+    mov bl, byte ptr cs:[V_CNT]
+    dec bx
+    cmp byte ptr cs:[bx+V_TPAD], cl
+    jne .Lph_norm
+    mov byte ptr cs:[V_RES], 1
+    jmp .Lph_end
+.Lph_norm:
     cmp byte ptr cs:[V_RUN], 1
     je .Lph_tap
     cmp byte ptr cs:[V_CNT], 0           /* not running, nothing tapped yet: this pad starts the chop */
@@ -306,6 +319,7 @@ h_enter:
     mov byte ptr cs:[V_RUN], 0
     mov byte ptr cs:[V_CNT], 0
     mov byte ptr cs:[V_REQ], 0
+    mov byte ptr cs:[V_RES], 0
     mov al, byte ptr [0xd7dc]
     mov byte ptr cs:[V_MODE], 0
     mov word ptr cs:[V_N], 16
@@ -472,6 +486,7 @@ set_mode:
     CALLN stop_all
     mov byte ptr cs:[V_CNT], 0
     mov byte ptr cs:[V_REQ], 0
+    mov byte ptr cs:[V_RES], 0
     cmp byte ptr cs:[V_MODE], 3
     je .Lsm_lazy
     mov byte ptr cs:[V_OPEN], 0
@@ -693,7 +708,7 @@ h_tick:
     mov byte ptr cs:[V_DIRTY], 1
 .Lt_prev:
     cmp byte ptr cs:[V_PREQ], 1
-    jne .Lt_req0
+    jne .Lt_res
     mov byte ptr cs:[V_PREQ], 0
     mov al, byte ptr cs:[V_PZ]
     cmp al, byte ptr [0xd7dc]
@@ -702,6 +717,20 @@ h_tick:
     CALLN stop_all
     CALLN play_zone
     CALLN redraw
+.Lt_res:
+    cmp byte ptr cs:[V_RES], 1
+    jne .Lt_req0
+    mov byte ptr cs:[V_RES], 0
+    cmp byte ptr cs:[V_CNT], 0
+    je .Lt_req0
+    CALLN stop_all                       /* (the stock stop call does not keep bx) */
+    xor bx, bx
+    mov bl, byte ptr cs:[V_CNT]
+    dec bx
+    shl bx, 1
+    mov ax, word ptr cs:[bx+V_TAPS]     /* that slice's start (ms from the run start): t0 = now - start keeps the timeline */
+    CALLN sp_start
+    mov byte ptr cs:[V_DIRTY], 1
 .Lt_req0:
     cmp byte ptr cs:[V_REQ], 1
     jne .Lt_dirty
@@ -898,7 +927,7 @@ build_zones:
 '''
 
 LABELS = ['v_endms','v_open','v_run','v_cnt','v_req','v_dirty','v_t0','v_beat','v_len','v_rate','v_prev','v_taps','v_bak','v_mode','v_n',
-          'h_enter','h_back','h_f2','h_mode','h_f4','h_apply','h_done','h_play','h_playoff','h_draw','h_tick','pad_hook','s_hdr','ntab','v_qh','v_ql','v_r','v_acc','v_scr','v_pz','v_preq','v_dig','v_dfld','v_lnote','h_tpad','v_tpad','v_even_ok','v_lazy_ok']
+          'h_enter','h_back','h_f2','h_mode','h_f4','h_apply','h_done','h_play','h_playoff','h_draw','h_tick','pad_hook','s_hdr','ntab','v_qh','v_ql','v_r','v_acc','v_scr','v_pz','v_preq','v_dig','v_dfld','v_lnote','h_tpad','v_tpad','v_even_ok','v_lazy_ok','v_res']
 
 def source(seg):
     consts = ''.join(f'.set {l.upper()}, {l} - start + BASE\n' for l in LABELS)
