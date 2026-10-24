@@ -42,7 +42,7 @@ devices. Coordinate through git branches (below), never by editing the same file
 | What | State |
 |---|---|
 | EXP12 | RELEASED experimental (GitHub `experimental-exp12`, branch `experimental`): full Timing list (+1/4, 1/4(3)), stock-safe .ALL files ("DAVEYTC" trailer), patcher options Chop: even split / Lazy chop |
-| EXP13 | CODE DONE, **TESTING** on device 1 (branch `exp13-wip`). Contents below |
+| EXP13 | **RELEASED 2026-10-24** (GitHub `experimental-exp13`, branch `experimental` = `exp13-wip`). Contents below |
 
 EXP13 contents (user reports from 2026-10-23):
 
@@ -62,9 +62,9 @@ Release steps after the tests pass: full suite, gates, patcher/apps, `release/ex
 
 ## 4. Who does what (proposal, user to confirm)
 
-- **Device 1 (this session):** finishes and releases EXP13 on branch `exp13-wip` → `experimental`.
+- **Device 1 (this session):** released EXP13 (done). Next: whatever the user assigns (EXP14 if device 2 doesn't take it).
 - **Device 2 (you):** **EXP14 = Sampling Mode on any sound** (section 5) on a new branch `exp14-sound-lofi`
-  from `exp13-wip`. Put the code in a NEW module `exp_reloc/mods/sound_lofi.py`; touch `make_exp.py`,
+  from `experimental`. Put the code in a NEW module `exp_reloc/mods/sound_lofi.py`; touch `make_exp.py`,
   `test_exp.py`, `gen_data.py` and `app_template.html` only with small additive blocks. Rebase on `experimental`
   once EXP13 is released.
 - Do not edit `zone_chop.py`, `timing_full.py` or `rec_start0.py` without agreeing with the other session first.
