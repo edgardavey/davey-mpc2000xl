@@ -22,7 +22,7 @@ Patcher options: **Chop: even split** and/or **Lazy chop** (with only one, F3 of
 | SHIFT + ←/→ on `St:`/`End:` | wheel step 1 / 10 / 100 / 1000 (as in stock TRIM) |
 | WINDOW | leave, keep the slices as plain zones |
 
-**LAZY:** hit any pad to start the sample, then tap pads where each new slice starts. The zones follow every tap. When it stops, pads preview the slices; trim them, then APPLY.
+**LAZY:** hit any pad to start the sample, then tap pads where each new slice starts. The zones follow every tap. The pad of the **last** slice plays on from that slice, so you can keep chopping (also after the sound ended). When it stops, other pads preview the slices; trim them, then APPLY.
 
 16 LEVELS stays free. Up to 16 slices.
 
@@ -41,11 +41,11 @@ Whole bank / program: cursor on `Mode:` → WINDOW → ALL FOR: BANK / PROGRAM.
 
 ### 4b. 1/4 TIMING
 
-`Timing:` / `Note value:` now goes up to `1/4` and `1/4(3)` (after `1/32(3)`, nothing removed). Saved .ALL files read as 1/8 / 1/8(3) on a stock unit.
+`Timing:` / `Note value:` now reads `OFF, 1/4, 1/4(3), 1/8 … 1/32(3)` (nothing removed). Saved .ALL files read as 1/8 / 1/8(3) on a stock unit.
 
 ### 5. SAMPLING MODE
 
-SHIFT+4 (SAMPLE) → cursor on `Mode:` → WINDOW. Preset OFF / SP1200 (26.04 kHz, 12-bit) / S900 (30 kHz), or `Sample Rate` 8000–44100 Hz. F5 DO IT. Record as usual; a black "processing" box shows until it is done, then KEEP / RETRY. OFF = stock recording.
+SHIFT+4 (SAMPLE) → cursor on `Mode:` → WINDOW. Preset OFF / SP1200 (26.04 kHz, 12-bit) / S900 (30 kHz), or `Sample Rate` 8000–44100 Hz. F5 DO IT. Record as usual (TRIM opens with St: 0 whatever Pre-rec is); a black "processing" box shows until it is done, then KEEP / RETRY. OFF = stock recording.
 
 Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). A mono source on one input leaves the other channel empty.
 
@@ -80,7 +80,7 @@ When copying the original `MPC2KXL.BIN`, keep its time stamp (Finder copy or `cp
 | SHIFT + ←/→ на `St:`/`End:` | шаг колеса 1 / 10 / 100 / 1000 (как в стоковом TRIM) |
 | WINDOW | выйти, оставить слайсы обычными зонами |
 
-**LAZY:** ударьте любой пэд, чтобы запустить сэмпл, затем тапайте пэды в начале каждого слайса. Зоны следуют за тапами. После остановки пэды прослушивают слайсы; подрежьте и нажмите APPLY.
+**LAZY:** ударьте любой пэд, чтобы запустить сэмпл, затем тапайте пэды в начале каждого слайса. Зоны следуют за тапами. Пэд **последнего** слайса продолжает воспроизведение с этого слайса, можно резать дальше (и после конца звука). После остановки остальные пэды прослушивают слайсы; подрежьте и нажмите APPLY.
 
 16 LEVELS свободен. До 16 слайсов.
 
@@ -99,7 +99,7 @@ SHIFT+6 → F1 (ASSIGN) → `Mode:` → `MUTE 1`…`MUTE 4` (`MUTE 5`…`8` с �
 
 ### 4b. ТАЙМИНГ 1/4
 
-`Timing:` / `Note value:` теперь доходит до `1/4` и `1/4(3)` (после `1/32(3)`, ничего не убрано). Сохранённые .ALL на стоковом MPC читаются как 1/8 / 1/8(3).
+`Timing:` / `Note value:` теперь: `OFF, 1/4, 1/4(3), 1/8 … 1/32(3)` (ничего не убрано). Сохранённые .ALL на стоковом MPC читаются как 1/8 / 1/8(3).
 
 ### 5. SAMPLING MODE
 

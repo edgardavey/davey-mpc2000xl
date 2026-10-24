@@ -133,18 +133,25 @@ mods.append({'id': 'dark', 'name': 'Dark mode (inverted LCD)', 'group': 'davey',
              'desc': 'Every LCD pixel byte is inverted inside the screen refresh loops. Touches the refresh path: emulator-tested only',
              'patches': patches_from(stable, apply_ours('dark'))})
 for m in mods:                                   # REGIONS side of the either/or
-    if m['id'] == 'regions': m['excludes'] = ['zone_chop']
+    if m['id'] == 'regions': m['excludes'] = ['zone_chop', 'prog_mono', 'timing_full', 'wave_fast']   # VU REGIONS uses 0x749B0-0x7653A, where these live
+    if m['id'] in ('prog_mono', 'timing_full', 'wave_fast'): m['excludes'] = sorted(set(m.get('excludes', []) + ['regions']))
     if m['id'] in ('regions', 'lazy', 'overdub_fix'): m['hidden'] = True
     if m['id'] == 'dark': m['hidden'] = True                                   # user 2026-10-23: dark mode out of EXP13+ until they say so      # 2026-10-17: our fork offers Zone chop only; VU Regions stay in VU's own patcher
 
 # our modules must not overlap each other
+# (a patch active only 'when' module X is selected cannot clash with a module that excludes X)
+byid = {m['id']: m for m in mods}
+def never_together(a, pa, b, pb):
+    return any(w in byid[b].get('excludes', []) for w in pa.get('when', [])) or any(w in byid[a].get('excludes', []) for w in pb.get('when', []))
 seen = {}
 for m in mods:
     if m['kind'] != 'set': continue
     for p in m['patches']:
         for i in range(p['offset'], p['offset'] + len(base64.b64decode(p['old']))):
-            assert i not in seen or seen[i] == m['id'], (hex(i), m['id'], seen[i])
-            seen[i] = m['id']
+            if i in seen and seen[i][0] != m['id']:
+                assert never_together(seen[i][0], seen[i][1], m['id'], p), (hex(i), m['id'], seen[i][0])
+                continue
+            seen[i] = (m['id'], p)
 
 rules = vub['rules']
 data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.4 EXPERIMENTAL (EXP13)',

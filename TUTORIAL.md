@@ -43,6 +43,8 @@ With only one of them, F3 offers only that kind.
 2. Hit **any pad**: the sample starts playing (that's slice 1).
 3. While it plays, hit a **new pad** at every point where a new slice should start.
    Each pad cuts only once, so a repeated pad is ignored.
+   Exception: hit the pad of the **last** slice again and the sound plays on from that slice, so you can keep
+   chopping from there (also after the sound has finished).
 4. **F4 UNDO** takes back the last cut. **F2 CLEAN** starts over.
 
 ### Check and fine-tune
@@ -94,7 +96,7 @@ Pads in the same group cut each other: classic open/closed hi-hat. **NORMAL** = 
 
 ## 4b. 1/4 timing
 
-Main screen `Timing:` (and the TIMING CORRECT window `Note value:`): after 1/32(3) come **1/4** and **1/4(3)**.
+Main screen `Timing:` (and the TIMING CORRECT window `Note value:`) now reads **OFF, 1/4, 1/4(3), 1/8, 1/8(3), 1/16, 1/16(3), 1/32, 1/32(3)**.
 Nothing was removed. Saved .ALL files stay safe on a stock MPC2000XL, which reads them as 1/8 / 1/8(3).
 
 ---
@@ -108,7 +110,7 @@ Nothing was removed. Saved .ALL files stay safe on a stock MPC2000XL, which read
    - or set `Sample Rate` (8000–44100 Hz).
 
    Then **F5 DO IT**.
-3. Record as usual. A black **processing** box shows while the sound is crunched, then **KEEP / RETRY**.
+3. Record as usual (with DAVEY, TRIM opens with `St: 0` whatever `Pre-rec` is set to). A black **processing** box shows while the sound is crunched, then **KEEP / RETRY**.
 4. **OFF** = normal recording.
 
 Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). If the waveform looks empty, try the other side. A mono source on one input leaves the other channel silent.

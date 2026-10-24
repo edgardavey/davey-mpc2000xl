@@ -1,12 +1,13 @@
 {
  "format,param_copy,transpose,tune,u13_pitch,u13_program": "9b0057cf4b6b4d3b32835b8e244852f8915d507de18a52eda21212d37f47f29a",
- "timing_full": "484772f9bd5932e518571f6524ab72e7b4e72a1ca613e407483e5090d7b20529",
+ "timing_full": "ec59f33622ec448fa71ddd52d7739f3a6c9a017bc7538ac9b5cccc87649fd3dd",
+ "rec_start0": "86b7b206c9549135bcb083ce15376cf763ea084f0510286ab6f64482f495614e",
  "wave_fast": "492dbafe75d7ac7e6adf442ce2c98346b5206db87bd6c10395271dc0b55df3f6",
  "mute_all,param_copy,u13_program": "474e71cc0a2a8d22e0eed9ebd6c2a38987f73c658d0fedbbdde0da6c20002b5e",
- "chop_even,zone_chop": "285114c60ec6f8c52ae79987feaab234f3d9ea71909552ed2fcb73491eb803b8",
- "chop_lazy,zone_chop": "1cb2190ce8d5a6267870f233cdcda813c251a8d623b19341812a99b0861fe9ac",
+ "chop_even,zone_chop": "25e365a34bc3445e4d8fe25a851014cd27b317898da39e44fb42ecdefae10901",
+ "chop_lazy,zone_chop": "f5cc9fe30003e057c16af481ad8f810f123264b5ef385083362c0bf2505202f5",
  "sampling": "ea8c00df14b1f1215a540e488d5985e0ecea221d2a43dd9d0e119f827c7adc7f",
  "prog_mono": "35391466c86cac801c5a374b9aa5b7ca63db69b5020e027395a2564c74875a09",
  "mute,mute8": "6beb23509b04ec75f8219a58e51fffefa4fd1ce759eb648461695af7b96e9e31",
- "chop_even,chop_lazy,double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,runtime,sampling,step_move,timing_full,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "e439f2344b7f333c09d83b2cb34dd868aad5cdd13943ae8a013dab839349faa3"
+ "chop_even,chop_lazy,double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,rec_start0,runtime,sampling,step_move,timing_full,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "2ae23f078e77ccc799762f354a7c6f0aad05c61368538bb28dc4ffb5324e0d4c"
 }

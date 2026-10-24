@@ -201,8 +201,11 @@ def t_rec_normal():
          P.shift_key('n5') + ['wait 2', 'snap', 'press main', 'wait 1', 'snap', 'exit']
     a = H.run('exp_rec_normal', Lr, 'exp', 'floppy/funky.img', 300, sound=False)
     b = H.run('exp_rec_normal_base', Lr, 'expbase', 'floppy/funky.img', 300, sound=False)
-    sa, sb = snaps(a), snaps(b); bad = [i for i, (x, y) in enumerate(zip(sa, sb)) if diff(LO(x), L(y))]
-    R[f'normal recording (Sampling OFF): KEEP, TRIM and main screens identical to the VU base (differing {bad})'] = healthy(a) and len(sa) == 4 and len(sa) == len(sb) and not bad
+    def masked(im, i):                 # TRIM (snap 2): St is 0 here by design (rec_start0, 2026-10-23), stock shows the Pre-rec point
+        if i != 2: return im
+        im = im.copy(); im.paste(255, (0, 9, 100, 20)); im.paste(255, (0, 20, 14, 50)); return im
+    sa, sb = snaps(a), snaps(b); bad = [i for i, (x, y) in enumerate(zip(sa, sb)) if diff(masked(LO(x), i), masked(L(y), i))]
+    R[f'normal recording (Sampling OFF): KEEP, TRIM and main screens identical to the VU base apart from St = 0 (differing {bad})'] = healthy(a) and len(sa) == 4 and len(sa) == len(sb) and not bad
 
 def t_digit():
     """chop screen: SHIFT+cursor sets the wheel step on St/End exactly like stock TRIM (the chop redraw used to reset it).
