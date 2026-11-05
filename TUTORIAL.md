@@ -115,6 +115,15 @@ Nothing was removed. Saved .ALL files stay safe on a stock MPC2000XL, which read
 
 Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). If the waveform looks empty, try the other side. A mono source on one input leaves the other channel silent.
 
+### Process a sound you already have
+1. SHIFT+5 (TRIM), hit the pad of the sound (or pick it at `Snd:`).
+2. **F5 EDIT**, turn the wheel past the stock list to **SP1200 ▶ NEW SOUND** / S900 ▶ NEW SOUND / SP1200 ▶ REPLACE / S900 ▶ REPLACE.
+3. NEW SOUND: set `New name:` if you like, **F5 DO IT**. A processing box, then the **KEEP or RETRY** window you know from sampling:
+   cursor down to `Assign to note:`, hit the pad that should get the sound, **F5 KEEP** (F4 PLAY to hear it, F2 RETRY throws the copy away).
+   You are back on TRIM with the processed sound; the original is untouched.
+   REPLACE processes the current sound itself (no undo).
+
+
 ---
 
 ## 6. vubeatz features (included)

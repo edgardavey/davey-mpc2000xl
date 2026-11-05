@@ -1,7 +1,7 @@
 {
  "format": "davey-patcher",
  "schema_version": 2,
- "release": "DAVEY patcher 4.4 EXPERIMENTAL (EXP13)",
+ "release": "DAVEY patcher 4.5 EXPERIMENTAL (EXP14)",
  "base": {
   "file": "MPC2KXL.BIN",
   "size": 524288,
@@ -471,7 +471,8 @@
     "zone_chop",
     "prog_mono",
     "timing_full",
-    "wave_fast"
+    "wave_fast",
+    "sound_lofi"
    ]
   },
   {
@@ -2350,6 +2351,439 @@
    ]
   },
   {
+   "id": "sound_lofi",
+   "name": "Sampling Mode on any sound",
+   "group": "davey",
+   "source": "davey",
+   "hidden": false,
+   "weight": 1,
+   "requires": [
+    "sampling"
+   ],
+   "kind": "set",
+   "desc": "TRIM > F5 EDIT: SP1200 / S900 > NEW SOUND (processed copy, original untouched) or > REPLACE (no undo), for any sound in memory or loaded from disk.",
+   "patches": [
+    {
+     "offset": 297536,
+     "old": "kA7o5xE=",
+     "new": "miAC5nU="
+    },
+    {
+     "offset": 302238,
+     "old": "kA7o3+o=",
+     "new": "muQB5nU="
+    },
+    {
+     "offset": 302343,
+     "old": "kA7oduo=",
+     "new": "mv8B5nU="
+    },
+    {
+     "offset": 314789,
+     "old": "oUyNPQcA",
+     "new": "mocA5nWQ"
+    },
+    {
+     "offset": 315106,
+     "old": "kA7oNQM=",
+     "new": "mosB5nU="
+    },
+    {
+     "offset": 315154,
+     "old": "ix5MjcHjAv+33iX/t9wl",
+     "new": "mkoA5nWQkJCQkJCQkJCQ"
+    },
+    {
+     "offset": 315181,
+     "old": "oUyNPQgA",
+     "new": "mj0A5nWQ"
+    },
+    {
+     "offset": 315679,
+     "old": "CA==",
+     "new": "DA=="
+    },
+    {
+     "offset": 315685,
+     "old": "Bw==",
+     "new": "Cw=="
+    },
+    {
+     "offset": 315712,
+     "old": "oUyNSEg=",
+     "new": "mkQA5nU="
+    },
+    {
+     "offset": 482912,
+     "old": "AAA=",
+     "new": "oUw="
+    },
+    {
+     "offset": 482914,
+     "old": "AA==",
+     "new": "jQ=="
+    },
+    {
+     "offset": 482915,
+     "old": "AAAAAAA=",
+     "new": "g/gIcwM="
+    },
+    {
+     "offset": 482920,
+     "old": "AA==",
+     "new": "6Q=="
+    },
+    {
+     "offset": 482921,
+     "old": "AAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "FwCBPlKN3PF0A+kLAIE+VA=="
+    },
+    {
+     "offset": 482937,
+     "old": "AA==",
+     "new": "jQ=="
+    },
+    {
+     "offset": 482938,
+     "old": "AAA=",
+     "new": "GT4="
+    },
+    {
+     "offset": 482940,
+     "old": "AA==",
+     "new": "dQ=="
+    },
+    {
+     "offset": 482941,
+     "old": "AAAAAAA=",
+     "new": "A+kBAEA="
+    },
+    {
+     "offset": 482946,
+     "old": "AA==",
+     "new": "ww=="
+    },
+    {
+     "offset": 482947,
+     "old": "AAA=",
+     "new": "6No="
+    },
+    {
+     "offset": 482949,
+     "old": "AA==",
+     "new": "/w=="
+    },
+    {
+     "offset": 482950,
+     "old": "AAAAAAA=",
+     "new": "g/gJcwM="
+    },
+    {
+     "offset": 482955,
+     "old": "AA==",
+     "new": "6Q=="
+    },
+    {
+     "offset": 482956,
+     "old": "AA==",
+     "new": "Dg=="
+    },
+    {
+     "offset": 482958,
+     "old": "AA==",
+     "new": "gw=="
+    },
+    {
+     "offset": 482959,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "+Au4AgBzA+kDALgGAMPo4/+D+AjL6Nz/SEjLLo8GeAIujwZ6Auip/4P4CXID6RAAicPR49Hj/7feJf+33CXrDYPoCYnD0eMOLv+3LAIu/zZ6Ai7/NngCy+h2/4P4CXID6QQAg/gHy4PEBAa7YneOwyaKHjAHLogefgImix42By6JHnwCswG5uGWoAXQD6QUAswK5MHUmiB4wBy7GBn8CAIP4C3ID6QYALsYGfwIBxB6mmCaLVzi4RKw5ynMD6QsAichSuUSs9+FZ9/EGuWJ3jsEmozYHBy6JHpIC"
+    },
+    {
+     "offset": 483178,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 483179,
+     "old": "AAA=",
+     "new": "jAY="
+    },
+    {
+     "offset": 483181,
+     "old": "AA==",
+     "new": "lA=="
+    },
+    {
+     "offset": 483182,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAA",
+     "new": "Ai6APn8CAXQD6R0AHmjLjwZT"
+    },
+    {
+     "offset": 483200,
+     "old": "AA==",
+     "new": "Hg=="
+    },
+    {
+     "offset": 483201,
+     "old": "AAAAAAAAAA==",
+     "new": "aKqYmsYjGQ=="
+    },
+    {
+     "offset": 483208,
+     "old": "AA==",
+     "new": "Pg=="
+    },
+    {
+     "offset": 483209,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "g8QMicEJ0XQD6TcA6wiJHqqYjAasmP82Sov/NkyLoaqYo0qLoQ=="
+    },
+    {
+     "offset": 483246,
+     "old": "AA==",
+     "new": "rA=="
+    },
+    {
+     "offset": 483247,
+     "old": "AAA=",
+     "new": "mKM="
+    },
+    {
+     "offset": 483249,
+     "old": "AA==",
+     "new": "TA=="
+    },
+    {
+     "offset": 483250,
+     "old": "AAA=",
+     "new": "i5o="
+    },
+    {
+     "offset": 483252,
+     "old": "AA==",
+     "new": "nQ=="
+    },
+    {
+     "offset": 483253,
+     "old": "AAAAAAAAAAAAAAAAAAAA",
+     "new": "AWJ3jwZMi48GSosuoH8C"
+    },
+    {
+     "offset": 483268,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 483269,
+     "old": "AAAAAAAAAAAAAAAAAA==",
+     "new": "ooACMcAx0rtid47DLg=="
+    },
+    {
+     "offset": 483282,
+     "old": "AA==",
+     "new": "ig=="
+    },
+    {
+     "offset": 483283,
+     "old": "AAAAAAAAAAAA",
+     "new": "Hn4CJogeMAcu"
+    },
+    {
+     "offset": 483292,
+     "old": "AA==",
+     "new": "iw=="
+    },
+    {
+     "offset": 483293,
+     "old": "AAAAAAAA",
+     "new": "HnwCJoke"
+    },
+    {
+     "offset": 483299,
+     "old": "AA==",
+     "new": "Ng=="
+    },
+    {
+     "offset": 483300,
+     "old": "AAAAAAAAAAAAAAAAAA==",
+     "new": "BwfqCu0ZPv8eUo0ugA=="
+    },
+    {
+     "offset": 483313,
+     "old": "AA==",
+     "new": "Pg=="
+    },
+    {
+     "offset": 483314,
+     "old": "AAAAAAAAAAAAAAA=",
+     "new": "gAIBdAPpSQAuxgY="
+    },
+    {
+     "offset": 483325,
+     "old": "AA==",
+     "new": "gA=="
+    },
+    {
+     "offset": 483326,
+     "old": "AA==",
+     "new": "Ag=="
+    },
+    {
+     "offset": 483328,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 483329,
+     "old": "AAAAAAAAAAAA",
+     "new": "xgaBAgFWUwbE"
+    },
+    {
+     "offset": 483338,
+     "old": "AA==",
+     "new": "Hg=="
+    },
+    {
+     "offset": 483339,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "wte+AAAmikASLoiEggJGg/4QcwPp7v+anLoZPsQewte+AAAuioSCAg=="
+    },
+    {
+     "offset": 483379,
+     "old": "AA==",
+     "new": "Jg=="
+    },
+    {
+     "offset": 483380,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "iEASRoP+EHMD6e7/B1teyy6APoECAXQD6RAAUC6hkgKjwtc="
+    },
+    {
+     "offset": 483415,
+     "old": "AA==",
+     "new": "Lg=="
+    },
+    {
+     "offset": 483416,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "oZQCo8TXWC6APoECAXQD6RAALsYGgQI="
+    },
+    {
+     "offset": 483440,
+     "old": "AA==",
+     "new": "mg=="
+    },
+    {
+     "offset": 483441,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+     "new": "7jkZPv8eUo3LmvKlGT7LLsYGgQIAmg=="
+    },
+    {
+     "offset": 483463,
+     "old": "AA==",
+     "new": "nA=="
+    },
+    {
+     "offset": 483464,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "uhk+yzQCRwJYAmkCU1AxMjAwIAwgTkVXIFNPVU4="
+    },
+    {
+     "offset": 483493,
+     "old": "AA==",
+     "new": "RA=="
+    },
+    {
+     "offset": 483495,
+     "old": "AAAAAAAA",
+     "new": "UzkwMCAM"
+    },
+    {
+     "offset": 483501,
+     "old": "AA==",
+     "new": "IA=="
+    },
+    {
+     "offset": 483502,
+     "old": "AAAAAAAAAAA=",
+     "new": "TkVXIFNPVU4="
+    },
+    {
+     "offset": 483510,
+     "old": "AA==",
+     "new": "RA=="
+    },
+    {
+     "offset": 483512,
+     "old": "AAAAAAAAAAAAAA==",
+     "new": "U1AxMjAwIAwgUg=="
+    },
+    {
+     "offset": 483522,
+     "old": "AA==",
+     "new": "RQ=="
+    },
+    {
+     "offset": 483523,
+     "old": "AAAAAAAAAA==",
+     "new": "UExBQ0UAUw=="
+    },
+    {
+     "offset": 483530,
+     "old": "AA==",
+     "new": "OQ=="
+    },
+    {
+     "offset": 483531,
+     "old": "AAAAAAAAAAAAAAAA",
+     "new": "MDAgDCBSRVBMQUNF"
+    },
+    {
+     "offset": 483554,
+     "old": "AAAAAAAA",
+     "new": "ICAgICAg"
+    },
+    {
+     "offset": 483560,
+     "old": "AAA=",
+     "new": "ICA="
+    },
+    {
+     "offset": 483562,
+     "old": "AAAAAAA=",
+     "new": "ICAgICA="
+    },
+    {
+     "offset": 483567,
+     "old": "AA==",
+     "new": "IA=="
+    },
+    {
+     "offset": 483568,
+     "old": "AAA=",
+     "new": "ICA="
+    },
+    {
+     "offset": 483574,
+     "old": "AAAAAAAAAAAAAAAAAAAAAAA=",
+     "new": "SgA9AEQAhwCLAf8BIALkAVM="
+    },
+    {
+     "offset": 483591,
+     "old": "AA==",
+     "new": "TA=="
+    },
+    {
+     "offset": 483592,
+     "old": "AAAA",
+     "new": "RU5E"
+    }
+   ],
+   "excludes": [
+    "regions"
+   ]
+  },
+  {
    "id": "mute8",
    "name": "Mute groups 1-8",
    "group": "davey",
@@ -3030,8 +3464,8 @@
   ]
  },
  "meter": {
-  "limit": 17,
-  "maximum": 17,
+  "limit": 18,
+  "maximum": 18,
   "limit_set": "davey",
   "sets": {
    "davey": [
@@ -3052,7 +3486,8 @@
     "timing_full",
     "mute_all",
     "wave_fast",
-    "rec_start0"
+    "rec_start0",
+    "sound_lofi"
    ],
    "light": [
     "tune",
@@ -3063,7 +3498,7 @@
   }
  },
  "verified": {
-  "chop_even,chop_lazy,double_stop,format,hpf,input_thru,mute,mute_all,param_copy,prog_mono,ram_init,rec_start0,runtime,sampling,step_move,timing_full,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "2a1ede7cb5b9d74db90c2d5d9a1500df5d1bef34f7de1454a93faaed1247eaf3",
+  "chop_even,chop_lazy,double_stop,format,hpf,input_thru,mute,mute_all,param_copy,prog_mono,ram_init,rec_start0,runtime,sampling,sound_lofi,step_move,timing_full,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "1c24920845e3590d309d6ffa48a101277fa5b66edc37617c0112da1bd2b439b1",
   "format,param_copy,transpose,tune,u13_pitch,u13_program": "9b0057cf4b6b4d3b32835b8e244852f8915d507de18a52eda21212d37f47f29a",
   "timing_full": "ec59f33622ec448fa71ddd52d7739f3a6c9a017bc7538ac9b5cccc87649fd3dd",
   "rec_start0": "86b7b206c9549135bcb083ce15376cf763ea084f0510286ab6f64482f495614e",

@@ -82,7 +82,7 @@ mods.append({'id': 'overdub_fix', 'name': 'REGIONS overdub fix', 'group': 'davey
 # ---- relocated DAVEY modules (exp_reloc line): built on the VU base WITHOUT REGIONS, placed only in measured-free RAM
 sys.path.insert(0, os.path.join(ROOT, 'exp_reloc')); sys.path.insert(0, os.path.join(ROOT, 'exp_reloc', 'mods'))
 import make_exp, engine
-import sampling as x_sampling, zone_chop as x_chop, mute8 as x_mute8, prog_mono as x_pmono, timing_full as x_tfull, mute_all as x_mall, wave_fast as x_wfast, rec_start0 as x_rst0
+import sampling as x_sampling, zone_chop as x_chop, mute8 as x_mute8, prog_mono as x_pmono, timing_full as x_tfull, mute_all as x_mall, wave_fast as x_wfast, rec_start0 as x_rst0, sound_lofi as x_slofi
 tmp = {'base': {'size': 524288, 'sha256': vub['files']['MPC2KXL.BIN']['sha256']}, 'modules': [m for m in mods if m['kind'] == 'xor'],
        'rules': vub['rules'], 'finalize': {'checksum': {'range': [0, 0x77ffe], 'offset': 0x77ffe}, 'unchanged': [0x78000, 0x80000]}}
 base_noreg, _ = engine.build(tmp, stock, make_exp.VUB)
@@ -115,6 +115,9 @@ mods.append({'id': 'wave_fast', 'name': 'Fast waveform', 'group': 'davey', 'sour
 mods.append({'id': 'rec_start0', 'name': 'Start at 0 after sampling', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 0, 'requires': [],
              'kind': 'set', 'desc': 'A new recording opens in TRIM with St: 0 whatever Pre-rec is set to (stock puts St at the Pre-rec point, 4410 for 100 ms). The pre-recorded audio stays in the sound.',
              'patches': patches_from(base_noreg, exp_apply(x_rst0.apply))})
+mods.append({'id': 'sound_lofi', 'name': 'Sampling Mode on any sound', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 1, 'requires': ['sampling'],
+             'kind': 'set', 'desc': 'TRIM > F5 EDIT: SP1200 / S900 > NEW SOUND (processed copy, original untouched) or > REPLACE (no undo), for any sound in memory or loaded from disk.',
+             'patches': patches_from(exp_apply(x_sampling.apply), exp_apply(lambda img: (x_sampling.apply(img), x_slofi.apply(img))))})   # only its own bytes
 MUTE8_AT = 0x77f00          # free with and without REGIONS (never written in 33 coverage runs over both configurations)
 make_exp.FREE.append((0x77f00, 0x77f80))
 mods.append({'id': 'mute8', 'name': 'Mute groups 1-8', 'group': 'davey', 'source': 'davey', 'hidden': False, 'weight': 0, 'requires': ['mute'],
@@ -133,8 +136,8 @@ mods.append({'id': 'dark', 'name': 'Dark mode (inverted LCD)', 'group': 'davey',
              'desc': 'Every LCD pixel byte is inverted inside the screen refresh loops. Touches the refresh path: emulator-tested only',
              'patches': patches_from(stable, apply_ours('dark'))})
 for m in mods:                                   # REGIONS side of the either/or
-    if m['id'] == 'regions': m['excludes'] = ['zone_chop', 'prog_mono', 'timing_full', 'wave_fast']   # VU REGIONS uses 0x749B0-0x7653A, where these live
-    if m['id'] in ('prog_mono', 'timing_full', 'wave_fast'): m['excludes'] = sorted(set(m.get('excludes', []) + ['regions']))
+    if m['id'] == 'regions': m['excludes'] = ['zone_chop', 'prog_mono', 'timing_full', 'wave_fast', 'sound_lofi']   # VU REGIONS uses 0x749B0-0x7653A, where these live
+    if m['id'] in ('prog_mono', 'timing_full', 'wave_fast', 'sound_lofi'): m['excludes'] = sorted(set(m.get('excludes', []) + ['regions']))
     if m['id'] in ('regions', 'lazy', 'overdub_fix'): m['hidden'] = True
     if m['id'] == 'dark': m['hidden'] = True                                   # user 2026-10-23: dark mode out of EXP13+ until they say so      # 2026-10-17: our fork offers Zone chop only; VU Regions stay in VU's own patcher
 
@@ -154,12 +157,12 @@ for m in mods:
             seen[i] = (m['id'], p)
 
 rules = vub['rules']
-data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.4 EXPERIMENTAL (EXP13)',
+data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.5 EXPERIMENTAL (EXP14)',
         'base': {'file': 'MPC2KXL.BIN', 'size': 524288, 'sha256': vub['files']['MPC2KXL.BIN']['sha256']},
         'modules': mods, 'rules': rules,
         'finalize': {'checksum': {'range': [0, 0x77ffe], 'offset': 0x77ffe}, 'unchanged': [0x78000, 0x80000],
                      'forbidden': [[0x70000, 0x741b0]]}}
-davey = make_exp.VUB + ['zone_chop', 'chop_even', 'chop_lazy', 'sampling', 'prog_mono', 'timing_full', 'mute_all', 'wave_fast', 'rec_start0']   # = EXP13 (experimental line; EXP7 stable patcher is released separately)
+davey = make_exp.VUB + ['zone_chop', 'chop_even', 'chop_lazy', 'sampling', 'prog_mono', 'timing_full', 'mute_all', 'wave_fast', 'rec_start0', 'sound_lofi']   # = EXP14 (experimental line; EXP7 stable patcher is released separately)
 allw = lambda ids: engine.points(data, engine.closure(data, ids))
 data['meter'] = {'limit': allw(davey),
                  'maximum': allw([m['id'] for m in mods if not m['hidden']]),
@@ -168,9 +171,9 @@ data['meter'] = {'limit': allw(davey),
                           'light': ['tune', 'transpose', 'param_copy', 'format']}}
 # the DAVEY preset must be byte-identical to the emulator-tested experimental file
 out, rep = engine.build(data, stock, davey)
-exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP13.BIN'), 'rb').read()
-assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP13.BIN'
-print('DAVEY preset == DAVEY_EXP13.BIN', rep['sha256'][:16])
+exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP14.BIN'), 'rb').read()
+assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP14.BIN'
+print('DAVEY preset == DAVEY_EXP14.BIN', rep['sha256'][:16])
 # tested combinations (emulator gates passed on the exact file); more are added by finalize_verified.py after the gate runs
 data['verified'] = {engine.sel_key(engine.closure(data, davey)): rep['sha256']}
 _extra = os.path.join(HERE, 'verified_extra.json')       # written by exp_reloc/gate_presets.py: only selections that passed both restore gates

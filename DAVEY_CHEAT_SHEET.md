@@ -49,6 +49,8 @@ SHIFT+4 (SAMPLE) → cursor on `Mode:` → WINDOW. Preset OFF / SP1200 (26.04 kH
 
 Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). A mono source on one input leaves the other channel empty.
 
+**Any sound:** TRIM (hit its pad) → F5 EDIT → wheel to `SP1200 ▶ NEW SOUND` / `S900 ▶ NEW SOUND` (processed copy, original untouched) or `… ▶ REPLACE` (no undo) → F5 DO IT. NEW SOUND ends in KEEP or RETRY: cursor to `Assign to note:`, hit a pad, F5 KEEP.
+
 ### 6. RESTORE THE ORIGINAL OS
 
 Keep the original `MPC2KXL.BIN` at the root of the card. LOAD → pick it → DO IT. (Boot-from-disk also works.)
@@ -106,6 +108,8 @@ SHIFT+6 → F1 (ASSIGN) → `Mode:` → `MUTE 1`…`MUTE 4` (`MUTE 5`…`8` с �
 SHIFT+4 (SAMPLE) → курсор на `Mode:` → WINDOW. Пресет OFF / SP1200 (26.04 кГц, 12 бит) / S900 (30 кГц) или `Sample Rate` 8000–44100 Гц. F5 DO IT. Записывайте как обычно; чёрное окно "processing" до конца обработки, затем KEEP / RETRY. OFF = стоковая запись.
 
 Совет: TRIM показывает один канал стерео-звука (`View: LEFT` / `RIGHT`). Моно-источник на одном входе оставляет второй канал пустым.
+
+**Любой звук:** TRIM (ударьте его пэд) → F5 EDIT → колесом до `SP1200 ▶ NEW SOUND` / `S900 ▶ NEW SOUND` (обработанная копия, оригинал не меняется) или `… ▶ REPLACE` (без отмены) → F5 DO IT. NEW SOUND заканчивается окном KEEP or RETRY: курсор на `Assign to note:`, ударьте пэд, F5 KEEP.
 
 ### 6. ВОССТАНОВЛЕНИЕ ОРИГИНАЛЬНОЙ OS
 
