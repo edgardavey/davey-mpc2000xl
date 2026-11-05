@@ -42,7 +42,8 @@ devices. Coordinate through git branches (below), never by editing the same file
 | What | State |
 |---|---|
 | EXP12 | RELEASED experimental (GitHub `experimental-exp12`, branch `experimental`): full Timing list (+1/4, 1/4(3)), stock-safe .ALL files ("DAVEYTC" trailer), patcher options Chop: even split / Lazy chop |
-| EXP13 | **RELEASED 2026-10-24** (GitHub `experimental-exp13`, branch `experimental` = `exp13-wip`). Contents below |
+| EXP13 | RELEASED 2026-10-24 (GitHub `experimental-exp13`). Contents below |
+| EXP14 | **RELEASED 2026-11-05** (GitHub `experimental-exp14`, branch `experimental`): Sampling Mode on any sound, `exp_reloc/mods/sound_lofi.py` at **0x75E60-0x7610B** (TRIM > F5 EDIT > SP1200/S900 NEW SOUND or REPLACE, then the stock KEEP/RETRY window). Test `lofi` |
 
 EXP13 contents (user reports from 2026-10-23):
 
@@ -109,7 +110,7 @@ Facts (static analysis by three advisor agents; **verify in the emulator first**
 - Placed now: wave_fast 0x74A00 (144), zone_chop 0x74F00 (~2650), **timing_full 0x75A80-0x75CBC**, mute8
   0x75CF0 (exp builds) / 0x77F00 (patcher), prog_mono 0x75E00, sampling block 0x77620-0x77E51, mute_all 0x77E60.
   **Still free:** 0x749A4-0x749FF, 0x74A90-0x74CB1, 0x74CF1-0x74EF5, 0x75E50-0x761E1, 0x761EC-0x762F3,
-  0x762FD-0x76540, 0x76DCB-0x77000. Device 2 claims **0x76000-0x76540** for EXP14 (adjust here if needed).
+  0x762FD-0x76540, 0x76DCB-0x77000. sound_lofi (EXP14) uses 0x75E60-0x7610B.
 - Event tables: 5-byte entries {code, off, seg}; never hook a field's per-field slot (it is also the
   value-changed callback). INT 8F = display ops (one op per int, inline data after `int 8f`).
 - Every fix gets a test in `exp_reloc/test_exp.py` that **fails on the old build and passes on the new one**.
