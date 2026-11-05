@@ -396,6 +396,77 @@ def t_rec_start0():
     (st, en), ok = res['exp']; (st0, en0), ok0 = res['stock']
     R[f'rec start 0: St {st} (stock {st0}), End {en} = stock {en0}'] = st == '0' and st0 != '0' and en == en0 and ok and ok0
 
+def t_lofi():
+    """Sampling Mode on any sound (2026-11-05, EXP14): TRIM > F5 EDIT > SP1200/S900 > NEW SOUND / REPLACE. NEW makes a
+    copy (stock COPY, name from 'New name:') and processes it, the original stays bit-identical; REPLACE processes the
+    current sound. SP1200 must equal the zero-order-hold + 12-bit model of the original (as t_sampling); S900 quantises to
+    13 bits; a stereo sound gets both channels; the SAMPLE page's recording setting is unchanged afterwards; from ZONE the
+    stock SLICE SOUND stays at its place"""
+    N = 3000
+    DUMP = ('lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local d=manager.machine.devices[":dsp"].spaces["l6028"] '
+            'local function dump(tag,s,o) local a=s*16+o local nm="" for i=0x12,0x21 do nm=nm..string.char(sp:read_u8(a+i)) end '
+            ' local da=sp:read_u32(a+0x0a) local len=sp:read_u32(a+0x2e) local t={} for i=0,%d do t[#t+1]=string.format("%%04x",d:read_u16((da+i)*2)) end '
+            ' local r={} if sp:read_u8(a+0x25)==1 then for i=0,%d do r[#r+1]=string.format("%%04x",d:read_u16((da+len+i)*2)) end end '
+            ' print("SND "..tag.." "..nm:gsub(" ","").." "..len.." L="..table.concat(t," ").." R="..table.concat(r," ")) end '
+            'if not origs then origo=sp:read_u16(0x582b0+0xd7c2) origs=sp:read_u16(0x582b0+0xd7c4) end '
+            'dump("@T@_orig",origs,origo) dump("@T@_cur",sp:read_u16(0x582b0+0xd7c4),sp:read_u16(0x582b0+0xd7c2)) '
+            'print("VUMODE @T@ "..sp:read_u8(0x77d50).." "..sp:read_u16(0x77d56))') % (N - 1, N - 1)
+    NOTE = ('lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local dr=sp:read_u8(0x582b0+0xd7be) '
+            'local o=sp:read_u16((0x5c+dr)*4) local s=sp:read_u16((0x5c+dr)*4+2) local t=s*16+o+0x752+36*4 '
+            'print(string.format("NOTE36 %04x:%04x cur %04x:%04x", sp:read_u16(t+2), sp:read_u16(t), sp:read_u16(0x582b0+0xd7c4), sp:read_u16(0x582b0+0xd7c2)))')
+    def run(tag, build, steps, floppy='floppy/funky.img', zone=False, after=()):
+        L = P.boot() + P.load_first_file(35) + P.shift_key('n5') + ['wait 2', 'snap']                     # snap 0: the TRIM page
+        L += (['press f3', 'wait 1.5'] if zone else []) + ['press f5', 'wait 1.5'] + ['press plus', 'wait 0.6'] * steps + ['snap']   # snap 1: Edit
+        L += [DUMP.replace('@T@', 'pre')] + ['press f5', 'wait 15', 'snap', DUMP.replace('@T@', 'post')] + list(after) + ['exit']
+        return H.run('exp_lofi_' + tag, L, build, floppy, 160, sound=False)
+    def snd(d, tag):
+        out = {}
+        for l in log(d, 'SND ' + tag):
+            parts = l.split(' ', 4); rest = parts[4]
+            Lw, Rw = rest.split(' R=')
+            out = {'name': parts[2], 'len': int(parts[3]), 'L': [int(x, 16) for x in Lw[2:].split()], 'R': [int(x, 16) for x in Rw.split()]}
+        return out
+    def model(inp, rate=26040, mask=0xfff0):
+        bx = 44100 - rate; bp = bx; dx = 0; o = []
+        for w in inp:
+            if bp < bx: bp += rate
+            else: bp -= bx; dx = w & mask
+            o.append(dx)
+        return o
+    d = run('sp_new', 'exp', 8); d_sp = d
+    o0, o1, c1 = snd(d, 'pre_orig'), snd(d, 'post_orig'), snd(d, 'post_cur')
+    ok = bool(o0) and o0 == o1 and c1.get('name') == 'FUNKY1' and c1.get('len') == o0.get('len') and c1.get('L') == model(o0['L'])
+    vm = log(d, 'VUMODE')
+    R[f"lofi: SP1200 > NEW SOUND: copy {c1.get('name')} (keeps the New name) = SP1200 model of the original, original unchanged ({o0 == o1}), recording setting kept ({vm[0][-6:] if vm else ''} -> {vm[-1][-6:] if vm else ''})"] = ok and len(vm) == 2 and vm[0].split()[2:] == vm[1].split()[2:]
+    R['lofi: the list shows SP1200 > NEW SOUND with New name:'] = len(snaps(d)) >= 2 and healthy(d)
+    d = run('s9_new', 'exp', 9)
+    o0, o1, c1 = snd(d, 'pre_orig'), snd(d, 'post_orig'), snd(d, 'post_cur')
+    R[f"lofi: S900 > NEW SOUND: copy {c1.get('name')} processed (13-bit, differs), original unchanged"] = bool(o0) and o0 == o1 and c1.get('name') == 'FUNKY1' and c1.get('L') != o0.get('L') and all(w & 7 == 0 for w in c1.get('L', [1]))
+    d = run('sp_rep', 'exp', 10)
+    o0, c1 = snd(d, 'pre_orig'), snd(d, 'post_cur')
+    R[f"lofi: SP1200 > REPLACE: {c1.get('name')} itself = SP1200 model, no new sound"] = bool(o0) and c1.get('name') == 'FUNKY' and c1.get('L') == model(o0['L'])
+    d = run('st_new', 'exp', 8, floppy='floppy/stereo.img')
+    o0, c1 = snd(d, 'pre_orig'), snd(d, 'post_cur')
+    R[f"lofi: stereo sound: both channels = SP1200 model ({c1.get('name')})"] = bool(o0) and bool(o0.get('R')) and c1.get('L') == model(o0['L']) and c1.get('R') == model(o0['R'])
+    d = run('zone', 'exp', 1, zone=True)                      # from ZONE: index 8 is SLICE SOUND, +1 = our first entry
+    s_, sp_ = snaps(d), snaps(d_sp)
+    same = len(s_) >= 2 and len(sp_) >= 2 and not diff(LO(s_[1]).crop((12, 8, 230, 20)), LO(sp_[1]).crop((12, 8, 230, 20)))
+    c1 = snd(d, 'post_cur')
+    # NEW SOUND ends in the stock KEEP or RETRY window: pad 2 (note 36) + F5 KEEP assigns the copy there and returns to TRIM;
+    # F2 RETRY deletes the copy (the original stays current) and returns to TRIM
+    d = run('keep', 'exp', 8, after=['wait 1', 'snap', 'press down', 'wait 0.6', 'tap pad2 0', 'wait 1', 'snap', 'press f5', 'wait 2', 'snap', NOTE, DUMP.replace('@T@', 'kept')])
+    c1 = snd(d, 'kept_cur'); n = (log(d, 'NOTE36') or ['NOTE36 x x x x'])[0].split()
+    s_ = snaps(d)
+    on_trim = lambda ss: len(ss) >= 3 and not diff(LO(ss[-1]).crop((0, 50, 248, 60)), LO(ss[0]).crop((0, 50, 248, 60)))   # soft keys = TRIM's
+    R[f"lofi: NEW SOUND -> KEEP or RETRY window; pad 2 + KEEP puts {c1.get('name')} on note 36 ({n[1] if len(n) > 1 else ''} = current {n[3] if len(n) > 3 else ''}), back on TRIM ({on_trim(s_)})"] = len(n) == 4 and n[1] == n[3] and c1.get('name') == 'FUNKY1' and on_trim(s_) and healthy(d)
+    # RETRY: the original is current again; the copy is gone (a new Edit window proposes the same name FUNKY1 again)
+    d = run('retry', 'exp', 8, after=['wait 1', 'press f2', 'wait 2', 'snap', DUMP.replace('@T@', 'retry'), 'press f5', 'wait 1.5'] + ['press plus', 'wait 0.6'] * 8 + ['snap'])
+    r1 = snd(d, 'retry_cur'); s_ = snaps(d)
+    again = len(s_) >= 2 and not diff(LO(s_[-1]).crop((12, 18, 230, 28)), LO(s_[1]).crop((12, 18, 230, 28)))
+    back = len(s_) >= 3 and not diff(LO(s_[-2]).crop((0, 50, 248, 60)), LO(s_[0]).crop((0, 50, 248, 60)))
+    R[f"lofi: RETRY: original {r1.get('name')} current again, back on TRIM ({back}), copy deleted (name FUNKY1 free again: {again})"] = r1.get('name') == 'FUNKY' and back and again and healthy(d)
+    R[f"lofi: from ZONE, SLICE SOUND keeps index 8 and the next entry is SP1200 > NEW SOUND (same line as TRIM: {same}, made {c1.get('name')})"] = same and c1.get('name') == 'FUNKY1' and healthy(d)
+
 def L_px(path, x, y):
     from PIL import Image
     im = Image.open(path).convert('L'); return im.getpixel((x, y)) < 100
@@ -467,7 +538,7 @@ def t_wave_fast():
     R[f'wave fast: FUNKY columns vs stock: {same} of {len(A)} identical, worst {worst} rows'] = cf == cs_ == 245 and len(A) == 245 and worst <= 2 and same >= 196
     R['wave fast: runs healthy'] = healthy(d)
 
-TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'timing': t_timing, 'timing_disk': t_timing_disk, 'chop_opts': t_chop_opts, 'rec_start0': t_rec_start0, 'lazy_resume': t_lazy_resume, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
+TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'timing': t_timing, 'timing_disk': t_timing_disk, 'chop_opts': t_chop_opts, 'rec_start0': t_rec_start0, 'lazy_resume': t_lazy_resume, 'lofi': t_lofi, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
 if __name__ == '__main__' and sys.argv[1:2] == ['--make-refs']:
     d = H.run('exp_ref_boot', BOOT_LINES, 'stock', GOLD, 120, sound=False); print(d, snaps(d)); sys.exit()
 if __name__ == '__main__':
