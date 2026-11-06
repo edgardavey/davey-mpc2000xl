@@ -49,7 +49,7 @@ SHIFT+4 (SAMPLE) → cursor on `Mode:` → WINDOW. Preset OFF / SP1200 (26.04 kH
 
 Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). A mono source on one input leaves the other channel empty.
 
-**Any sound:** TRIM (hit its pad) → F5 EDIT → wheel to `SP1200 ▶ NEW SOUND` / `S900 ▶ NEW SOUND` (processed copy, original untouched) or `… ▶ REPLACE` (no undo) → F5 DO IT. NEW SOUND ends in KEEP or RETRY: cursor to `Assign to note:`, hit a pad, F5 KEEP.
+**Any sound:** TRIM (hit its pad) → F5 EDIT → wheel to `SP1200 ▶ NEW SOUND` / `S900 ▶ NEW SOUND` (processed copy, original untouched) or `… ▶ REPLACE` (no undo). Hit a pad in the window to hear and pick the sound (`Snd:`); F1/F3 = `Rate:` (preset, then 8000–44100 Hz) → F5 DO IT. NEW SOUND ends in KEEP or RETRY: cursor to `Assign to note:`, hit a pad, F5 KEEP.
 
 ### 6. RESTORE THE ORIGINAL OS
 
@@ -109,7 +109,7 @@ SHIFT+4 (SAMPLE) → курсор на `Mode:` → WINDOW. Пресет OFF / SP
 
 Совет: TRIM показывает один канал стерео-звука (`View: LEFT` / `RIGHT`). Моно-источник на одном входе оставляет второй канал пустым.
 
-**Любой звук:** TRIM (ударьте его пэд) → F5 EDIT → колесом до `SP1200 ▶ NEW SOUND` / `S900 ▶ NEW SOUND` (обработанная копия, оригинал не меняется) или `… ▶ REPLACE` (без отмены) → F5 DO IT. NEW SOUND заканчивается окном KEEP or RETRY: курсор на `Assign to note:`, ударьте пэд, F5 KEEP.
+**Любой звук:** TRIM (ударьте его пэд) → F5 EDIT → колесом до `SP1200 ▶ NEW SOUND` / `S900 ▶ NEW SOUND` (обработанная копия, оригинал не меняется) или `… ▶ REPLACE` (без отмены). Пэд в окне — слушать и выбрать звук (`Snd:`); F1/F3 = `Rate:` (пресет, затем 8000–44100 Гц) → F5 DO IT. NEW SOUND заканчивается окном KEEP or RETRY: курсор на `Assign to note:`, ударьте пэд, F5 KEEP.
 
 ### 6. ВОССТАНОВЛЕНИЕ ОРИГИНАЛЬНОЙ OS
 

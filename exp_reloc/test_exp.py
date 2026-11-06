@@ -283,16 +283,61 @@ def t_tpad():
     R[f'tpad: the pad hit still sounds (quiet {q:.0f}, hit {hit:.0f})'] = q < 5 and hit > 50
     R['tpad: screens to review by eye'] = sess + '/snap'
 
+def t_lofi_ui():
+    """EXP15 (user report 2026-11-06): the Sampling Mode Edit window shows the source sound (Snd:) and the Rate (F1 RATE- / F3 RATE+),
+    a pad hit in the window picks that pad's sound AND plays it; DO IT then uses the chosen rate (11025 Hz here) on the picked sound"""
+    import subprocess, struct
+    sys.path.insert(0, os.path.join(ROOT, 'exp_reloc', 'mods'))
+    import sound_lofi as SL
+    rec = bytes.fromhex('01000000' '00' '03e2eb193e' '05d4eb193e' '06f6eb193e' '325ced193e' '15d4eb193e')
+    _, ea, _, _ = SL.build_units(rec); RIDX = SL.LIN + ea[9]
+    N = 'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local o=sp:read_u16(0x582b0+0xd7c2) local s=sp:read_u16(0x582b0+0xd7c4) local t={} for i=0x12,0x1d do t[#t+1]=string.char(sp:read_u8(s*16+o+i)) end print("SND @T@ "..table.concat(t))'
+    RI = 'lua local sp=manager.machine.devices[":maincpu"].spaces["program"] print("RIDX @T@ "..sp:read_u16(%d))' % RIDX
+    DUMP = ('lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local d=manager.machine.devices[":dsp"].spaces["l6028"] '
+            'local a=sp:read_u16(0x582b0+0xd7c4)*16+sp:read_u16(0x582b0+0xd7c2) local da=sp:read_u32(a+0x0a) local t={} for i=0,2999 do t[#t+1]=string.format("%04x",d:read_u16((da+i)*2)) end print("DAT @T@ "..table.concat(t," "))')
+    TM = lambda t: 'lua print(string.format("TM %s %.3f","' + t + '",manager.machine.time:as_double()))'
+    L = P.boot() + P.load_first_file(35) + chop_enter() + ['press f3', 'wait 1', 'press f5', 'wait 2', 'press f5', 'wait 12', 'press main', 'wait 1']
+    L += P.shift_key('n5') + ['wait 2', 'press f5', 'wait 1.5'] + ['press plus', 'wait 0.6'] * 8 + ['snap', N.replace('@T@', 'open'), RI.replace('@T@', 'open'), TM('q0'), 'wait 1', TM('q1')]
+    L += ['tap pad3 0', TM('p3'), 'wait 1.5', N.replace('@T@', 'pad3'), 'snap', DUMP.replace('@T@', 'src'), 'tap pad12 0', 'wait 1', N.replace('@T@', 'pad12')]
+    L += ['press f3', 'wait 0.8', 'press f3', 'wait 0.8', 'press f3', 'wait 0.8', 'press f1', 'wait 0.8', RI.replace('@T@', 'f3f3f3f1'), 'snap']
+    L += ['press f5', 'wait 20', 'snap', N.replace('@T@', 'done'), DUMP.replace('@T@', 'dst'), 'exit']
+    sc = os.path.join(ROOT, 'test_log', 'lofi_ui.txt'); open(sc, 'w').write('\n'.join(L) + '\n'); w = os.path.join(ROOT, 'test_log', 'lofi_ui.wav')
+    out = subprocess.run([os.path.join(os.environ.get('MPC_EMU', ROOT), 'tools/dev/run_script_snd.sh'), sc, 'floppy/funky.img'], cwd=ROOT, env=dict(os.environ, SYSDIR=H.SYS['exp'], CAP='260', WAV=w), capture_output=True, text=True)
+    d = os.path.dirname(os.path.dirname(out.stdout.strip().split('\n')[-1])); lg = open(d + '/out.log', errors='replace').read()
+    g = lambda pat: [m.group(1).strip() for m in re.finditer(pat, lg)]
+    nm = {m.group(1): m.group(2).strip() for m in re.finditer(r'SND (\S+) (.*)', lg)}
+    T = {m.group(1): float(m.group(2)) for m in re.finditer(r'TM (\S+) ([\d.]+)', lg)}
+    ri = {m.group(1): int(m.group(2)) for m in re.finditer(r'RIDX (\S+) (\d+)', lg)}
+    raw = open(w, 'rb').read(); ch, sr = struct.unpack_from('<HI', raw, 22); i = raw.index(b'data'); dl, = struct.unpack_from('<I', raw, i + 4)
+    a = struct.unpack_from('<%dh' % (min(dl, len(raw) - i - 8) // 2), raw, i + 8)
+    rms = lambda x, y: (sum(v * v for v in a[int(x * sr) * ch:int(y * sr) * ch]) / max(1, int((y - x) * sr) * ch)) ** 0.5
+    q, hit = rms(T['q0'], T['q1']), rms(T['p3'], T['p3'] + 0.8)
+    R[f"lofi ui: pad 3 hit in the Edit window picks its sound ({nm.get('pad3')}, was {nm.get('open')}) and plays it (quiet {q:.0f}, hit {hit:.0f}); an empty pad keeps it ({nm.get('pad12')})"] = nm.get('open') == 'FUNKY' and nm.get('pad3') == 'FUNKY3' and nm.get('pad12') == 'FUNKY3' and q < 5 and hit > 50
+    R[f"lofi ui: Rate starts at the preset ({ri.get('open')}), F3 x3 and F1 x1 = step 2 ({ri.get('f3f3f3f1')})"] = ri.get('open') == 0 and ri.get('f3f3f3f1') == 2
+    dat = {m.group(1): [int(x, 16) for x in m.group(2).split()] for m in re.finditer(r'DAT (\S+) ([0-9a-f ]+)', lg)}
+    def model(inp, rate, mask=0xfff0):
+        bx = 44100 - rate; bp = bx; dx = 0; o = []
+        for wd in inp:
+            if bp < bx: bp += rate
+            else: bp -= bx; dx = wd & mask
+            o.append(dx)
+        return o
+    src, dst = dat.get('src', []), dat.get('dst', [])
+    R[f"lofi ui: DO IT processes the picked sound (FUNKY3) at 11025 Hz: copy {nm.get('done')} = SP1200 model of it"] = bool(src) and dst == model(src, 11025) and nm.get('done', '').startswith('FUNKY') and nm.get('done') != 'FUNKY3'
+    R['lofi ui: screens to review by eye'] = d + '/snap'
+
 def t_lazy_repeat():
     """LAZY: each pad cuts once per run (user report 2026-10-17): pad1 starts, pad2, pad3 cut, pad2 again is ignored, pad4 cuts;
     UNDO frees pad4, which can cut again"""
     L = P.boot() + P.load_first_file(35) + chop_enter() + ['press f3', 'wait 1', 'press f3', 'wait 1', 'press f3', 'wait 1.5']        # 16 -> 8 -> 4 -> LAZY
-    L += ['tap pad1 0', 'wait 0.35', 'tap pad2 0', 'wait 0.35', 'tap pad3 0', 'wait 0.35', 'tap pad2 0', 'wait 0.35', 'tap pad4 0', 'wait 2.5', P.T(ZD, 'after'), 'snap']
+    L += ['tap pad1 0', 'wait 0.35', 'tap pad2 0', 'wait 0.35', 'tap pad3 0', 'wait 0.35', 'tap pad2 0', 'wait 0.5', P.T(ZD, 'back'), 'tap pad3 0', 'wait 0.35', 'tap pad4 0', 'wait 2.5', P.T(ZD, 'after'), 'snap']
     L += ['press f4', 'wait 1', P.T(ZD, 'undo'), 'snap', 'exit']
     d = H.run('exp_lazy_repeat', L, 'exp', 'floppy/funky.img', 150, sound=False)
     z = {l.split()[1]: l for l in log(d, 'ZONES')}
     n = lambda k: int(re.search(r'n=(\d+)', z.get(k, 'n=-1')).group(1))
-    R[f"lazy repeat: pads 1,2,3,2,4 give {n('after')} slices (4 expected, repeated pad2 ignored), UNDO -> {n('undo')} (3)"] = n('after') == 4 and n('undo') == 3
+    cur = int(re.search(r'cur=(\d+)', z.get('back', 'cur=-1')).group(1))
+    R[f"lazy repeat: pad2 hit again while pad3 plays goes back to slice 2 at once (cur {cur}, user report 2026-11-06)"] = cur == 2
+    R[f"lazy repeat: pads 1,2,3,2,3(resume),4 give {n('after')} slices (4 expected, no slice from the repeats), UNDO -> {n('undo')} (3)"] = n('after') == 4 and n('undo') == 3
     R['lazy repeat: run healthy'] = healthy(d)
 
 def t_lazy_resume():
@@ -538,7 +583,7 @@ def t_wave_fast():
     R[f'wave fast: FUNKY columns vs stock: {same} of {len(A)} identical, worst {worst} rows'] = cf == cs_ == 245 and len(A) == 245 and worst <= 2 and same >= 196
     R['wave fast: runs healthy'] = healthy(d)
 
-TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'timing': t_timing, 'timing_disk': t_timing_disk, 'chop_opts': t_chop_opts, 'rec_start0': t_rec_start0, 'lazy_resume': t_lazy_resume, 'lofi': t_lofi, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
+TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'timing': t_timing, 'timing_disk': t_timing_disk, 'chop_opts': t_chop_opts, 'rec_start0': t_rec_start0, 'lazy_resume': t_lazy_resume, 'lofi': t_lofi, 'lofi_ui': t_lofi_ui, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
 if __name__ == '__main__' and sys.argv[1:2] == ['--make-refs']:
     d = H.run('exp_ref_boot', BOOT_LINES, 'stock', GOLD, 120, sound=False); print(d, snaps(d)); sys.exit()
 if __name__ == '__main__':

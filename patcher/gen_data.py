@@ -157,12 +157,12 @@ for m in mods:
             seen[i] = (m['id'], p)
 
 rules = vub['rules']
-data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.5 EXPERIMENTAL (EXP14)',
+data = {'format': 'davey-patcher', 'schema_version': 2, 'release': 'DAVEY patcher 4.6 EXPERIMENTAL (EXP15)',
         'base': {'file': 'MPC2KXL.BIN', 'size': 524288, 'sha256': vub['files']['MPC2KXL.BIN']['sha256']},
         'modules': mods, 'rules': rules,
         'finalize': {'checksum': {'range': [0, 0x77ffe], 'offset': 0x77ffe}, 'unchanged': [0x78000, 0x80000],
                      'forbidden': [[0x70000, 0x741b0]]}}
-davey = make_exp.VUB + ['zone_chop', 'chop_even', 'chop_lazy', 'sampling', 'prog_mono', 'timing_full', 'mute_all', 'wave_fast', 'rec_start0', 'sound_lofi']   # = EXP14 (experimental line; EXP7 stable patcher is released separately)
+davey = make_exp.VUB + ['zone_chop', 'chop_even', 'chop_lazy', 'sampling', 'prog_mono', 'timing_full', 'mute_all', 'wave_fast', 'rec_start0', 'sound_lofi']   # = EXP15 (experimental line; EXP7 stable patcher is released separately)
 allw = lambda ids: engine.points(data, engine.closure(data, ids))
 data['meter'] = {'limit': allw(davey),
                  'maximum': allw([m['id'] for m in mods if not m['hidden']]),
@@ -171,9 +171,9 @@ data['meter'] = {'limit': allw(davey),
                           'light': ['tune', 'transpose', 'param_copy', 'format']}}
 # the DAVEY preset must be byte-identical to the emulator-tested experimental file
 out, rep = engine.build(data, stock, davey)
-exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP14.BIN'), 'rb').read()
-assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP14.BIN'
-print('DAVEY preset == DAVEY_EXP14.BIN', rep['sha256'][:16])
+exp2 = open(os.path.join(ROOT, 'exp_reloc', 'DAVEY_EXP15.BIN'), 'rb').read()
+assert out == exp2, 'DAVEY preset differs from exp_reloc/DAVEY_EXP15.BIN'
+print('DAVEY preset == DAVEY_EXP15.BIN', rep['sha256'][:16])
 # tested combinations (emulator gates passed on the exact file); more are added by finalize_verified.py after the gate runs
 data['verified'] = {engine.sel_key(engine.closure(data, davey)): rep['sha256']}
 _extra = os.path.join(HERE, 'verified_extra.json')       # written by exp_reloc/gate_presets.py: only selections that passed both restore gates

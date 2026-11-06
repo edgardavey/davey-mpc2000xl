@@ -42,7 +42,8 @@ With only one of them, F3 offers only that kind.
 1. Press **F3** until you reach **LAZY**.
 2. Hit **any pad**: the sample starts playing (that's slice 1).
 3. While it plays, hit a **new pad** at every point where a new slice should start.
-   Each pad cuts only once, so a repeated pad is ignored.
+   Each pad cuts only once. Hit the pad of an **earlier** slice while the sound plays and it cuts the sound at once and plays that slice
+   (no waiting for the end); no new slice is made, and hit the **last** slice's pad to go on chopping.
    Exception: hit the pad of the **last** slice again and the sound plays on from that slice, so you can keep
    chopping from there (also after the sound has finished).
 4. **F4 UNDO** takes back the last cut. **F2 CLEAN** starts over.
@@ -118,6 +119,8 @@ Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). If the w
 ### Process a sound you already have
 1. SHIFT+5 (TRIM), hit the pad of the sound (or pick it at `Snd:`).
 2. **F5 EDIT**, turn the wheel past the stock list to **SP1200 ▶ NEW SOUND** / S900 ▶ NEW SOUND / SP1200 ▶ REPLACE / S900 ▶ REPLACE.
+   The window shows `Snd:` (the sound that will be processed) and `Rate:`. **Hit a pad** to hear a sound and pick it (an empty pad changes nothing).
+   **F1 RATE-** / **F3 RATE+** step the rate: the preset (SP1200 26040 Hz, S900 30000 Hz), then 8000 … 44100 Hz.
 3. NEW SOUND: set `New name:` if you like, **F5 DO IT**. A processing box, then the **KEEP or RETRY** window you know from sampling:
    cursor down to `Assign to note:`, hit the pad that should get the sound, **F5 KEEP** (F4 PLAY to hear it, F2 RETRY throws the copy away).
    You are back on TRIM with the processed sound; the original is untouched.
