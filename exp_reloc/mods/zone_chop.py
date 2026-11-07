@@ -243,9 +243,17 @@ pad_hook:
     cmp si, bx
     jae .Lph_new
     cmp byte ptr cs:[si+V_TPAD], cl
-    je .Lph_end
+    je .Lph_used
     inc si
     jmp .Lph_chk
+.Lph_used:                               /* EXP15: an earlier slice's pad while the run plays: cut at once and play that slice (tapping is over until the last pad resumes it) */
+    mov al, cl
+    and al, 0x0f
+    inc al
+    mov byte ptr cs:[V_PZ], al
+    mov byte ptr cs:[V_PREQ], 1
+    mov byte ptr cs:[V_RUN], 0
+    jmp .Lph_end
 .Lph_new:
     or bl, bl
     je .Lph_store

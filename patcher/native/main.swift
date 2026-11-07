@@ -2,7 +2,7 @@ import Cocoa
 import WebKit
 
 // Thin native shell: shows the offline patcher page and routes its "download" to a save dialog.
-final class App: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate {
+final class App: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate, WKScriptMessageHandlerWithReply {
     var win: NSWindow!
     var web: WKWebView!
     var savedTo: URL?
@@ -10,6 +10,7 @@ final class App: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDele
     func applicationDidFinishLaunching(_ n: Notification) {
         let cfg = WKWebViewConfiguration()
         cfg.mediaTypesRequiringUserActionForPlayback = []      // the intro tune may start when the window opens
+        cfg.userContentController.addScriptMessageHandler(self, contentWorld: .page, name: "fetchOS")
         web = WKWebView(frame: .zero, configuration: cfg)
         web.navigationDelegate = self; web.uiDelegate = self
         win = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 820),
@@ -18,6 +19,17 @@ final class App: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDele
         let page = Bundle.main.url(forResource: "patcher", withExtension: "html")!
         web.loadFileURL(page, allowingReadAccessTo: page.deletingLastPathComponent())
         NSApp.activate(ignoringOtherApps: true)
+    }
+    // Akai's original OS: the page asks for the zip, we fetch it from Akai's CDN into memory (nothing is written to disk, so nothing is left to delete).
+    // DAVEY_OS_URL replaces the address for tests (any URL, including file://).
+    func userContentController(_ c: WKUserContentController, didReceive m: WKScriptMessage, replyHandler: @escaping (Any?, String?) -> Void) {
+        let env = ProcessInfo.processInfo.environment["DAVEY_OS_URL"]
+        guard let u = URL(string: env ?? (m.body as? String ?? "")), env != nil || (u.scheme == "https" && u.host == "cdn.inmusicbrands.com") else { replyHandler(nil, "bad url"); return }
+        URLSession.shared.dataTask(with: URLRequest(url: u, timeoutInterval: 60)) { d, r, e in
+            DispatchQueue.main.async {
+                if let d = d, e == nil, (r as? HTTPURLResponse)?.statusCode ?? 200 == 200 { replyHandler(d.base64EncodedString(), nil) } else { replyHandler(nil, e?.localizedDescription ?? "download failed") }
+            }
+        }.resume()
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ a: NSApplication) -> Bool { true }
 
