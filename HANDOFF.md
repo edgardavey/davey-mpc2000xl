@@ -43,6 +43,7 @@ devices. Coordinate through git branches (below), never by editing the same file
 |---|---|
 | EXP12 | RELEASED experimental (GitHub `experimental-exp12`, branch `experimental`): full Timing list (+1/4, 1/4(3)), stock-safe .ALL files ("DAVEYTC" trailer), patcher options Chop: even split / Lazy chop |
 | EXP13 | RELEASED 2026-10-24 (GitHub `experimental-exp13`). Contents below |
+| EXP15 | **RELEASED 2026-11-07** (GitHub `experimental-exp15`, patcher 4.6): EXP14 feedback fixes: lazy chop cuts on earlier pad; Sampling Mode Rate row (F1/F3, 8000-44100 Hz); pad select + `Snd:` row in Edit. sound_lofi now 3 units (0x75E60, 0x76300, 0x76DD0; excludes overdub_fix). Tests `lofi_ui`, `lazy_repeat`. Emulator-tested only. Patcher: simpler UI, bigger text, auto OS download. Next: DUCK (pump) |
 | EXP14 | **RELEASED 2026-11-05** (GitHub `experimental-exp14`, branch `experimental`): Sampling Mode on any sound, `exp_reloc/mods/sound_lofi.py` at **0x75E60-0x7610B** (TRIM > F5 EDIT > SP1200/S900 NEW SOUND or REPLACE, then the stock KEEP/RETRY window). Test `lofi` |
 
 EXP13 contents (user reports from 2026-10-23):
