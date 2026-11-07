@@ -138,6 +138,7 @@ mods.append({'id': 'dark', 'name': 'Dark mode (inverted LCD)', 'group': 'davey',
 for m in mods:                                   # REGIONS side of the either/or
     if m['id'] == 'regions': m['excludes'] = ['zone_chop', 'prog_mono', 'timing_full', 'wave_fast', 'sound_lofi']   # VU REGIONS uses 0x749B0-0x7653A, where these live
     if m['id'] in ('prog_mono', 'timing_full', 'wave_fast', 'sound_lofi'): m['excludes'] = sorted(set(m.get('excludes', []) + ['regions']))
+    if m['id'] == 'sound_lofi': m['excludes'] = sorted(set(m['excludes'] + ['overdub_fix']))   # EXP15 unit C (0x76DD0) shares the range of VU's hidden overdub_fix, which is never offered
     if m['id'] in ('regions', 'lazy', 'overdub_fix'): m['hidden'] = True
     if m['id'] == 'dark': m['hidden'] = True                                   # user 2026-10-23: dark mode out of EXP13+ until they say so      # 2026-10-17: our fork offers Zone chop only; VU Regions stay in VU's own patcher
 
@@ -145,7 +146,7 @@ for m in mods:                                   # REGIONS side of the either/or
 # (a patch active only 'when' module X is selected cannot clash with a module that excludes X)
 byid = {m['id']: m for m in mods}
 def never_together(a, pa, b, pb):
-    return any(w in byid[b].get('excludes', []) for w in pa.get('when', [])) or any(w in byid[a].get('excludes', []) for w in pb.get('when', []))
+    return b in byid[a].get('excludes', []) or a in byid[b].get('excludes', []) or any(w in byid[b].get('excludes', []) for w in pa.get('when', [])) or any(w in byid[a].get('excludes', []) for w in pb.get('when', []))
 seen = {}
 for m in mods:
     if m['kind'] != 'set': continue

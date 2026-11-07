@@ -56,7 +56,7 @@ def main():
     exe = os.path.join(OUT, 'DAVEY MPC PATCHER.exe')
     cmd = [zig, 'c++', '-target', 'x86_64-windows-gnu', '-std=c++17', '-O2', '-s', '-Wl,--subsystem,windows', '-DUNICODE', '-D_UNICODE',
            '-I', wv_inc, '-I', w2_inc, '-I', gen, os.path.join(HERE, 'main.cc'), os.path.join(gen, 'app.rc'), '-o', exe,
-           '-lole32', '-lshlwapi', '-lversion', '-lcomdlg32', '-ladvapi32', '-lshell32', '-luser32', '-lgdi32']
+           '-lole32', '-lurlmon', '-lshlwapi', '-lversion', '-lcomdlg32', '-ladvapi32', '-lshell32', '-luser32', '-lgdi32']
     subprocess.run(cmd, check=True)
     print('built', exe, os.path.getsize(exe), 'bytes, sha256', hashlib.sha256(open(exe, 'rb').read()).hexdigest()[:16])
 

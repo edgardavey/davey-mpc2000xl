@@ -5,6 +5,7 @@
 
 #include <windows.h>
 #include <commdlg.h>
+#include <urlmon.h>
 
 #include <string>
 
@@ -35,6 +36,46 @@ static std::string b64decode(const std::string &in) {
     bits += 6;
     if (bits >= 0) { out.push_back(char((val >> bits) & 0xff)); bits -= 8; }
   }
+  return out;
+}
+
+static std::string b64encode(const std::string &in) {
+  static const char *a = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  std::string out;
+  size_t i = 0;
+  for (; i + 2 < in.size(); i += 3) {
+    unsigned v = ((unsigned char)in[i] << 16) | ((unsigned char)in[i + 1] << 8) | (unsigned char)in[i + 2];
+    out += a[v >> 18]; out += a[(v >> 12) & 63]; out += a[(v >> 6) & 63]; out += a[v & 63];
+  }
+  if (i + 1 == in.size()) { unsigned v = (unsigned char)in[i] << 16; out += a[v >> 18]; out += a[(v >> 12) & 63]; out += "=="; }
+  else if (i + 2 == in.size()) { unsigned v = ((unsigned char)in[i] << 16) | ((unsigned char)in[i + 1] << 8); out += a[v >> 18]; out += a[(v >> 12) & 63]; out += a[(v >> 6) & 63]; out += '='; }
+  return out;
+}
+
+// Called from the page: nativeFetchOS(url) -> base64 of Akai's OS zip (only from Akai's CDN; DAVEY_OS_URL overrides for tests) or null.
+// The zip goes through a temp file that is deleted at once.
+static std::string native_fetch(const std::string &req) {
+  std::string url = webview::detail::json_parse(req, "", 0);
+  char env[1024] = {0};
+  DWORD en = GetEnvironmentVariableA("DAVEY_OS_URL", env, sizeof(env));
+  if (en > 0 && en < sizeof(env)) url = env;
+  else if (url.compare(0, 31, "https://cdn.inmusicbrands.com/a") != 0) return "null";
+  wchar_t dir[MAX_PATH], tmp[MAX_PATH];
+  GetTempPathW(MAX_PATH, dir);
+  GetTempFileNameW(dir, L"dvy", 0, tmp);
+  std::string out = "null";
+  if (URLDownloadToFileW(nullptr, widen(url).c_str(), tmp, 0, nullptr) == S_OK) {
+    HANDLE h = CreateFileW(tmp, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (h != INVALID_HANDLE_VALUE) {
+      std::string data;
+      char buf[65536];
+      DWORD got = 0;
+      while (ReadFile(h, buf, sizeof(buf), &got, nullptr) && got) data.append(buf, got);
+      CloseHandle(h);
+      if (!data.empty()) out = "\"" + b64encode(data) + "\"";
+    }
+  }
+  DeleteFileW(tmp);
   return out;
 }
 
@@ -95,6 +136,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     w.set_title("DAVEY MPC PATCHER");
     w.set_size(1100, 820, WEBVIEW_HINT_NONE);
     HWND hwnd = (HWND)w.window().value();
+    w.bind("nativeFetchOS", [](const std::string &req) -> std::string { return native_fetch(req); });
     w.bind("nativeSave", [hwnd](const std::string &req) -> std::string { return native_save(hwnd, req); });
     w.init(SAVE_HOOK);
     w.set_html(reinterpret_cast<const char *>(PATCHER_HTML));
