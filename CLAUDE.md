@@ -33,7 +33,7 @@ Say "emulator-tested only".
 
 ## Setup (macOS)
 1. Build the emulator: `python3 tools/fetch_mame.py`, then `SDL_INSTALL_ROOT=/path/to/sdl2 bash build_macos.sh`.
-2. Put your stock OS at `build_os/sys_stock/MPC2KXL.BIN`; build the test floppies (`tools/make_floppy.sh`).
+2. `python3 tools/fetch_dev_files.py` gets the stock OS (from Akai's CDN), the test samples (GitHub release asset `davey-dev-files.zip`) and builds the floppies (`tools/make_floppy.py`, any OS).
 3. VU's module data: `patcher/modules.json` is committed. To regenerate it you need VU's *MPC2000XL Updater 2.app*;
    point `VU_UPDATER_JSON` at its `Contents/Resources/modular.json`.
 4. Build an OS: `python3 exp_reloc/make_exp.py exp_reloc/DAVEY_EXPn.BIN`; test:

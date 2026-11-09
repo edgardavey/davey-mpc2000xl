@@ -175,5 +175,7 @@ tools/firmware.py
 tools/integrate_mame.py
 tools/launcher.py
 tools/make_floppy.sh
+tools/make_floppy.py
+tools/fetch_dev_files.py
 tools/package_macos.py
 tools/patch_mame_keyboard.py

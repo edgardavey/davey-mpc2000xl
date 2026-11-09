@@ -22,7 +22,13 @@ devices. Coordinate through git branches (below), never by editing the same file
 
 1. Clone `https://github.com/edgardavey/davey-mpc2000xl`, check out the work branch (section 4).
 2. Build the emulator: `python3 tools/fetch_mame.py`, then `SDL_INSTALL_ROOT=/path/to/sdl2 bash build_macos.sh`.
-3. Files that are **never in git** (Akai's OS and private data). Get them from the user:
+3. **One command sets up the test files on any OS:** `python3 tools/fetch_dev_files.py`. It downloads the test samples
+   (`floppy/*.WAV`, sha256-checked, from the newest GitHub release that carries `davey-dev-files.zip`), builds the floppy
+   images with `tools/make_floppy.py` (pure Python, any OS) and fetches Akai's stock OS 1.20 from Akai's own CDN (never
+   redistributed by us), then builds `gold_floppy.img` from it. `exp_reloc/base/vub_noregions.BIN` is rebuilt by
+   `engine.build(engine.load_data(), stock, VUB)` (see make_exp.py). The only thing it cannot fetch is VU's updater data
+   (`modular.json`, needed by `patcher/gen_data.py` and `make_exp.py`): get it from the project owner.
+   Never commit Akai's OS (`*.BIN`, `gold_floppy.img`) or VU's data. Details of what the files are:
    - the stock OS 1.20 `build_os/sys_stock/MPC2KXL.BIN` (sha256 `100e3375b4...`);
    - floppy images in `floppy/` (`funky.img`; `gold_floppy.img` = funky.img plus the ORIGINAL `MPC2KXL.BIN`
      stamped **2004-11-11 15:11**; the time matters, see 6);
