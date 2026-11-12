@@ -1,6 +1,7 @@
 """Test harness: run a command script on one or two builds, collect snapshots/log, compare, and keep an issues list."""
 import os, sys, subprocess, shutil, hashlib, time, json, re
 from PIL import Image, ImageChops
+IS_WIN = os.name == 'nt'
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # repo root
 SYS = {'stable': ROOT + '/build_os/sys_stable', 'davey': ROOT + '/build_os/sys_new', 'stock': ROOT + '/build_os/sys_stock', 'r2': ROOT + '/build_os/sys_r2', 'r2dark': ROOT + '/build_os/sys_r2dark'}
 LOG = ROOT + '/test_log'
@@ -23,12 +24,18 @@ def run(name, lines, build, floppy='floppy/funky.img', cap=600, sound=True):
     # watchdog (2026-10-17): an emulator run that stops progressing used to hang the whole suite for hours.
     # Wall-clock limit = 3x the emulated length (min 5 min); on expiry the run is killed, logged as EMULATOR STALL and retried once.
     for attempt in (1, 2):
-        p = subprocess.Popen([os.environ.get('MPC_EMU', ROOT) + '/tools/dev/run_script.sh', script, floppy], cwd=ROOT, env=env,
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
+        runner = (os.environ.get('MPC_EMU', ROOT) + '/tools/dev/run_script.sh').replace('\\', '/')
+        if IS_WIN:   # Windows (MSYS2 bash): forward-slash paths, no process groups
+            cmd = ['bash', runner, script.replace('\\', '/'), floppy]; extra = {}
+        else:
+            cmd = [runner, script, floppy]; extra = {'start_new_session': True}
+        p = subprocess.Popen(cmd, cwd=ROOT, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, **extra)
         try:
             stdout, _ = p.communicate(timeout=max(300, 3 * cap)); break
         except subprocess.TimeoutExpired:
-            os.killpg(p.pid, 9); p.communicate()
+            if IS_WIN: subprocess.run(['taskkill', '/F', '/T', '/PID', str(p.pid)], capture_output=True)
+            else: os.killpg(p.pid, 9)
+            p.communicate()
             print(f'EMULATOR STALL in {name} (attempt {attempt}), killed after {max(300, 3 * cap)} s', flush=True)
             if attempt == 2:
                 open(d + '/out.log', 'w').write(f'EMULATOR STALL: {name} stalled twice; result not trustworthy\n'); return d
