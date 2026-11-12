@@ -2,13 +2,13 @@
  "format,param_copy,transpose,tune,u13_pitch,u13_program": "9b0057cf4b6b4d3b32835b8e244852f8915d507de18a52eda21212d37f47f29a",
  "timing_full": "ec59f33622ec448fa71ddd52d7739f3a6c9a017bc7538ac9b5cccc87649fd3dd",
  "rec_start0": "86b7b206c9549135bcb083ce15376cf763ea084f0510286ab6f64482f495614e",
- "sampling,sound_lofi": "176e2f46ec3892c47ca6482269338e4ba74fc01053cce1adb1742a4f9537dc80",
+ "sampling,sound_lofi": "db68d56017ccc7d4ce2488e76401a41623c7050f211813b06d19fb795c6c4698",
  "wave_fast": "492dbafe75d7ac7e6adf442ce2c98346b5206db87bd6c10395271dc0b55df3f6",
  "mute_all,param_copy,u13_program": "474e71cc0a2a8d22e0eed9ebd6c2a38987f73c658d0fedbbdde0da6c20002b5e",
- "chop_even,zone_chop": "4c88323078f53e8f4e8aae64916809b967f02d9336da816518f5e539981bd7f1",
- "chop_lazy,zone_chop": "65b9039c56a1382c8eeeae37e4c638d0055decae63d2154bea44da045544954c",
+ "chop_even,zone_chop": "17465dea3aad5a4736d8e178fec9afeeeab01d6cabe9a9cd6e728ae1bb834852",
+ "chop_lazy,zone_chop": "1509b734177ef26f57f28b2959ea281d11d2851d93a384bf8c2d85351a808608",
  "sampling": "ea8c00df14b1f1215a540e488d5985e0ecea221d2a43dd9d0e119f827c7adc7f",
  "prog_mono": "35391466c86cac801c5a374b9aa5b7ca63db69b5020e027395a2564c74875a09",
  "mute,mute8": "6beb23509b04ec75f8219a58e51fffefa4fd1ce759eb648461695af7b96e9e31",
- "chop_even,chop_lazy,double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,rec_start0,runtime,sampling,sound_lofi,step_move,timing_full,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "d88332289fbbe97810926480c8fb7af69235b0aa7ad66a9941e704541b8c497d"
+ "chop_even,chop_lazy,double_stop,format,hpf,input_thru,mute,mute8,mute_all,param_copy,prog_mono,ram_init,rec_start0,runtime,sampling,sound_lofi,step_move,timing_full,transpose,tune,u13_pitch,u13_program,wave_fast,zone_chop": "ccf6cf6f75e0d6581c8f62b3967df4dc931b0c987ff47ac56877317ef6a7d8b5"
 }
