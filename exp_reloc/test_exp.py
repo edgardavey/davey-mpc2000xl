@@ -250,7 +250,7 @@ def t_f6play():
         L = P.boot() + P.load_first_file(35) + chop_enter() + ['press f3', 'wait 1', 'press f3', 'wait 1.5', TM('q0'), 'wait 1.5', TM('q1'), 'down f6', TM('h0'), 'wait 0.05', TM('h1')]
         L += (['wait %.2f' % hold_extra] if hold_extra else []) + ['up f6', 'wait 1.5', 'exit']
         sc = os.path.join(ROOT, 'test_log', 'f6play.txt'); open(sc, 'w').write('\n'.join(L) + '\n'); w = os.path.join(ROOT, 'test_log', 'f6play.wav')
-        out = subprocess.run([os.path.join(os.environ.get('MPC_EMU', ROOT), 'tools/dev/run_script_snd.sh'), sc, 'floppy/funky.img'], cwd=ROOT, env=dict(os.environ, SYSDIR=H.SYS['exp'], CAP='150', WAV=w), capture_output=True, text=True)
+        out = subprocess.run(['bash', os.path.join(os.environ.get('MPC_EMU', ROOT), 'tools/dev/run_script_snd.sh'), sc, 'floppy/funky.img'], cwd=ROOT, env=dict(os.environ, SYSDIR=H.SYS['exp'], CAP='150', WAV=w), capture_output=True, text=True)
         lg = open(os.path.dirname(os.path.dirname(out.stdout.strip().split('\n')[-1])) + '/out.log', errors='replace').read()
         T = {m.group(1): float(m.group(2)) for m in re.finditer(r'TM (\S+) ([\d.]+)', lg)}
         raw = open(w, 'rb').read(); ch, sr = struct.unpack_from('<HI', raw, 22); i = raw.index(b'data'); dl, = struct.unpack_from('<I', raw, i + 4)   # plain RIFF read (kept from when build_os/suite/chunk.py shadowed the stdlib chunk module)
@@ -270,7 +270,7 @@ def t_tpad():
     L += P.shift_key('n5') + ['wait 2', P.T(N, 'start'), 'wait 1', TM('q0'), 'wait 1', TM('q1'), 'tap pad3 0', TM('p3'), 'wait 1.5', P.T(N, 'pad3'), 'snap',
                               'tap pad1 0', 'wait 1.5', P.T(N, 'pad1'), 'snap', 'tap pad12 0', 'wait 1.5', P.T(N, 'pad12'), 'snap', 'exit']
     sc = os.path.join(ROOT, 'test_log', 'tpad.txt'); open(sc, 'w').write('\n'.join(L) + '\n'); w = os.path.join(ROOT, 'test_log', 'tpad.wav')
-    out = subprocess.run([os.path.join(os.environ.get('MPC_EMU', ROOT), 'tools/dev/run_script_snd.sh'), sc, 'floppy/funky.img'], cwd=ROOT, env=dict(os.environ, SYSDIR=H.SYS['exp'], CAP='200', WAV=w), capture_output=True, text=True)
+    out = subprocess.run(['bash', os.path.join(os.environ.get('MPC_EMU', ROOT), 'tools/dev/run_script_snd.sh'), sc, 'floppy/funky.img'], cwd=ROOT, env=dict(os.environ, SYSDIR=H.SYS['exp'], CAP='200', WAV=w), capture_output=True, text=True)
     sess = os.path.dirname(os.path.dirname(out.stdout.strip().split('\n')[-1])); lg = open(sess + '/out.log', errors='replace').read()
     T = {m.group(1): float(m.group(2)) for m in re.finditer(r'TM (\S+) ([\d.]+)', lg)}
     nm = {m.group(1): m.group(2).strip() for m in re.finditer(r'SND (\S+) (.*)', lg)}
@@ -299,10 +299,11 @@ def t_lofi_ui():
     L = P.boot() + P.load_first_file(35) + chop_enter() + ['press f3', 'wait 1', 'press f5', 'wait 2', 'press f5', 'wait 12', 'press main', 'wait 1']
     L += P.shift_key('n5') + ['wait 2', 'press f5', 'wait 1.5'] + ['press plus', 'wait 0.6'] * 8 + ['snap', N.replace('@T@', 'open'), RI.replace('@T@', 'open'), TM('q0'), 'wait 1', TM('q1')]
     L += ['tap pad3 0', TM('p3'), 'wait 1.5', N.replace('@T@', 'pad3'), 'snap', DUMP.replace('@T@', 'src'), 'tap pad12 0', 'wait 1', N.replace('@T@', 'pad12')]
-    L += ['press f3', 'wait 0.8', 'press f3', 'wait 0.8', 'press f3', 'wait 0.8', 'press f1', 'wait 0.8', RI.replace('@T@', 'f3f3f3f1'), 'snap']
+    # EXP16 (user feedback 2026-11-09): the preset (26040 here) sits in its natural place of the list: F3 -> 28000 (index 10), F1 back -> the preset's place (9), F1 -> 24000 (8); six more F1 -> 11025 (index 2)
+    L += ['press f3', 'wait 0.8', RI.replace('@T@', 'f3'), 'press f1', 'wait 0.8', RI.replace('@T@', 'f1back'), 'snap', 'press f1', 'wait 0.8', RI.replace('@T@', 'f1down')] + ['press f1', 'wait 0.8'] * 6 + [RI.replace('@T@', 'final'), 'snap']
     L += ['press f5', 'wait 20', 'snap', N.replace('@T@', 'done'), DUMP.replace('@T@', 'dst'), 'exit']
     sc = os.path.join(ROOT, 'test_log', 'lofi_ui.txt'); open(sc, 'w').write('\n'.join(L) + '\n'); w = os.path.join(ROOT, 'test_log', 'lofi_ui.wav')
-    out = subprocess.run([os.path.join(os.environ.get('MPC_EMU', ROOT), 'tools/dev/run_script_snd.sh'), sc, 'floppy/funky.img'], cwd=ROOT, env=dict(os.environ, SYSDIR=H.SYS['exp'], CAP='260', WAV=w), capture_output=True, text=True)
+    out = subprocess.run(['bash', os.path.join(os.environ.get('MPC_EMU', ROOT), 'tools/dev/run_script_snd.sh'), sc, 'floppy/funky.img'], cwd=ROOT, env=dict(os.environ, SYSDIR=H.SYS['exp'], CAP='260', WAV=w), capture_output=True, text=True)
     d = os.path.dirname(os.path.dirname(out.stdout.strip().split('\n')[-1])); lg = open(d + '/out.log', errors='replace').read()
     g = lambda pat: [m.group(1).strip() for m in re.finditer(pat, lg)]
     nm = {m.group(1): m.group(2).strip() for m in re.finditer(r'SND (\S+) (.*)', lg)}
@@ -313,7 +314,7 @@ def t_lofi_ui():
     rms = lambda x, y: (sum(v * v for v in a[int(x * sr) * ch:int(y * sr) * ch]) / max(1, int((y - x) * sr) * ch)) ** 0.5
     q, hit = rms(T['q0'], T['q1']), rms(T['p3'], T['p3'] + 0.8)
     R[f"lofi ui: pad 3 hit in the Edit window picks its sound ({nm.get('pad3')}, was {nm.get('open')}) and plays it (quiet {q:.0f}, hit {hit:.0f}); an empty pad keeps it ({nm.get('pad12')})"] = nm.get('open') == 'FUNKY' and nm.get('pad3') == 'FUNKY3' and nm.get('pad12') == 'FUNKY3' and q < 5 and hit > 50
-    R[f"lofi ui: Rate starts at the preset ({ri.get('open')}), F3 x3 and F1 x1 = step 2 ({ri.get('f3f3f3f1')})"] = ri.get('open') == 0 and ri.get('f3f3f3f1') == 2
+    R[f"lofi ui: Rate starts at the preset ({ri.get('open')}); F3 -> the next rate of the list ({ri.get('f3')}, 28000 Hz); F1 -> the preset's own place ({ri.get('f1back')}, 26040 Hz); F1 -> the previous rate ({ri.get('f1down')}, 24000 Hz); six more F1 -> step {ri.get('final')} (11025 Hz)"] = (ri.get('open'), ri.get('f3'), ri.get('f1back'), ri.get('f1down'), ri.get('final')) == (0, 10, 9, 8, 2)
     dat = {m.group(1): [int(x, 16) for x in m.group(2).split()] for m in re.finditer(r'DAT (\S+) ([0-9a-f ]+)', lg)}
     def model(inp, rate, mask=0xfff0):
         bx = 44100 - rate; bp = bx; dx = 0; o = []
@@ -353,6 +354,31 @@ def t_lazy_resume():
     s2, s3 = (b[2] / rate, b[3] / rate) if n >= 3 else (-1, -1)             # zone k starts at B[k]
     R[f'lazy resume: 3 slices ({n}), slice 2 at {s2:.2f} s (~0.8), slice 3 at {s3:.2f} s (~1.3, old ~2.1)'] = n == 3 and 0.6 < s2 < 1.0 and 1.1 < s3 < 1.6
     R['lazy resume: run healthy'] = healthy(d)
+
+def t_lazy_last_long():
+    """LAZY (user report 2026-11-09): with 16 slices cut (every pad used) the last slice plays on to the end of a LONG sound;
+    meanwhile the other pads must still work (an earlier slice's pad = cut at once and play that slice), not be ignored until the sound ends.
+    BREAK.WAV is about 15 s; 16 taps 0.35 s apart, then pad2 and pad3 while the 16th slice still plays."""
+    sys.path.insert(0, os.path.join(ROOT, 'exp_reloc', 'mods'))
+    import tempfile, zone_chop as ZC
+    from asm16 import assemble
+    seg = (0x74f00 - ZC.BASE) >> 4; tp = tempfile.mktemp(suffix='.S'); open(tp, 'w').write(ZC.source(seg)); code = assemble(tp); os.remove(tp)
+    VO = 0x74f00 + code.index(b'\xe7\x1a') - 129                  # linear address of v_open (v_even_ok sits 129 bytes after it); state bytes: open run cnt req dirty pad | t0 endms beat
+    ST = ('lua local sp=manager.machine.devices[":maincpu"].spaces["program"] local v=%d print(string.format("ST @T@ open=%%d run=%%d cnt=%%d req=%%d preq=%%d pz=%%d res=%%d scr=%%d t0=%%d endms=%%d beat=%%d now=%%d", '
+          'sp:read_u8(v),sp:read_u8(v+1),sp:read_u8(v+2),sp:read_u8(v+3),sp:read_u8(v+133),sp:read_u8(v+132),sp:read_u8(v+134),sp:read_u8(v+131),sp:read_u16(v+6),sp:read_u16(v+8),sp:read_u16(v+10),sp:read_u16(0xfe70+0xb8a)))') % VO
+    LOAD = P.shift_key('n3') + ['wait 2', 'press f6', 'wait 3', 'press n3', 'press n5', 'press enter', 'wait 60', 'press f5', 'wait 3', 'press main', 'wait 1']   # like P.load_first_file(35) but 60 s for the 1.3 MB BREAK.WAV (6 s is only enough for FUNKY)
+    L = P.boot() + LOAD + chop_enter() + ['press f3', 'wait 1', 'press f3', 'wait 1', 'press f3', 'wait 1.5']        # 16 -> 8 -> 4 -> LAZY
+    for i in range(1, 17): L += [f'tap pad{i} 0', 'wait 0.35']
+    L += [P.T(ZD, 'full'), ST.replace('@T@', 'full'), 'tap pad2 0', 'wait 0.6', P.T(ZD, 'p2'), ST.replace('@T@', 'p2'), 'tap pad3 0', 'wait 0.6', P.T(ZD, 'p3'), ST.replace('@T@', 'p3'), 'snap', 'exit']
+    d = H.run('exp_lazy_last_long', L, 'exp', 'floppy/break.img', 400, sound=False)
+    z = {l.split()[1]: l for l in log(d, 'ZONES')}; sts = {l.split()[1]: l for l in log(d, 'ST')}
+    g = lambda k, f: int(re.search(f + r'=(-?\d+)', z.get(k, f + '=-1')).group(1))
+    s = lambda k, f: int(re.search(f + r'=(\d+)', sts.get(k, f + '=-1')).group(1))
+    b1 = int(re.search(r'B=(\d+)', z.get('full', 'B=4294967295')).group(1))                     # first zone start: real values are below ~1.4 M samples, 0xCCCCCCCC = the chop screen was never reached
+    R[f"lazy last slice: the lazy run is really on after 16 taps (open {s('full', 'open')}, run {s('full', 'run')}, cnt {s('full', 'cnt')}, zone table real: {b1 < 5000000})"] = s('full', 'open') == 1 and s('full', 'run') == 1 and s('full', 'cnt') == 16 and b1 < 5000000
+    R[f"lazy last slice: pad2 while the 16th slice plays selects slice 2 at once (cur {g('p2', 'cur')}; EXP15 ignores the pad until the sound ends)"] = g('p2', 'cur') == 2
+    R[f"lazy last slice: then pad3 selects slice 3 (cur {g('p3', 'cur')})"] = g('p3', 'cur') == 3
+    R['lazy last slice: run healthy'] = healthy(d)
 
 def t_timing():
     """Full Timing list (2026-10-22, wheel order 2026-10-23): OFF, 1/4, 1/4(3), 1/8 ... 1/32(3). Stored values stay
@@ -583,7 +609,7 @@ def t_wave_fast():
     R[f'wave fast: FUNKY columns vs stock: {same} of {len(A)} identical, worst {worst} rows'] = cf == cs_ == 245 and len(A) == 245 and worst <= 2 and same >= 196
     R['wave fast: runs healthy'] = healthy(d)
 
-TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'timing': t_timing, 'timing_disk': t_timing_disk, 'chop_opts': t_chop_opts, 'rec_start0': t_rec_start0, 'lazy_resume': t_lazy_resume, 'lofi': t_lofi, 'lofi_ui': t_lofi_ui, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
+TESTS = {'wave_fast': t_wave_fast, 'wave_chop': t_wave_chop, 'mute_all': t_mute_all, 'timing': t_timing, 'timing_disk': t_timing_disk, 'chop_opts': t_chop_opts, 'rec_start0': t_rec_start0, 'lazy_resume': t_lazy_resume, 'lazy_last_long': t_lazy_last_long, 'lofi': t_lofi, 'lofi_ui': t_lofi_ui, 'lazy_repeat': t_lazy_repeat, 'tpad': t_tpad, 'f6play': t_f6play, 'digit': t_digit, 'prog_mono': t_prog_mono, 'rec_normal': t_rec_normal, 'chop_preview': t_chop_preview, 'mute4': t_mute4, 'mute': t_mute, 'vub': t_vub, 'twin': t_twin, 'gate_update': t_gate_update, 'gate_boot': t_gate_boot, 'chop': t_chop, 'sampling': t_sampling, 'prog24': t_prog24, 'use_restore': t_use_restore}
 if __name__ == '__main__' and sys.argv[1:2] == ['--make-refs']:
     d = H.run('exp_ref_boot', BOOT_LINES, 'stock', GOLD, 120, sound=False); print(d, snaps(d)); sys.exit()
 if __name__ == '__main__':

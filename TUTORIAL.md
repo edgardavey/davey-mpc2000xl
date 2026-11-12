@@ -120,7 +120,7 @@ Tip: TRIM shows one channel of a stereo sound (`View: LEFT` / `RIGHT`). If the w
 1. SHIFT+5 (TRIM), hit the pad of the sound (or pick it at `Snd:`).
 2. **F5 EDIT**, turn the wheel past the stock list to **SP1200 ▶ NEW SOUND** / S900 ▶ NEW SOUND / SP1200 ▶ REPLACE / S900 ▶ REPLACE.
    The window shows `Snd:` (the sound that will be processed) and `Rate:`. **Hit a pad** to hear a sound and pick it (an empty pad changes nothing).
-   **F1 RATE-** / **F3 RATE+** step the rate: the preset (SP1200 26040 Hz, S900 30000 Hz), then 8000 … 44100 Hz.
+   **F1 RATE-** / **F3 RATE+** step the rate through 8000 … 44100 Hz. The window opens on the preset (SP1200 26040 Hz, S900 30000 Hz), which sits in its place in the list and is marked `(preset)`, so the first step goes to its neighbour (26040 → 24000 or 28000).
 3. NEW SOUND: set `New name:` if you like, **F5 DO IT**. A processing box, then the **KEEP or RETRY** window you know from sampling:
    cursor down to `Assign to note:`, hit the pad that should get the sound, **F5 KEEP** (F4 PLAY to hear it, F2 RETRY throws the copy away).
    You are back on TRIM with the processed sound; the original is untouched.

@@ -236,8 +236,6 @@ pad_hook:
     mov bl, byte ptr cs:[V_CNT]
     cmp ax, word ptr cs:[V_ENDMS]
     jae .Lph_end
-    cmp bl, 16
-    jae .Lph_end
     xor si, si                           /* each pad cuts only once per run: a pad already used (start pad included) is ignored */
 .Lph_chk:
     cmp si, bx
@@ -255,6 +253,8 @@ pad_hook:
     mov byte ptr cs:[V_RUN], 0
     jmp .Lph_end
 .Lph_new:
+    cmp bl, 16                           /* EXP16: the 16-slice limit only stops a NEW cut; an earlier slice's pad (above) works while the last slice plays on (user report 2026-11-09) */
+    jae .Lph_end
     or bl, bl
     je .Lph_store
     mov si, bx

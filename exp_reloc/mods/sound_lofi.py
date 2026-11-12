@@ -321,19 +321,20 @@ mksname:                       /* v_sname = the current sound's name (16 chars +
     mov byte ptr cs:[V_SNAME + 16], 0
     pop es
     .byte 0xc3
-mkrate:                        /* ax = E; v_rtxt = "26040 Hz (preset)" / "22050 Hz" */
+mkrate:                        /* ax = E; v_rtxt = "26040 Hz (preset)" / "22050 Hz" (EXP16: the preset sits in its natural place of the list; "(preset)" shows whenever the rate equals it) */
     push es
+    push bp
     mov bx, A_SEG
     mov es, bx
+    mov bp, %(SP1200)d         /* bp = this entry's preset rate */
+    test al, 1
+    jnz .Lmr_p
+    mov bp, %(S900)d
+.Lmr_p:
+    mov cx, bp
     mov bx, word ptr es:[A_RIDX]
     or bx, bx
-    jnz .Lmr_tab
-    mov cx, %(SP1200)d
-    test al, 1
-    jnz .Lmr_go
-    mov cx, %(S900)d
-    jmp .Lmr_go
-.Lmr_tab:
+    jz .Lmr_go
     shl bx, 1
     mov cx, word ptr es:[bx + A_RATES - 2]
 .Lmr_go:
@@ -360,7 +361,7 @@ mkrate:                        /* ax = E; v_rtxt = "26040 Hz (preset)" / "22050 
     mov byte ptr cs:[di + 2], 122
     add di, 3
     mov byte ptr cs:[di], 0
-    cmp word ptr es:[A_RIDX], 0
+    cmp cx, bp                 /* cx = the rate shown: the preset (index 0 or the same value in the list) gets the label */
     jne .Lmr_end
     mov si, offset S_PRE
 .Lmr_cp:
@@ -371,6 +372,7 @@ mkrate:                        /* ax = E; v_rtxt = "26040 Hz (preset)" / "22050 
     or al, al
     jnz .Lmr_cp
 .Lmr_end:
+    pop bp
     pop es
     .byte 0xc3
 
@@ -476,7 +478,7 @@ open_win:                      /* replaces 'push ds / push 2606 / call 0724' (in
     push word ptr cs:[V_OCS]   /* the stock 'add sp,4' removes our two argument words */
     push word ptr cs:[V_OIP]
     .byte 0xcb
-rate_dn:                       /* Edit window F1: Rate - (preset <- 8000 <- ...) */
+rate_dn:                       /* Edit window F1: Rate - (EXP16: the previous rate of the list; the preset is one of them) */
     pusha
     push ds
     push es
@@ -493,12 +495,19 @@ rate_up:                       /* Edit window F3: Rate + */
     FC A_SEG, A_EFFF
     cmp ax, 9
     jb .Lr_out
+    mov dx, ax                 /* dx = the entry E (odd = SP1200, even = S900) */
     mov ax, A_SEG
     mov es, ax
     mov bx, word ptr es:[A_RIDX]
+    or bx, bx
+    jnz .Lr_have               /* EXP16: index 0 = the preset: step from where the preset sits in the list (26040 -> 24000 / 28000, 30000 -> 28000 / 32000) */
+    mov bx, %(SPI)d
+    test dl, 1
+    jnz .Lr_have
+    mov bx, %(S9I)d
+.Lr_have:
     add bx, cx
-    cmp bx, 0xffff
-    je .Lr_out
+    jz .Lr_out                 /* below the first rate (8000): stay */
     cmp bx, %(NR)d
     ja .Lr_out
     mov word ptr es:[A_RIDX], bx
@@ -625,7 +634,7 @@ def build_units(rec):
     labA = {n.upper(): f'{n} - start' for n in LABELS}
     labB = {n.upper(): f'{n} - start' for n in LABELS_B}
     labC = {n.upper(): f'{n} - start' for n in LABELS_C}
-    fmt = {'SP1200': SP1200, 'S900': S900, 'RATES': ', '.join(map(str, RATES)), 'NR': len(RATES), 'REC': ', '.join(f'0x{b:02x}' for b in rec), 'SEGC': SEG_C}
+    fmt = {'SPI': RATES.index(SP1200) + 1, 'S9I': RATES.index(S900) + 1, 'SP1200': SP1200, 'S900': S900, 'RATES': ', '.join(map(str, RATES)), 'NR': len(RATES), 'REC': ', '.join(f'0x{b:02x}' for b in rec), 'SEGC': SEG_C}
     ex = {'A_EFFF': 0x1234, 'A_RIDX': 0x1234, 'A_RATES': 0x1234, 'A_SEG': SEG, 'SEG_C': SEG_C}
     for _ in range(2):
         a = _assemble(SRC % fmt, {**labA, **ex, 'SEG_C': SEG_C})
@@ -670,4 +679,4 @@ def apply(img):
 
 
 if __name__ == '__main__':
-    print(SRC % {'SP1200': SP1200, 'S900': S900, 'RATES': '0', 'NR': 0, 'REC': '0', 'SEGC': 0})
+    print(SRC % {'SPI': 0, 'S9I': 0, 'SP1200': SP1200, 'S900': S900, 'RATES': '0', 'NR': 0, 'REC': '0', 'SEGC': 0})
